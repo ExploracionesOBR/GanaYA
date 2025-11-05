@@ -4,34 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lotería Mexicana GANA YA! Interactiva</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
+    <!-- Carga de Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carga de la fuente Inter --><style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body { font-family: 'Inter', sans-serif; }
         
-        /* Estilos base de la tarjeta GRANDE en juego */
+        /* Estilos base de la tarjeta - Solo para la carta GRANDE en juego */
         .card-loteria-lg {
             width: 100%;
             height: 100%;
-            /* Ajuste para usar aspect-ratio en lugar del padding-top hack */
-            aspect-ratio: 1 / 1.4; 
+            padding-top: 140%; 
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
             border: 3px solid #2563EB; 
             overflow: hidden;
-            /* Texto de respaldo */
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
         }
 
-        /* MINIATURA DE CARTONES DE JUGADOR */
+        /* MINIATURA DE CARTONES DE JUGADOR (EL GRAN CAMBIO) */
         .player-card-compact {
-            aspect-ratio: 1 / 1.1;
+            aspect-ratio: 1 / 1.1; /* Ligera verticalidad */
             width: 100%; 
             padding: 4px;
             background-color: white;
@@ -52,26 +50,13 @@
         .board-grid-6-compact { grid-template-columns: repeat(2, 1fr); }
         .board-grid-9-compact { grid-template-columns: repeat(3, 1fr); }
 
-        /* Estilo para cada celda de la miniatura (ahora con imagen de fondo) */
-        .board-cell {
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            position: relative; /* Para el overlay de la marca */
+        .marked-cell {
+            background-color: #EF4444; /* Rojo: Marcado */
+            border-radius: 2px;
         }
-        
-        /* Efecto de marcado: Overlay rojo semitransparente con una 'X' */
-        .marked-overlay {
-            position: absolute;
-            inset: 0;
-            background-color: rgba(239, 68, 68, 0.7); /* Rojo semi-transparente */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: black;
-            color: white;
-            text-shadow: 1px 1px 2px black;
+        .unmarked-cell {
+            background-color: #D1D5DB; /* Gris: Sin Marcar */
+            border-radius: 2px;
         }
 
         @keyframes fanfare {
@@ -99,11 +84,11 @@
         .winner-name-effect {
             position: relative;
             display: inline-block;
-            overflow: visible;
+            overflow: visible; /* Permitir que los elementos salgan del contenedor */
         }
         .winner-name-effect::before,
         .winner-name-effect::after {
-            content: '✨';
+            content: '✨'; /* Emoji o carácter para el efecto */
             position: absolute;
             font-size: 2rem;
             opacity: 0;
@@ -134,8 +119,10 @@
         /* Estructura del Layout Principal de la Vista de Juego */
         .game-layout {
             display: grid;
+            /* 3 columnas: 1 columna pequeña, 2 columnas grandes (para jugadores) */
             grid-template-columns: 1fr 3fr 1fr;
-            grid-template-rows: auto 1fr auto;
+            /* 3 filas: Logo/Titulo, Contenido Principal, Ganadores */
+            grid-template-rows: auto 1fr auto; 
             gap: 16px;
             height: 90vh; 
         }
@@ -144,25 +131,25 @@
         .logo-area { grid-area: 1 / 1 / 2 / 2; }
         .title-area { grid-area: 1 / 2 / 2 / 3; }
         .pot-area { grid-area: 1 / 3 / 2 / 4; }
-        .players-area { grid-area: 2 / 1 / 3 / 3; }
+        .players-area { grid-area: 2 / 1 / 3 / 3; } /* Ocupa 2 columnas */
         .current-card-area { 
-            grid-area: 2 / 3 / 4 / 4;
-            align-items: flex-start;
+            grid-area: 2 / 3 / 4 / 4; /* Ahora ocupa 2 filas (2 y 3) */
+            align-items: flex-start; /* Alineación arriba para dejar espacio al botón */
         } 
-        .winners-area { grid-area: 3 / 1 / 4 / 3; }
+        .winners-area { grid-area: 3 / 1 / 4 / 3; } /* Ahora solo ocupa 2 columnas */
         
         /* Media Query para móvil (apilar contenido) */
         @media (max-width: 1024px) {
             .game-layout {
                 grid-template-columns: 1fr;
-                grid-template-rows: auto auto 1fr auto;
+                grid-template-rows: auto auto 1fr auto; /* Más filas para apilar */
                 height: auto;
             }
              .logo-area, .title-area, .pot-area, .players-area, .current-card-area, .winners-area {
-                grid-area: unset !important;
-                grid-column: 1 / -1;
+                grid-area: unset !important; /* Deshabilitar grid-area */
+                grid-column: 1 / -1; /* Ocupar todo el ancho */
             }
-             .current-card-area { order: -1; }
+             .current-card-area { order: -1; } /* Mover la carta actual al inicio en móvil */
              .players-area { min-height: 400px; }
         }
 
@@ -170,7 +157,7 @@
 </head>
 <body class="bg-gray-100 min-h-screen">
 
-    <script type="module">
+    <!-- Configuración e Inicialización de Firebase --><script type="module">
         // Importaciones de Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -179,21 +166,17 @@
 
         // Establecer nivel de log para depuración de Firestore
         setLogLevel('Debug');
-        
-        // --- CONSTANTES ---
-        // 🚨 RUTA CRUCIAL: AJUSTADA a todo en MINÚSCULAS para coincidir con GitHub Pages
-        const CARD_IMAGE_PATH = './cartas_baraja_loteria/'; 
 
         // Variables Globales de Canvas (MANDATORIO)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { /* mock config */ };
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
+        
         // Instancias de Firebase
         let app, db, auth;
         let userId = 'loading'; // ID del usuario actual
 
-        // Estados Reactivos GLOBALES
+        // Estados Reactivos GLOBALES (Para que sean accesibles desde el HTML)
         window.gameState = {
             currentTab: 'game', // 'game' o 'admin'
             isAuthReady: false,
@@ -211,35 +194,35 @@
             players: {},
             // Datos de ganadores desde Firestore (winners/{winnerId})
             winners: [],
-            // 🚨 CARTAS AJUSTADAS: con ESPACIOS, en MINÚSCULAS y el sufijo -min
+            // Cartas de la lotería Mexicana (54 cartas)
             allCards: [
-                { id: 1, name: "El Gallo", fileName: "01 el gallo-min.jpg" }, { id: 2, name: "El Diablito", fileName: "02 el diablito-min.jpg" },
-                { id: 3, name: "La Dama", fileName: "03 la dama-min.jpg" }, { id: 4, name: "El Catrín", fileName: "04 el catrín-min.jpg" },
-                { id: 5, name: "El Paraguas", fileName: "05 el paraguas-min.jpg" }, { id: 6, name: "La Sirena", fileName: "06 la sirena-min.jpg" },
-                { id: 7, name: "La Escalera", fileName: "07 la escalera-min.jpg" }, { id: 8, name: "La Botella", fileName: "08 la botella-min.jpg" },
-                { id: 9, name: "El Barril", fileName: "09 el barril-min.jpg" }, { id: 10, name: "El Árbol", fileName: "10 el árbol-min.jpg" },
-                { id: 11, name: "El Melón", fileName: "11 el melón-min.jpg" }, { id: 12, name: "El Valiente", fileName: "12 el valiente-min.jpg" },
-                { id: 13, name: "El Gorrito", fileName: "13 el gorrito-min.jpg" }, { id: 14, name: "La Muerte", fileName: "14 la muerte-min.jpg" },
-                { id: 15, name: "La Pera", fileName: "15 la pera-min.jpg" }, { id: 16, name: "La Bandera", fileName: "16 la bandera-min.jpg" },
-                { id: 17, name: "El Bandolón", fileName: "17 el bandolón-min.jpg" }, { id: 18, name: "El Violoncello", fileName: "18 el violoncello-min.jpg" },
-                { id: 19, name: "La Garza", fileName: "19 la garza-min.jpg" }, { id: 20, name: "El Pájaro", fileName: "20 el pájaro-min.jpg" },
-                { id: 21, name: "La Mano", fileName: "21 la mano-min.jpg" }, { id: 22, name: "La Bota", fileName: "22 la bota-min.jpg" },
-                { id: 23, name: "La Luna", fileName: "23 la luna-min.jpg" }, { id: 24, name: "El Cotorro", fileName: "24 el cotorro-min.jpg" },
-                { id: 25, name: "El Borracho", fileName: "25 el borracho-min.jpg" }, { id: 26, name: "El Negrito", fileName: "26 el negrito-min.jpg" },
-                { id: 27, name: "El Corazón", fileName: "27 el corazón-min.jpg" }, { id: 28, name: "La Sandía", fileName: "28 la sandía-min.jpg" },
-                { id: 29, name: "El Tambor", fileName: "29 el tambor-min.jpg" }, { id: 30, name: "El Camarón", fileName: "30 el camarón-min.jpg" },
-                { id: 31, name: "Las Jaras", fileName: "31 las jaras-min.jpg" }, { id: 32, name: "El Músico", fileName: "32 el músico-min.jpg" },
-                { id: 33, name: "La Araña", fileName: "33 la araña-min.jpg" }, { id: 34, name: "El Soldado", fileName: "34 el soldado-min.jpg" },
-                { id: 35, name: "La Estrella", fileName: "35 la estrella-min.jpg" }, { id: 36, name: "El Cazo", fileName: "36 el cazo-min.jpg" },
-                { id: 37, name: "El Mundo", fileName: "37 el mundo-min.jpg" }, { id: 38, name: "El Apache", fileName: "38 el apache-min.jpg" },
-                { id: 39, name: "El Nopal", fileName: "39 el nopal-min.jpg" }, { id: 40, name: "El Alacrán", fileName: "40 el alacrán-min.jpg" },
-                { id: 41, name: "La Rosa", fileName: "41 la rosa-min.jpg" }, { id: 42, name: "La Calavera", fileName: "42 la calavera-min.jpg" },
-                { id: 43, name: "La Campana", fileName: "43 la campana-min.jpg" }, { id: 44, name: "El Cantarito", fileName: "44 el cantarito-min.jpg" },
-                { id: 45, name: "El Venado", fileName: "45 el venado-min.jpg" }, { id: 46, name: "El Sol", fileName: "46 el sol-min.jpg" },
-                { id: 47, name: "La Corona", fileName: "47 la corona-min.jpg" }, { id: 48, name: "La Chalupa", fileName: "48 la chalupa-min.jpg" },
-                { id: 49, name: "El Pino", fileName: "49 el pino-min.jpg" }, { id: 50, name: "El Pescado", fileName: "50 el pescado-min.jpg" },
-                { id: 51, name: "La Palma", fileName: "51 la palma-min.jpg" }, { id: 52, name: "La Maceta", fileName: "52 la maceta-min.jpg" },
-                { id: 53, name: "El Arpa", fileName: "53 el arpa-min.jpg" }, { id: 54, name: "La Rana", fileName: "54 la rana-min.jpg" }
+                { id: 1, name: "El Gallo", emoji: "🐓" }, { id: 2, name: "El Diablito", emoji: "😈" },
+                { id: 3, name: "La Dama", emoji: "👩" }, { id: 4, name: "El Catrín", emoji: "🤵" },
+                { id: 5, name: "El Paraguas", emoji: "☂️" }, { id: 6, name: "La Sirena", emoji: "🧜‍♀️" },
+                { id: 7, name: "La Escalera", emoji: "🪜" }, { id: 8, name: "La Botella", emoji: "🍾" },
+                { id: 9, name: "El Barril", emoji: "🛢️" }, { id: 10, name: "El Árbol", emoji: "🌳" },
+                { id: 11, name: "El Melón", emoji: "🍈" }, { id: 12, name: "El Valiente", emoji: "🦸‍♂️" },
+                { id: 13, name: "El Gorrito", emoji: "🤠" }, { id: 14, name: "La Muerte", emoji: "💀" },
+                { id: 15, name: "La Pera", emoji: "🍐" }, { id: 16, name: "La Bandera", emoji: "🇲🇽" },
+                { id: 17, name: "El Bandolón", emoji: "🎻" }, { id: 18, name: "El Violoncello", emoji: "🎸" },
+                { id: 19, name: "La Garza", emoji: "🦢" }, { id: 20, name: "El Pájaro", emoji: "🐦" },
+                { id: 21, name: "La Mano", emoji: "✋" }, { id: 22, name: "La Bota", emoji: "👢" },
+                { id: 23, name: "La Luna", emoji: "🌕" }, { id: 24, name: "El Cotorro", emoji: "🦜" },
+                { id: 25, name: "El Borracho", emoji: "🍻" }, { id: 26, name: "El Negrito", emoji: "👨" },
+                { id: 27, name: "El Corazón", emoji: "❤️" }, { id: 28, name: "La Sandía", emoji: "🍉" },
+                { id: 29, name: "El Tambor", emoji: "🥁" }, { id: 30, name: "El Camarón", emoji: "🦐" },
+                { id: 31, name: "Las Jaras", emoji: "🏹" }, { id: 32, name: "El Músico", emoji: "🎶" },
+                { id: 33, name: "La Araña", emoji: "🕷️" }, { id: 34, name: "El Soldado", emoji: "💂" },
+                { id: 35, name: "La Estrella", emoji: "⭐" }, { id: 36, name: "El Cazo", emoji: "🍲" },
+                { id: 37, name: "El Mundo", emoji: "🌎" }, { id: 38, name: "El Apache", emoji: "🏹" },
+                { id: 39, name: "El Nopal", emoji: "🌵" }, { id: 40, name: "El Alacrán", emoji: "🦂" },
+                { id: 41, name: "La Rosa", emoji: "🌹" }, { id: 42, name: "La Calavera", emoji: "💀" },
+                { id: 43, name: "La Campana", emoji: "🔔" }, { id: 44, name: "El Cantarito", emoji: "🏺" },
+                { id: 45, name: "El Venado", emoji: "🦌" }, { id: 46, name: "El Sol", emoji: "☀️" },
+                { id: 47, name: "La Corona", emoji: "👑" }, { id: 48, name: "La Chalupa", emoji: "🛶" },
+                { id: 49, name: "El Pino", emoji: "🌲" }, { id: 50, name: "El Pescado", emoji: "🐟" },
+                { id: 51, name: "La Palma", emoji: "🌴" }, { id: 52, name: "La Maceta", emoji: "🪴" },
+                { id: 53, name: "El Arpa", emoji: "🎼" }, { id: 54, name: "La Rana", emoji: "🐸" }
             ]
         };
 
@@ -249,11 +232,11 @@
         const getGameStatusRef = () => doc(db, 'artifacts', appId, 'public', 'data', 'loteria_state', 'game_status');
         const getPlayersCollection = () => collection(db, 'artifacts', appId, 'public', 'data', 'players');
         const getWinnersCollection = () => collection(db, 'artifacts', appId, 'public', 'data', 'winners');
-
+        
         // Obtener el nombre del grid CSS basado en el tamaño del cartón
         const getGridClassCompact = (size) => {
             switch (size) {
-                case 4: return 'board-grid-4-compact';
+                case 4: return 'board-grid-4-compact'; 
                 case 6: return 'board-grid-6-compact'; 
                 case 9: return 'board-grid-9-compact'; 
                 default: return 'board-grid-4-compact';
@@ -302,7 +285,7 @@
                 window.renderApp();
             }
         };
-
+        
         // Inicializa el documento de estado del juego si no existe
         const initializeGameStatus = async () => {
             if (!db) return;
@@ -329,6 +312,7 @@
         // Escuchadores de Firestore (onSnapshot)
         const startListeners = () => {
             if (!db || !window.gameState.isAuthReady) return;
+
             initializeGameStatus(); 
 
             // 1. Escuchar Estado del Juego
@@ -355,7 +339,7 @@
                     };
                     // Solo revisamos las marcas si el juego está corriendo
                     if(window.gameState.gameStatus.gameRunning) {
-                        checkAndMarkBoards();
+                        checkAndMarkBoards(); 
                     }
                 }
                 window.renderApp();
@@ -424,7 +408,7 @@
                         // Llamar a handleWin (que también se detiene el juego y se encarga de todo)
                         handleWin(player.id, player.name, board);
                         // Marcar el board como 'won' localmente
-                        return { ...board, status: 'won' };
+                        return { ...board, status: 'won' }; 
                     }
                     // Si hubo cambios en las marcas
                     else if (currentMatches !== board.matched_cards.length) {
@@ -455,6 +439,7 @@
         const handleWin = async (playerId, playerName, winningBoard) => {
             // Previene múltiples detecciones
             if (window.gameState.gameStatus.winner) return;
+
             try {
                 // 1. **DETENER EL JUEGO INMEDIATAMENTE** y registrar ganador en el estado del juego
                 await setDoc(getGameStatusRef(), { 
@@ -493,11 +478,13 @@
                 const newBoards = currentData.boards.map(board => 
                     board.boardId === winningBoard.boardId ? { ...board, status: 'won' } : board
                 );
+                
                 // Si ya no quedan partidas, el jugador se queda con sus boards ganados, pero ya no paga
                 await updateDoc(playerRef, {
                     partidas_pagadas: newPartidasPagadas,
                     boards: newBoards,
                 });
+
                 window.showConfetti(); // Mostrar confeti
 
             } catch (e) {
@@ -509,8 +496,10 @@
         // Barajar y Reiniciar el juego (ADMIN) - GLOBALIZADA
         window.startGame = async () => {
             if (!db) return console.error("Firebase no disponible.");
+
             // Reiniciar el estado del juego
             const newDeck = [...window.gameState.allCards].sort(() => 0.5 - Math.random());
+            
             try {
                 await setDoc(getGameStatusRef(), {
                     drawnCards: [],
@@ -521,7 +510,7 @@
                     gameRunning: true,
                     winner: null, // Limpiar ganador
                 });
-
+                
                 // Limpiar el estado 'won' de todos los boards y las cartas marcadas
                 const playersSnapshot = await getDocs(getPlayersCollection());
                 playersSnapshot.forEach(async (playerDoc) => {
@@ -550,7 +539,7 @@
             if (!db) return;
             try {
                 // Detener sin declarar ganador (pausa)
-                await setDoc(getGameStatusRef(), { gameRunning: false }, { merge: true });
+                await setDoc(getGameStatusRef(), { gameRunning: false }, { merge: true }); 
                 window.stopDrawingInterval();
             } catch (e) {
                 console.error("Error al detener juego:", e);
@@ -561,7 +550,7 @@
         window.changeDrawSpeed = async (speed) => {
             if (!db) return;
             try {
-                await setDoc(getGameStatusRef(), { drawSpeed: speed }, { merge: true });
+                await setDoc(getGameStatusRef(), { drawSpeed: speed }, { merge: true }); 
             } catch (e) {
                 console.error("Error al cambiar velocidad:", e);
             }
@@ -595,10 +584,10 @@
                 }
             } else {
                  console.log("¡Baraja vacía! Juego terminado.");
-                window.stopGame();
+                 window.stopGame();
             }
         };
-
+        
         // Control de tiempo para el avance automático (ADMIN) - GLOBALIZADA
         let drawingInterval = null;
         window.startDrawingInterval = () => {
@@ -608,8 +597,7 @@
             // La velocidad se ajusta en base a drawSpeed (1, 2, o 3 cartas por lanzamiento)
             const speedMultiplier = window.gameState.gameStatus.drawSpeed;
             // Un lanzamiento cada 5 segundos (más lento)
-            const intervalTime = 5000;
-
+            const intervalTime = 5000; 
             drawingInterval = setInterval(() => {
                 if (!window.gameState.gameStatus.gameRunning || window.gameState.gameStatus.winner) {
                     window.stopDrawingInterval();
@@ -628,12 +616,12 @@
 
         // Event listener para la barra espaciadora
         document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && window.gameState.currentTab === 'game' && window.gameState.gameStatus.gameRunning) {
+            if (e.code === 'Space' && window.gameState.gameStatus.gameRunning) {
                 e.preventDefault(); // Previene el scroll de la página
                 window.drawNextCard(window.gameState.gameStatus.drawSpeed);
             }
         });
-
+        
         // --- FUNCIONES DE ADMINISTRACIÓN ---
 
         // Función para actualizar la información del jugador en Firestore
@@ -724,7 +712,7 @@
 
             modalEl.classList.remove('hidden');
         };
-
+        
         window.showAlert = (message, type = 'info') => {
             const modalEl = document.getElementById('confirmationModal');
             document.getElementById('modalTitle').textContent = type === 'error' ? '¡Error!' : 'Información';
@@ -746,63 +734,53 @@
             const confettiContainer = document.getElementById('confetti-container');
             confettiContainer.innerHTML = ''; // Limpiar confeti anterior
             const colors = ['#f44336', '#ffeb3b', '#2196f3', '#4caf50', '#ff9800'];
-            const pieces = 50;
 
-            let style = document.createElement('style');
-            style.type = 'text/css';
-            document.head.appendChild(style);
-
-            for (let i = 0; i < pieces; i++) {
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                const size = Math.random() * 10 + 5;
-                const left = Math.random() * 100;
-                const delay = Math.random() * 2;
-                const duration = Math.random() * 3 + 2;
-
+            for (let i = 0; i < 50; i++) {
                 const piece = document.createElement('div');
                 piece.style.cssText = `
                     position: absolute;
-                    width: ${size}px;
-                    height: ${size}px;
-                    background-color: ${color};
-                    top: -${size}px;
-                    left: ${left}%;
-                    opacity: 0;
-                    transform-origin: 50% 50%;
-                    animation: confetti-fall-${i} ${duration}s ease-in ${delay}s forwards;
-                    border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+                    width: 10px;
+                    height: 10px;
+                    background-color: ${colors[Math.floor(Math.random() * colors.length)]};
+                    top: ${Math.random() * 100}vh;
+                    left: ${Math.random() * 100}vw;
+                    opacity: ${Math.random()};
+                    transform: rotate(${Math.random() * 360}deg);
+                    animation: fall ${2 + Math.random() * 3}s ease-in forwards;
                 `;
                 confettiContainer.appendChild(piece);
-                
-                // Generar keyframes dinámicos
-                style.sheet.insertRule(`
-                    @keyframes confetti-fall-${i} {
-                        0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
-                        100% { transform: translate(${Math.random() * 400 - 200}px, 100vh) rotate(${720 + Math.random() * 360}deg); opacity: 0; }
-                    }
-                `);
             }
-            // Limpiar confeti después de 5 segundos
-            setTimeout(() => { confettiContainer.innerHTML = ''; }, 5000); 
+
+            // CSS Keyframes para la animación de caída del confeti
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes fall {
+                    0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+                    100% { transform: translate(${Math.random() * 400 - 200}px, 100vh) rotate(${720 + Math.random() * 360}deg); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+
+            setTimeout(() => {
+                confettiContainer.innerHTML = ''; // Limpiar confeti
+            }, 5000);
         };
 
         // --- FUNCIONES DE RENDERIZADO (UI) ---
 
-        // Función para renderizar una carta GRANDE individual
+        // Función para renderizar una carta GRANDE individual (solo para la carta actual)
         const renderSingleCardLG = (card) => {
             if (!card) return '';
-            // 🚨 MODIFICADO: Usar el fileName de la carta para la imagen de fondo
-            const imageUrl = CARD_IMAGE_PATH + card.fileName;
-
+            // Usamos un placeholder con el nombre y el ID
+            const cardBg = `https://placehold.co/100x140/FFFFFF/2563EB/png?text=${encodeURIComponent(card.name)}\n(${card.id})`;
+            
             return `
-                <div class="card-loteria-lg bg-white shadow-2xl transition-transform duration-200"
-                    style="background-image: url('${imageUrl}'); border-color: #EF4444;"
+                <div 
+                    class="card-loteria-lg bg-white shadow-2xl transition-transform duration-200" 
+                    style="background-image: url(${cardBg}); border-color: #EF4444;"
                     title="${card.name}"
                 >
-                    <div class="absolute inset-x-0 bottom-0 bg-black/60 p-1 text-center">
-                        <span class="text-sm font-bold text-white">${card.name}</span>
-                        <span class="text-xs text-yellow-300">#${card.id}</span>
-                    </div>
+                     <div class="absolute inset-0 flex items-center justify-center text-8xl">${card.emoji}</div>
                 </div>
             `;
         };
@@ -810,7 +788,7 @@
         // Función para renderizar la tarjeta compacta de un jugador
         const renderPlayerCardCompact = (player) => {
             // Solo renderizamos la primera tabla activa
-            const activeBoard = player.boards.find(b => b.status !== 'won');
+            const activeBoard = player.boards.find(b => b.status !== 'won'); 
             if (!activeBoard) return '';
 
             const cardCount = activeBoard.cards.length;
@@ -822,35 +800,63 @@
 
             return `
                 <div class="player-card-compact ${isWinning ? 'border-4 border-green-500 shadow-lg' : 'border border-gray-300'}"
-                    title="${player.name} - ${activeBoard.matched_cards.length}/${cardCount} Cartas"
+                     title="${player.name} - ${activeBoard.matched_cards.length}/${cardCount} Cartas"
                 >
-                    <div class="flex justify-between items-center mb-1">
+                    <!-- Encabezado compacto --><div class="flex justify-between items-center mb-1">
                         <span class="text-xs font-bold truncate max-w-[60%]">${player.name}</span>
                         <span class="text-[0.6rem] font-medium text-gray-500">${activeBoard.matched_cards.length}/${cardCount}</span>
                     </div>
-                    <div class="${gridClass} player-grid-compact w-full h-full">
+
+                    <!-- Miniatura del Cartón (Grid) --><div class="${gridClass} player-grid-compact w-full h-full">
                         ${activeBoard.cards.map(card => `
-                            <div class="board-cell w-full h-full" 
-                                style="aspect-ratio: 1; background-image: url('${CARD_IMAGE_PATH}${card.fileName}');"
-                                title="${card.name}"
+                            <div class="w-full h-full ${isMatched(card.id) ? 'marked-cell' : 'unmarked-cell'} flex items-center justify-center text-[0.6rem] text-white" 
+                                 style="aspect-ratio: 1;"
+                                 title="${card.name}"
                             >
-                                ${isMatched(card.id) ? 
-                                    `<div class="marked-overlay">X</div>` : 
-                                    ''
-                                }
+                                ${card.emoji}
                             </div>
                         `).join('')}
                     </div>
-                    <div class="h-1 mt-1 bg-gray-200 rounded-full overflow-hidden">
-                        <div class="h-full ${progressColor}" style="width: ${progress * 100}%;"></div>
-                    </div>
-                    <div class="text-[0.6rem] text-center font-semibold text-gray-700 mt-1">
-                        Partidas: ${player.partidas_pagadas}
+
+                    <!-- Barra de Progreso --><div class="h-1 mt-1 bg-gray-200 rounded-full overflow-hidden">
+                        <div class="h-1 rounded-full ${progressColor}" style="width: ${progress * 100}%;"></div>
                     </div>
                 </div>
             `;
         };
 
+
+        // Función principal de renderizado - GLOBALIZADA
+        window.renderApp = () => {
+            const container = document.getElementById('app-container');
+            if (!container) return;
+
+            const isGameTab = window.gameState.currentTab === 'game';
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto p-4">
+                    <!-- Tabs de Navegación --><div class="flex border-b border-gray-300 mb-6">
+                        <button 
+                            onclick="window.gameState.currentTab = 'game'; window.renderApp();" 
+                            class="py-2 px-6 text-sm font-medium ${isGameTab ? 'border-b-4 border-red-600 text-red-600' : 'text-gray-500 hover:text-red-500'}"
+                        >
+                            Juego (Live)
+                        </button>
+                        <button 
+                            onclick="window.gameState.currentTab = 'admin'; window.renderApp();" 
+                            class="py-2 px-6 text-sm font-medium ${!isGameTab ? 'border-b-4 border-red-600 text-red-600' : 'text-gray-500 hover:text-red-500'}"
+                        >
+                            Administrador
+                        </button>
+                    </div>
+
+                    ${isGameTab ? renderGameView() : renderAdminView()}
+                </div>
+                ${renderModal()}
+                <div id="confetti-container" class="confetti"></div>
+            `;
+        };
+        
         // Renderizar la Vista del Juego (Live)
         const renderGameView = () => {
             const { gameStatus, players, winners } = window.gameState;
@@ -861,52 +867,65 @@
             const cardsRemaining = gameStatus.deck.length;
 
             return `
-                ${gameStatus.winner ?
-                `
-                <div class="fixed inset-0 bg-black/80 z-40 flex flex-col items-center justify-center p-4">
-                    <div class="bg-yellow-400 p-10 rounded-3xl border-8 border-red-600 text-center shadow-2xl winner-overlay-content">
-                        <h2 class="text-8xl font-black text-red-800 mb-4 tracking-wider">¡GANA YA!</h2>
-                        <p class="text-4xl font-extrabold text-gray-900">¡Ganador: <span class="text-red-600 winner-name-effect">${gameStatus.winner.name.toUpperCase()}</span>!</p>
-                        <p class="text-xl text-gray-700 mt-2">Ha ganado el Bote de **$${totalPot.toLocaleString('es-MX')} MXN**</p>
+                
+                <!-- Overlay de Ganador -->${gameStatus.winner ? `
+                    <div class="fixed inset-0 bg-black/80 z-40 flex flex-col items-center justify-center p-4">
+                        <div class="bg-yellow-400 p-10 rounded-3xl border-8 border-red-600 text-center shadow-2xl winner-overlay-content">
+                            <h2 class="text-8xl font-black text-red-800 mb-4 tracking-wider">¡GANA YA!</h2>
+                            <p class="text-4xl font-extrabold text-gray-900">¡Ganador: <span class="text-red-600 winner-name-effect">${gameStatus.winner.name.toUpperCase()}</span>!</p>
+                            <p class="text-xl text-gray-700 mt-2">Ha ganado el Bote de **$${totalPot.toLocaleString('es-MX')} MXN**</p>
+                             <!-- El botón 'Terminar Partida y Cerrar' se ha eliminado como solicitaste --><!-- Ahora el juego permanece en la pantalla de ganador hasta que el administrador lo reinicie manualmente --></div>
                     </div>
-                </div>
                 ` : ''}
 
                 <div class="game-layout">
-                    <div class="logo-area flex items-center justify-center">
-                        <div class="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center font-black text-lg shadow-md">L</div>
+                    <!-- LOGO AREA (1/1) --><div class="logo-area flex items-center justify-center">
+                         <div class="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center font-black text-lg shadow-md">L</div>
                     </div>
-
-                    <div class="title-area flex items-center justify-center border-2 border-gray-300 rounded-lg p-2 bg-white shadow-md">
-                        <h1 class="text-2xl font-extrabold text-red-600 tracking-tighter">LOTERÍA MEXICANA ¡FELICIDADES!</h1>
+                    
+                    <!-- TITULO AREA (1/2) --><div class="title-area flex items-center justify-center border-2 border-gray-300 rounded-lg p-2 bg-white shadow-md">
+                        <h1 class="text-2xl font-extrabold text-red-600 tracking-tighter">LOTERÍA MEXICANA ¡GANA YA!</h1>
                     </div>
-
-                    <div class="pot-area flex flex-col items-center justify-center border-2 border-green-500 bg-green-50 rounded-lg p-2 shadow-md">
+                    
+                    <!-- $ EN JUEGO AREA (1/3) --><div class="pot-area flex flex-col items-center justify-center border-2 border-green-500 bg-green-50 rounded-lg p-2 shadow-md">
                         <span class="text-xs font-semibold text-green-700">BOTE ACUMULADO</span>
                         <p class="text-xl font-black text-green-800">$${totalPot.toLocaleString('es-MX')} MXN</p>
                     </div>
 
-                    <div class="current-card-area flex flex-col items-center bg-white p-4 rounded-xl shadow-2xl border-4 border-yellow-500">
+                    <!-- CARTAS EN JUEGO AREA (2/3 & 3/3) - Columna Lateral Derecha --><div class="current-card-area flex flex-col items-center bg-white p-4 rounded-xl shadow-2xl border-4 border-yellow-500">
                         <h3 class="text-lg font-bold mb-3 text-yellow-700 border-b pb-2 w-full text-center">CARTA EN JUEGO</h3>
-                        
-                        <div class="flex flex-col items-center w-full max-w-[200px] aspect-[1/1.4] mb-4">
-                            ${renderSingleCardLG(gameStatus.currentCard)}
+                        <!-- Carta Actual --><div class="flex flex-col items-center w-full max-w-[200px] mb-4">
+                            ${gameStatus.currentCard ? `
+                                <div class="transition-all duration-500 transform scale-100 shadow-2xl rounded-xl w-full" style="aspect-ratio: 100/140;">
+                                    ${renderSingleCardLG(gameStatus.currentCard)}
+                                </div>
+                                <h2 class="text-xl font-black mt-3 text-red-800">${gameStatus.currentCard.name.toUpperCase()}</h2>
+                                <p class="text-xs text-gray-600 mt-1">¡Corre y se va corriendo!</p>
+                            ` : `
+                                <div class="text-center p-4 bg-gray-100/70 rounded-xl shadow-inner w-full" style="aspect-ratio: 100/140;">
+                                    <span class="text-4xl text-red-400">🃏</span>
+                                    <p class="text-sm text-gray-600 font-semibold mt-2">Esperando carta...</p>
+                                </div>
+                            `}
                         </div>
-
-                        <div class="flex flex-col space-y-2 w-full">
-                            <button onclick="window.drawNextCard(window.gameState.gameStatus.drawSpeed)" 
+                        
+                        <!-- Controles de Lanzamiento Manual/Velocidad --><div class="w-full mt-2 space-y-3">
+                            <button 
+                                onclick="window.drawNextCard(window.gameState.gameStatus.drawSpeed)" 
                                 ${!gameStatus.gameRunning || gameStatus.winner ? 'disabled' : ''}
                                 class="w-full py-3 bg-red-600 text-white font-bold rounded-lg shadow-xl hover:bg-red-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                            > 
+                            >
                                 TIRAR CARTA (ESPACIO)
                             </button>
-                            <button onclick="window.startGame()" class="w-full py-2 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-200 text-sm"
-                            > 
+                             <button 
+                                onclick="window.startGame()" 
+                                class="w-full py-2 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-200 text-sm"
+                            >
                                 🔄 BARAJEAR Y REINICIAR
                             </button>
                         </div>
-
-                        <div class="w-full mt-4 p-3 bg-gray-100 rounded-lg shadow-inner">
+                        
+                        <!-- Estado del Mazo y Velocidad --><div class="w-full mt-4 p-3 bg-gray-100 rounded-lg shadow-inner">
                             <p class="text-xs font-semibold mb-2 text-gray-700 text-center">MAZO: ${gameStatus.drawnCards.length} / ${window.gameState.allCards.length} | Restantes: ${cardsRemaining}</p>
                             <p class="text-xs font-semibold mb-1 text-gray-700">Velocidad:</p>
                             <div class="flex justify-between space-x-1">
@@ -915,14 +934,12 @@
                                 <button onclick="window.changeDrawSpeed(3)" class="flex-1 py-1 text-xs rounded-full transition-all ${gameStatus.drawSpeed === 3 ? 'bg-red-600 text-white' : 'bg-gray-300 text-gray-700 hover:bg-red-200'}">🚀 3</button>
                             </div>
                         </div>
-
-                        <div class="w-full mt-4 p-3 bg-red-50 rounded-lg border border-red-200 shadow-inner">
+                         <!-- ULTIMAS CARTAS (Miniaturas) --><div class="w-full mt-4 p-3 bg-red-50 rounded-lg border border-red-200 shadow-inner">
                             <h3 class="text-xs font-bold mb-2 text-red-600 w-full text-center">HISTORIAL</h3>
                             <div class="flex justify-center space-x-2">
                                 ${gameStatus.drawnCards.slice(-5).reverse().map(card => `
-                                    <div class="w-8 h-11 bg-cover bg-center rounded shadow-md border border-gray-300" 
-                                        style="background-image: url('${CARD_IMAGE_PATH}${card.fileName}');"
-                                        title="${card.name}">
+                                    <div class="text-xl w-6 h-6 flex items-center justify-center rounded-full bg-red-200 shadow-inner" title="${card.name}">
+                                        ${card.emoji}
                                     </div>
                                 `).join('')}
                                 ${gameStatus.drawnCards.length === 0 ? '<p class="text-gray-500 text-xs">Empieza la partida...</p>' : ''}
@@ -930,42 +947,40 @@
                         </div>
                     </div>
                     
-                    <div class="players-area bg-white p-4 rounded-xl shadow-2xl border-4 border-red-600 overflow-y-auto">
+                    <!-- CARTAS DE JUGADORES ACTIVOS AREA (2/1-2) - Mayor Espacio --><div class="players-area bg-white p-4 rounded-xl shadow-2xl border-4 border-red-600 overflow-y-auto">
                         <h3 class="text-xl font-bold mb-3 text-red-600 border-b pb-2">JUGADORES ACTIVOS (${activePlayers.length})</h3>
-                        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-3">
-                            ${activePlayers.length > 0 ? activePlayers.map(renderPlayerCardCompact).join('') : '<p class="text-gray-500">No hay jugadores activos con partidas pagadas.</p>'}
+                        <!-- Usamos un grid denso para los cartones compactos --><div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-3">
+                            ${activePlayers.length > 0 ? activePlayers.map(renderPlayerCardCompact).join('') : '<p class="text-gray-500">No hay jugadores activos.</p>'}
                         </div>
                     </div>
 
-                    <div class="winners-area bg-white p-4 rounded-xl shadow-2xl border-4 border-blue-600 overflow-y-auto">
-                        <h3 class="text-xl font-bold mb-3 text-blue-600 border-b pb-2">GANADORES RECIENTES (${winners.length})</h3>
-                        <div class="flex flex-wrap gap-4">
-                            ${winners.slice(0, 10).map(w => `
-                                <div class="bg-blue-50 p-3 rounded-lg border border-blue-200 text-sm shadow-sm">
-                                    <p class="font-bold text-blue-800">${w.playerName}</p>
-                                    <p class="text-xs text-gray-600">${w.message}</p>
-                                    <p class="text-sm font-black text-green-700">$${w.prizeAmount.toLocaleString('es-MX')} MXN</p>
+                    <!-- ULTIMOS GANADORES AREA (3/1-3) - Pie de página (Ahora solo 2 columnas) --><div class="winners-area bg-white p-4 rounded-xl shadow-2xl border-t-4 border-blue-500">
+                        <h3 class="text-xl font-bold mb-3 text-blue-600 border-b pb-2">ÚLTIMOS GANADORES</h3>
+                        <div class="flex overflow-x-auto space-x-4 pb-2">
+                            ${winners.length > 0 ? winners.slice(0, 5).map(winner => `
+                                <div class="flex-shrink-0 w-64 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-600 shadow-sm hover:shadow-md transition">
+                                    <p class="font-bold text-blue-800 truncate">${winner.playerName.toUpperCase()}</p>
+                                    <p class="text-sm text-gray-700">Ganó <span class="font-bold">$${winner.prizeAmount.toLocaleString('es-MX')} MXN</span></p>
+                                    <p class="text-xs text-gray-500">${new Date(winner.timestamp?.seconds * 1000).toLocaleString('es-MX')}</p>
                                 </div>
-                            `).join('')}
-                            ${winners.length === 0 ? '<p class="text-gray-500">Aún no hay ganadores en esta ronda.</p></div>' : ''}
+                            `).join('') : '<p class="text-gray-500">Aún no hay ganadores en esta partida.</p>'}
                         </div>
                     </div>
-
                 </div>
             `;
         };
 
-        // Renderizar la Vista de Administración
+        // Renderizar la Vista del Administrador (sin cambios en la lógica, solo para mantener la coherencia)
         const renderAdminView = () => {
-            const { gameStatus, players } = window.gameState;
-            const activePlayersArray = Object.values(players);
-
-            return `
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-2xl border-t-4 border-red-600">
-                        <h2 class="text-2xl font-bold mb-4 text-red-600">Control de la Partida</h2>
-
-                        <div class="mb-4">
+             const { gameStatus, players } = window.gameState;
+             const activePlayersArray = Object.values(players);
+             
+             return `
+                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                     <!-- PANEL DE CONTROL DEL JUEGO --><div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-2xl border-t-4 border-red-600">
+                         <h2 class="text-2xl font-bold mb-4 text-red-600">Control de la Partida</h2>
+                         
+                         <!-- Estado y Controles --><div class="mb-4">
                             <p class="font-semibold text-lg mb-2">Estado: 
                                 <span class="${gameStatus.gameRunning ? 'text-green-600' : gameStatus.winner ? 'text-yellow-600' : 'text-gray-500'} font-bold">
                                     ${gameStatus.gameRunning ? 'CORRIENDO' : gameStatus.winner ? '¡TERMINADO (GANADOR)!': 'DETENIDO'}
@@ -973,9 +988,9 @@
                             </p>
                             ${gameStatus.currentCard ? `<p class="text-sm text-gray-600">Última carta: ${gameStatus.currentCard.name} (${gameStatus.currentCard.id})</p>` : ''}
                             <p class="text-sm text-gray-600">Cartas restantes: ${gameStatus.deck.length}</p>
-                        </div>
-
-                        <div class="flex flex-col space-y-3">
+                         </div>
+                         
+                         <!-- Botones de Acción --><div class="flex flex-col space-y-3">
                             ${gameStatus.gameRunning ? `
                                 <button onclick="window.drawNextCard(window.gameState.gameStatus.drawSpeed)" class="w-full py-3 bg-yellow-500 text-white font-bold rounded-lg shadow-md hover:bg-yellow-600 transition duration-200">
                                     LANZAR SIGUIENTE (${gameStatus.drawSpeed})
@@ -989,116 +1004,75 @@
                                 </button>
                             `}
                             <p class="text-xs text-gray-500 pt-2">El botón Iniciar/Reiniciar limpia la baraja, ganadores y el estado de los cartones.</p>
-                        </div>
-                    </div>
-
-                    <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-2xl border-t-4 border-yellow-500">
-                        <h2 class="text-2xl font-bold mb-4 text-yellow-600">Gestión de Jugadores</h2>
-                        <form onsubmit="window.handlePlayerSubmit(event)" class="grid grid-cols-3 gap-4">
-                            <div class="col-span-3">
-                                <label for="playerName" class="block text-sm font-medium text-gray-700">Nombre del Jugador</label>
-                                <input type="text" id="playerName" name="playerName" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
-                            </div>
-
-                            <div>
-                                <label for="partidas" class="block text-sm font-medium text-gray-700">Partidas Pagadas (x$20)</label>
-                                <input type="number" id="partidas" name="partidas" min="1" value="1" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
-                            </div>
-
-                            <div>
-                                <label for="numCards" class="block text-sm font-medium text-gray-700">Tamaño del Cartón</label>
-                                <select id="numCards" name="numCards" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
-                                    <option value="4">4 Cartas</option>
-                                    <option value="6">6 Cartas</option>
-                                    <option value="9">9 Cartas</option>
-                                </select>
-                            </div>
-                            
-                            <input type="hidden" id="playerId" name="playerId" value="">
-
-                            <div class="col-span-3">
-                                <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    Añadir / Actualizar Jugador
-                                </button>
-                            </div>
-                            <p class="col-span-3 text-xs text-gray-500">Si el jugador ya existe, se actualizan sus datos y el contador de partidas pagadas.</p>
-                        </form>
-                    </div>
-
-                    <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-2xl border-t-4 border-blue-600">
-                        <h2 class="text-2xl font-bold mb-4 text-blue-600">Lista de Jugadores Registrados (${activePlayersArray.length})</h2>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead>
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NOMBRE</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CARTONES</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PARTIDAS ACTIVAS ($)</th>
-                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">ACCIONES</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    ${activePlayersArray.length > 0 ? activePlayersArray.map(player => `
-                                        <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 truncate max-w-xs" title="${player.name}">${player.name} (${player.id.substring(0, 4)}...)</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${player.boards.length} (Ganados: ${player.boards.filter(b => b.status === 'won').length})</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-semibold">$${(player.partidas_pagadas * 20).toLocaleString('es-MX')}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <button onclick="window.deletePlayer('${player.id}')" class="text-red-600 hover:text-red-900 ml-3">Eliminar</button>
-                                            </td>
-                                        </tr>
-                                    `).join('') : `
-                                        <tr>
-                                            <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No hay jugadores registrados.</td>
-                                        </tr>
-                                    `}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            `;
-        };
-        
-        // Renderizado de la aplicación
-        window.renderApp = () => {
-            const appContainer = document.getElementById('app-container');
-            const isGameTab = window.gameState.currentTab === 'game';
-            
-            // Si Firebase no está listo, solo muestra el spinner (o modo demo)
-            if (!window.gameState.isAuthReady && Object.keys(firebaseConfig).length > 0) {
-                 appContainer.innerHTML = `
-                    <div class="text-center p-10">
-                        <div class="animate-spin inline-block w-8 h-8 border-4 border-t-red-500 border-red-200 rounded-full"></div>
-                        <p class="mt-4 text-red-600">Conectando a Firebase...</p>
-                    </div>
-                 `;
-                 return;
-            }
-
-            // Renderizado completo de la interfaz
-            appContainer.innerHTML = `
-                <div class="p-4 lg:p-6">
-                    <div class="flex border-b border-gray-300 mb-6 space-x-4">
-                        <button onclick="window.gameState.currentTab = 'game'; window.renderApp();" 
-                                class="py-2 px-4 font-semibold transition-colors duration-200 
-                                       ${isGameTab ? 'border-b-4 border-red-600 text-red-600' : 'text-gray-500 hover:text-red-400'}">
-                            Vista de Juego (Live)
-                        </button>
-                        <button onclick="window.gameState.currentTab = 'admin'; window.renderApp();" 
-                                class="py-2 px-4 font-semibold transition-colors duration-200 
-                                       ${!isGameTab ? 'border-b-4 border-red-600 text-red-600' : 'text-gray-500 hover:text-red-400'}">
-                            Administrador
-                        </button>
-                    </div>
-                    ${isGameTab ? renderGameView() : renderAdminView()}
-                </div>
-                ${renderModal()}
-                <div id="confetti-container" class="confetti"></div>
-            `;
+                         </div>
+                     </div>
+                     
+                     <!-- FORMULARIO DE JUGADOR --><div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-2xl border-t-4 border-yellow-500">
+                         <h2 class="text-2xl font-bold mb-4 text-yellow-600">Gestión de Jugadores</h2>
+                         <form onsubmit="window.handlePlayerSubmit(event)" class="grid grid-cols-3 gap-4">
+                             <div class="col-span-3">
+                                 <label for="playerName" class="block text-sm font-medium text-gray-700">Nombre del Jugador</label>
+                                 <input type="text" id="playerName" name="playerName" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                             </div>
+                             <div>
+                                 <label for="partidas" class="block text-sm font-medium text-gray-700">Partidas a Pagar (Activas)</label>
+                                 <input type="number" id="partidas" name="partidas" required min="1" value="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                  <p class="text-xs text-gray-500 mt-1">Cada partida es de $20 MXN.</p>
+                             </div>
+                             <div>
+                                 <label for="numCards" class="block text-sm font-medium text-gray-700">Tamaño del Cartón</label>
+                                 <select id="numCards" name="numCards" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                    <option value="4">4 Cartas (2x2)</option>
+                                    <option value="6">6 Cartas (2x3)</option>
+                                    <option value="9">9 Cartas (3x3)</option>
+                                 </select>
+                                 <p class="text-xs text-gray-500 mt-1">Define el tamaño del cartón generado.</p>
+                             </div>
+                             <div class="col-span-3">
+                                 <input type="hidden" id="playerId" name="playerId">
+                                 <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition duration-200">
+                                     Generar Cartón y Actualizar Partidas
+                                 </button>
+                             </div>
+                         </form>
+                     </div>
+                     
+                     <!-- TABLA DE JUGADORES ACTIVOS --><div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-2xl">
+                         <h2 class="text-2xl font-bold mb-4 text-gray-700">Jugadores Registrados (${activePlayersArray.length})</h2>
+                         <div class="overflow-x-auto">
+                             <table class="min-w-full divide-y divide-gray-200">
+                                 <thead class="bg-gray-50">
+                                     <tr>
+                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">JUGADOR</th>
+                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CARTONES</th>
+                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PARTIDAS ACTIVAS ($)</th>
+                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">ACCIONES</th>
+                                     </tr>
+                                 </thead>
+                                 <tbody class="bg-white divide-y divide-gray-200">
+                                     ${activePlayersArray.length > 0 ? activePlayersArray.map(player => `
+                                         <tr>
+                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 truncate max-w-xs" title="${player.name}">${player.name} (${player.id.substring(0, 4)}...)</td>
+                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${player.boards.length} (Ganados: ${player.boards.filter(b => b.status === 'won').length})</td>
+                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-semibold">$${(player.partidas_pagadas * 20).toLocaleString('es-MX')} (${player.partidas_pagadas})</td>
+                                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                                                 <button onclick="window.deletePlayer('${player.id}')" class="text-red-600 hover:text-red-900 transition-colors">Eliminar</button>
+                                             </td>
+                                         </tr>
+                                     `).join('') : `
+                                         <tr>
+                                             <td colspan="4" class="px-6 py-4 text-center text-gray-500">No hay jugadores registrados.</td>
+                                         </tr>
+                                     `}
+                                 </tbody>
+                             </table>
+                         </div>
+                     </div>
+                 </div>
+             `;
         };
 
-        // Renderizado del Modal de Confirmación
+        // Renderizado de la Modal de Confirmación
         const renderModal = () => `
             <div id="confirmationModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden z-50 transition-opacity flex items-center justify-center">
                 <div class="bg-white rounded-lg shadow-xl max-w-sm w-full p-6">
@@ -1120,11 +1094,12 @@
         window.onload = initializeFirebase;
     </script>
 
-    <div id="app-container">
+    <!-- Contenedor Principal de la Aplicación --><div id="app-container">
         <div class="text-center p-10">
             <div class="animate-spin inline-block w-8 h-8 border-4 border-t-red-500 border-red-200 rounded-full"></div>
-            <p class="mt-4 text-red-600">Cargando aplicación...</p>
+            <p class="text-gray-600 mt-2">Cargando Lotería Mexicana y autenticando...</p>
         </div>
     </div>
+
 </body>
 </html>

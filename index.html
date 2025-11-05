@@ -3,729 +3,956 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>GANA YA! - Lotería Interactiva (Admin + Jugador)</title>
+  <title>GANA YA! — Lotería (Admin avanzado)</title>
 
-  <!-- Tailwind (cdn) -->
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
   <style>
-    body { font-family: 'Inter', sans-serif; background-color: #f7f3e8; }
-    .card-loteria {
-      background-color: white;
-      border: 4px solid #a32a2a;
-      box-shadow: 0 8px 16px rgba(0,0,0,.12);
-      border-radius: 1rem;
-      transition: transform .2s, opacity .3s;
+    :root{
+      --rojo:#b42222;
+      --verde:#0f8a3c;
+      --dorado:#caa43f;
+      --crema:#f6f1e6;
+      --sombra: 0 10px 24px rgba(0,0,0,0.08);
     }
-    .card-cell {
-      background-color: #f0f0f0;
-      position: relative;
-      border-radius: .5rem;
-      overflow: hidden;
-      background-size: cover;
-      background-position: center;
-      min-height: 56px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-    /* Marca cuando está marcada: overlay oscuro + logo centrado */
-    .card-cell.marked::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-color: rgba(0,0,0,0.45);
-      background-image: url('logo_1_entrada.png');
-      background-size: 35%;
-      background-repeat: no-repeat;
-      background-position: center;
-      z-index: 10;
-      pointer-events: none;
-    }
-    #current-card {
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-color: white;
-      transition: all .5s;
-    }
-    .card-placeholder {
-      background-color: #e0e0e0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:3rem;
-    }
-
-    /* Modal confetti very simple */
-    @keyframes confetti {
-      0% { transform: translateY(0) rotate(0); opacity: 1; }
-      100% { transform: translateY(-420px) rotate(720deg); opacity: 0; }
-    }
-    .confetti {
-      position: fixed;
-      width: 10px;
-      height: 10px;
-      top: 100%;
-      animation: confetti 2s ease-out forwards;
-      z-index: 60;
-    }
-
-    /* Toggle botón activo */
-    .tab-active { background: linear-gradient(90deg,#fef3f3,#fff); border-bottom: 4px solid #a32a2a; }
+    body{ font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--crema); color:#1f2937; }
+    .brand-title{ font-family: "Alfa Slab One", serif; color:var(--rojo); letter-spacing:1px; }
+    .tab-btn{ border-radius:999px; padding:.5rem .9rem; font-weight:700; box-shadow: 0 6px 18px rgba(0,0,0,.06); }
+    .tab-active{ background: linear-gradient(90deg,#fef2f2,#fff); border: 3px solid var(--rojo); color: var(--rojo); }
+    .mex-frame{ background:#fff; border-radius:12px; padding:16px; box-shadow: var(--sombra); position:relative; }
+    .mex-border{ border:4px solid var(--rojo); border-radius:10px; padding:10px; background:#fff; box-shadow: 0 6px 18px rgba(0,0,0,0.04); }
+    .title-accent { display:inline-block; height:8px; width:72px; background: linear-gradient(90deg, var(--dorado), #e6c05b); border-radius:6px; margin-top:6px; }
+    .card-cell { border-radius:8px; overflow:hidden; background-size:cover; background-position:center; min-height:64px; position:relative; box-shadow: 0 4px 10px rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; }
+    .card-cell.marked::after{ content:""; position:absolute; inset:0; background-color: rgba(0,0,0,0.45); background-image:url('logo_1_entrada.png'); background-repeat:no-repeat; background-position:center; background-size:36%; z-index:10; }
+    .current-card { border-radius:14px; border:6px solid #fff; box-shadow: 0 12px 30px rgba(0,0,0,0.08); min-height:180px; display:flex; align-items:center; justify-content:center; background: linear-gradient(180deg,#fff,#fff); }
+    .confetti{ position: fixed; width: 10px; height: 10px; top:100%; animation: confetti 2s ease-out forwards; z-index:120; }
+    @keyframes confetti{ 0%{ transform: translateY(0) rotate(0); opacity:1 } 100%{ transform: translateY(-420px) rotate(720deg); opacity:0 } }
+    .btn{ padding:.55rem .9rem; border-radius:.6rem; font-weight:700; }
+    .btn-red{ background:var(--rojo); color:white; }
+    .btn-blue{ background:#1565d8; color:white; }
+    .btn-green{ background:var(--verde); color:white; }
+    .small{ font-size:.85rem; }
+    .pulse-green { animation: pulse-green 1s ease; }
+    @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(15,138,60,0.6);} 70% { box-shadow: 0 0 0 14px rgba(15,138,60,0);} 100% { box-shadow: none; } }
+    .row-disabled { opacity: .45; filter: grayscale(.2); }
+    .confetti-mini {position:absolute; width:6px; height:6px; border-radius:50%; }
+    .animate-create { transform-origin: center; animation: create-pop .45s ease forwards; }
+    @keyframes create-pop { 0% { transform: scale(.6); opacity:0 } 60% { transform: scale(1.05); opacity:1 } 100% { transform: scale(1); } }
+    @media (max-width:1024px){ .current-card{ min-height:140px } }
+    /* small helper */
+    .small-muted{ font-size:.85rem; color:#6b7280; }
   </style>
 </head>
-<body class="min-h-screen p-4 md:p-8">
+<body class="min-h-screen">
 
-  <!-- NAV superior / conmutador -->
-  <nav class="max-w-6xl mx-auto flex items-center justify-between gap-4 mb-6">
+  <!-- HEADER -->
+  <header class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center gap-6 justify-between">
     <div class="flex items-center gap-4">
-      <img src="logo_1_entrada.png" alt="Logo" class="w-14 h-14 rounded-full shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/60x60/a32a2a/ffffff?text=LOGO'">
-      <h1 class="text-3xl md:text-4xl font-black text-[#a32a2a] uppercase tracking-wide">GANA YA!</h1>
+      <img src="logo_1_entrada.png" alt="Logo" class="w-16 h-16 rounded-full shadow-lg" onerror="this.onerror=null;this.src='https://placehold.co/80x80/b42222/ffffff?text=LOGO'">
+      <div>
+        <h1 class="brand-title text-4xl md:text-5xl">GANA YA!</h1>
+        <div class="text-xs text-gray-600 mt-1">Lotería interactiva — estilo tradicional mexicano</div>
+      </div>
     </div>
 
-    <div class="flex items-center gap-2">
-      <button id="tab-player" class="px-4 py-2 rounded-lg font-bold tab-active">Vista Jugador</button>
-      <button id="tab-admin" class="px-4 py-2 rounded-lg font-bold">Vista Administrador</button>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2">
+        <button id="tab-player" class="tab-btn tab-active">Vista Jugador</button>
+        <button id="tab-admin" class="tab-btn">Vista Administrador</button>
+      </div>
+
+      <div class="bg-green-700 text-white p-3 rounded-xl shadow-lg flex flex-col items-center min-w-[120px]">
+        <span class="text-xs font-semibold uppercase">BOLSA EN JUEGO</span>
+        <span id="pot-amount" class="text-xl md:text-2xl font-extrabold">$0.00</span>
+      </div>
     </div>
-  </nav>
+  </header>
 
-  <!-- CONTENEDOR PRINCIPAL -->
-  <main class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
+  <!-- MAIN -->
+  <main class="max-w-7xl mx-auto px-4 pb-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-    <!-- VISTA JUGADOR (oculta/visible según pestaña) -->
-    <section id="view-player" class="lg:col-span-3">
-      <!-- Header Jugador -->
-      <header class="flex items-center justify-between mb-6 p-4 rounded-xl bg-white shadow-lg border-b-4 border-red-600">
-        <div class="flex items-center gap-4">
-          <img src="logo_1_entrada.png" alt="Logo" class="w-12 h-12 rounded-full shadow" onerror="this.onerror=null;this.src='https://placehold.co/60x60/a32a2a/ffffff?text=LOGO'">
-          <div>
-            <h2 class="text-2xl font-black text-[#a32a2a]">GANA YA! - Vista Jugador</h2>
-            <p class="text-sm text-gray-600">Interfaz pública — muestra cartas y cartas marcadas</p>
-          </div>
-        </div>
+      <!-- CENTRAL: Cartas de jugadores -->
+      <section id="view-player" class="lg:col-span-8">
+        <div class="mex-frame">
+          <div class="flex items-start justify-between">
+            <div>
+              <h2 class="text-2xl font-extrabold text-gray-800">Cartas Activas (Modalidad actual)</h2>
+              <div class="title-accent"></div>
+              <p class="text-sm text-gray-600 mt-2">Se muestran las cartas asociadas a compras/partidas en la modalidad seleccionada desde Administración.</p>
+            </div>
 
-        <div class="bg-green-700 text-white p-3 rounded-xl shadow-xl border-4 border-green-800 flex flex-col items-center min-w-[150px]">
-          <span class="text-xs font-bold uppercase">Bolsa en Juego</span>
-          <span id="pot-amount" class="text-3xl font-extrabold">$0.00</span>
-        </div>
-      </header>
-
-      <div class="grid lg:grid-cols-3 gap-6">
-
-        <!-- Cartas de jugadores -->
-        <div class="lg:col-span-2">
-          <h3 class="text-xl font-black text-gray-700 mb-3">Cartas de Jugadores Activos</h3>
-          <div id="active-players-cards" class="grid gap-4 grid-cols-1 sm:grid-cols-2 cards-grid">
-            <div class="text-center text-gray-500 p-8 card-loteria col-span-full">Cargando jugadores...</div>
-          </div>
-        </div>
-
-        <!-- Columna derecha: carta actual, últimas cartas, ganadores -->
-        <aside class="lg:col-span-1 flex flex-col space-y-6">
-          <div class="bg-white p-4 rounded-2xl shadow-xl border-4 border-red-500 text-center">
-            <h4 class="text-xl font-bold text-red-600 mb-2">Carta en Juego</h4>
-            <div id="current-card" class="card-loteria w-full h-48 p-4 card-placeholder">
-              <div class="flex flex-col items-center justify-center">
-                <span class="text-6xl">🎲</span>
-                <span class="text-sm font-semibold mt-2 text-gray-600">Esperando...</span>
+            <!-- quick summary -->
+            <div class="w-80">
+              <div class="bg-gray-50 p-3 rounded-lg border">
+                <div class="text-sm small-muted">Total compras activas:</div>
+                <div id="summary-active-count" class="text-xl font-bold">0</div>
+                <div class="text-sm small-muted mt-2">Total partidas vendidas:</div>
+                <div id="summary-partidas" class="text-lg font-bold">0</div>
               </div>
             </div>
           </div>
 
-          <div class="bg-white p-4 rounded-2xl shadow-xl border-4 border-gray-300">
-            <h4 class="text-xl font-bold text-gray-700 mb-2">Últimas 5 Cartas</h4>
-            <div id="last-cards" class="flex flex-wrap gap-2 justify-center">
-              <span class="text-gray-400 text-sm">Ninguna carta aún.</span>
+          <div class="mt-6 mex-border">
+            <div id="active-players-cards" class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 p-3">
+              <div class="text-center text-gray-500 p-8 col-span-full">Aún no hay jugadores / compras en esta modalidad.</div>
             </div>
           </div>
-
-          <div class="bg-white p-4 rounded-2xl shadow-xl border-4 border-gray-300">
-            <h4 class="text-xl font-bold text-gray-700 mb-2">Últimos Ganadores</h4>
-            <div id="last-winners" class="flex flex-col justify-center gap-2 text-center">
-              <span class="text-gray-500">Aún no hay ganadores.</span>
-            </div>
-          </div>
-        </aside>
-      </div>
-
-      <!-- Modal Ganador -->
-      <div id="winner-modal" class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 hidden flex items-center justify-center">
-        <div id="confetti-container" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
-        <div class="bg-yellow-300 p-8 md:p-12 rounded-2xl shadow-2xl text-center border-4 border-yellow-500 z-50">
-          <h1 class="text-6xl font-black text-red-600 mb-4 animate-bounce">¡GANA YA!</h1>
-          <h2 class="text-4xl font-extrabold text-gray-800 mb-2">¡FELICIDADES!</h2>
-          <p id="winner-name" class="text-5xl font-black text-red-800 mb-4">NOMBRE</p>
-          <p class="text-3xl font-bold text-gray-700">Ganaste <span id="winner-amount" class="text-green-700 text-5xl font-extrabold">$0.00 MXN</span></p>
-          <button onclick="hideWinnerModal()" class="mt-8 px-8 py-3 bg-red-600 text-white font-bold text-xl rounded-full shadow-lg hover:bg-red-700">Cerrar</button>
         </div>
+      </section>
+
+      <!-- LATERAL: Admin + Carta en juego -->
+      <aside class="lg:col-span-4 flex flex-col gap-6">
+
+        <!-- PANEL Admin (Caja) -->
+        <div class="mex-frame">
+          <h3 class="text-lg font-extrabold text-gray-800">Caja / Configuración</h3>
+          <div class="title-accent"></div>
+
+          <div class="mt-4 space-y-3">
+            <!-- Prices per modality -->
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="text-xs text-gray-600">Precio 2x2</label>
+                <input id="price-4" type="number" min="1" class="w-full p-2 border rounded" />
+              </div>
+              <div>
+                <label class="text-xs text-gray-600">Precio 2x3</label>
+                <input id="price-6" type="number" min="1" class="w-full p-2 border rounded" />
+              </div>
+              <div>
+                <label class="text-xs text-gray-600">Precio 3x3</label>
+                <input id="price-9" type="number" min="1" class="w-full p-2 border rounded" />
+              </div>
+            </div>
+
+            <div>
+              <label class="text-xs text-gray-600">Ganancia casa por carta</label>
+              <input id="house-profit" type="number" min="0" class="w-full p-2 border rounded" />
+              <p class="text-xs text-gray-500 mt-1">Se resta por cada carta vendida para calcular la bolsa.</p>
+            </div>
+
+            <div class="flex gap-2">
+              <button id="save-prices" class="btn btn-green flex-1 small">Guardar precios</button>
+              <button id="reset-prices" class="btn small" style="background:#f3f4f6;border-radius:.6rem">Reset</button>
+            </div>
+
+            <div class="mt-2 bg-gray-50 p-3 rounded-lg">
+              <div class="text-sm text-gray-600">Modalidad activa</div>
+              <select id="modality-select" class="w-full p-2 border rounded-lg mt-2">
+                <option value="4">4 imágenes (2x2)</option>
+                <option value="6">6 imágenes (2x3)</option>
+                <option value="9" selected>9 imágenes (3x3)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel de compra / registrar jugador -->
+        <div class="mex-frame">
+          <h3 class="text-lg font-extrabold text-gray-800">Registrar Jugador (Caja)</h3>
+          <div class="title-accent"></div>
+
+          <div class="mt-3 space-y-3">
+            <label class="text-xs text-gray-600">Nombre del jugador</label>
+            <input id="player-name-input" type="text" class="w-full p-2 border rounded" placeholder="Ej. María López">
+
+            <label class="text-xs text-gray-600">Presupuesto ($)</label>
+            <input id="player-budget-input" type="number" min="1" class="w-full p-2 border rounded" placeholder="Ej. 100">
+
+            <div>
+              <label class="text-xs text-gray-600">Modalidades deseadas (elige 1 o más)</label>
+              <div class="flex gap-2 mt-2">
+                <label class="inline-flex items-center gap-2"><input type="checkbox" class="modal-chk" value="4"> 2x2</label>
+                <label class="inline-flex items-center gap-2"><input type="checkbox" class="modal-chk" value="6"> 2x3</label>
+                <label class="inline-flex items-center gap-2"><input type="checkbox" class="modal-chk" value="9"> 3x3</label>
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <button id="calc-btn" class="btn btn-blue flex-1 small">Calcular partidas</button>
+              <button id="add-player-btn" class="btn btn-green flex-1 small">Añadir jugador</button>
+            </div>
+
+            <div id="calc-result" class="text-sm text-gray-600"></div>
+            <div id="calc-warning" class="text-sm text-red-600"></div>
+          </div>
+        </div>
+
+        <!-- Control de juego -->
+        <div class="mex-frame">
+          <h3 class="text-lg font-extrabold text-gray-800">Control de Partida</h3>
+          <div class="title-accent"></div>
+
+          <div class="mt-4 space-y-2">
+            <div class="flex gap-2">
+              <button id="shuffle-btn" class="btn btn-blue flex-1 small">BARAJEAR</button>
+              <button id="draw-btn" class="btn btn-red flex-1 small">TIRAR CARTA</button>
+            </div>
+            <div class="flex gap-2">
+              <button id="auto-btn" class="btn small" style="flex:1;background:#fee9d6;border-radius:.6rem">CARTAS AUTOMÁTICO</button>
+              <button id="clean-btn" class="btn small" style="flex:1;background:#fff;border:1px solid #e5e7eb">LIMPIAR</button>
+            </div>
+
+            <div class="mt-2 bg-gray-50 p-3 rounded-lg">
+              <div class="text-sm text-gray-600">Cartas restantes: <span id="deck-count" class="font-bold">54</span></div>
+              <div class="text-sm text-gray-600 mt-1">Carta actual: <span id="current-card-name" class="font-bold text-red-600">Ninguna</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARTA EN JUEGO -->
+        <div class="mex-frame">
+          <h3 class="text-lg font-extrabold text-gray-800">Carta en Juego</h3>
+          <div class="title-accent"></div>
+
+          <div class="mt-4 current-card" id="current-card">
+            <div class="text-center">
+              <div id="current-card-inner">
+                <span class="text-6xl">🎲</span>
+                <div class="text-sm font-semibold mt-2 text-gray-600">Esperando...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Últimas 3 cartas -->
+        <div class="mex-frame">
+          <h3 class="text-lg font-extrabold text-gray-800">Últimas 3 Cartas</h3>
+          <div class="title-accent"></div>
+          <div class="mt-4 bg-white p-3 rounded-lg border min-h-[72px]">
+            <div id="last-cards" class="flex gap-2 flex-wrap">
+              <div class="text-gray-400">Ninguna carta aún.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Últimos Ganadores -->
+        <div class="mex-frame">
+          <h3 class="text-lg font-extrabold text-gray-800">Últimos Ganadores</h3>
+          <div class="title-accent"></div>
+          <div class="mt-4 bg-white p-3 rounded-lg border min-h-[64px]">
+            <div id="last-winners" class="text-center text-gray-500">Aún no hay ganadores.</div>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+    <!-- Sección: Jugadores / compras (tabla) -->
+    <section class="mt-8 mex-frame">
+      <h3 class="text-xl font-extrabold text-gray-800">Administración de Compras / Jugadores</h3>
+      <div class="title-accent"></div>
+      <p class="text-sm text-gray-600 mt-2">Cada fila representa una compra del jugador en una modalidad determinada.</p>
+
+      <div class="mt-4 overflow-x-auto">
+        <table class="min-w-full text-left">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="p-2">Jugador</th>
+              <th class="p-2">Modalidad</th>
+              <th class="p-2">Partidas</th>
+              <th class="p-2">Total pagado</th>
+              <th class="p-2">Ganadas</th>
+              <th class="p-2">Estado Pago</th>
+              <th class="p-2">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="players-table-body">
+            <tr><td colspan="7" class="p-4 text-gray-500">No hay compras registradas.</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
-    <!-- VISTA ADMIN -->
-    <section id="view-admin" class="hidden lg:col-span-1">
-      <div class="bg-white p-6 rounded-2xl shadow-2xl border-4 border-red-700">
-        <header class="mb-6">
-          <h3 class="text-2xl font-black text-red-700 uppercase text-center">PANEL DE ADMINISTRACIÓN</h3>
-          <p class="text-center text-gray-500 text-sm mt-1">Control de partida y gestión</p>
-        </header>
-
-        <!-- Controles principales -->
-        <div class="grid gap-4 mb-6">
-          <label class="text-sm font-semibold">Modalidad</label>
-          <select id="modality-select" class="w-full p-2 border rounded-lg">
-            <option value="4">4 imágenes (2x2)</option>
-            <option value="6">6 imágenes (2x3)</option>
-            <option value="9" selected>9 imágenes (3x3)</option>
-          </select>
-
-          <div class="flex gap-2">
-            <button id="shuffle-btn" onclick="shuffleDeck()" class="flex-1 px-4 py-2 rounded-lg bg-blue-600 text-white font-bold">BARAJEAR</button>
-            <button id="draw-btn" onclick="drawCard()" class="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white font-bold">TIRAR CARTA (Espacio)</button>
-          </div>
-
-          <div class="flex justify-between text-sm text-gray-600 p-2 rounded-lg bg-gray-100">
-            <span>Cartas restantes: <span id="deck-count" class="font-bold">0</span></span>
-            <span>Carta actual: <span id="current-card-name" class="font-bold text-red-600">Ninguna</span></span>
-          </div>
-        </div>
-
-        <!-- Finanzas -->
-        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-300 mb-6">
-          <p class="flex justify-between"><span>Jugadores registrados:</span> <span id="admin-player-count" class="font-bold">0</span></p>
-          <p class="flex justify-between"><span>Total de cartas activas:</span> <span id="admin-active-card-count" class="font-bold">0</span></p>
-          <p class="flex justify-between font-extrabold text-green-700"><span>Ganancia Potencial:</span> <span id="admin-profit">$0.00</span></p>
-          <p class="flex justify-between text-blue-700"><span>Bolsa en juego:</span> <span id="admin-pot-amount">$0.00</span></p>
-        </div>
-
-        <!-- Registrar jugador -->
-        <div class="mb-4">
-          <h4 class="font-bold mb-2">Registrar nuevo jugador</h4>
-          <div class="grid grid-cols-1 gap-2">
-            <input id="player-name-input" type="text" placeholder="Nombre del jugador" class="p-2 border rounded" />
-            <input id="player-games-input" type="number" min="1" value="1" class="p-2 border rounded" />
-            <button onclick="addPlayer()" class="mt-2 p-2 bg-green-600 text-white rounded font-bold">Añadir Jugador</button>
-          </div>
-        </div>
-
-        <!-- Lista jugadores -->
-        <div>
-          <h4 class="font-bold mb-2">Jugadores activos</h4>
-          <div class="max-h-56 overflow-y-auto">
-            <table class="min-w-full text-left">
-              <thead class="text-sm text-gray-600">
-                <tr>
-                  <th class="p-2">Nombre</th>
-                  <th class="p-2">Partidas</th>
-                  <th class="p-2">Pagado</th>
-                  <th class="p-2">Victorias</th>
-                  <th class="p-2">Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="admin-players-list" class="text-sm">
-                <tr><td colspan="5" class="p-2 text-gray-500">Cargando jugadores...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Ganadores pendientes -->
-        <div class="mt-4">
-          <h4 class="font-bold mb-2">Ganadores pendientes</h4>
-          <div id="pending-winners-list" class="space-y-2 max-h-36 overflow-y-auto">
-            <p class="text-gray-500">Ningún ganador pendiente.</p>
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
 
-  <!-- SCRIPT: LÓGICA SIMULADA (localStorage) -->
+  <!-- WINNER MODAL -->
+  <div id="winner-modal" class="fixed inset-0 bg-black/60 hidden z-50 flex items-center justify-center">
+    <div id="confetti-container" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+    <div class="bg-yellow-300 p-8 rounded-2xl shadow-2xl text-center border-4 border-yellow-500 z-50">
+      <h1 class="text-5xl font-black text-red-600 mb-2">¡FELICIDADES!</h1>
+      <p id="winner-text" class="text-2xl font-bold text-gray-800 mb-2">Nombre ha ganado</p>
+      <p id="winner-amount" class="text-xl text-green-800 font-extrabold">$0.00</p>
+      <div class="mt-6 flex justify-center gap-3">
+        <button onclick="closeWinner()" class="btn btn-red">Cerrar</button>
+        <button id="mark-paid-btn" class="btn btn-green">Marcar pagado</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPORT / FOOTER -->
+  <footer class="max-w-7xl mx-auto px-4 py-6 text-sm text-gray-600">
+    <p>Sube <strong>logo_1_entrada.png</strong> en la raíz y la carpeta <strong>Cartas_baraja_loteria/</strong> con las 54 imágenes (nombres exactos).</p>
+  </footer>
+
+  <!-- SCRIPT (Lógica completa) -->
   <script>
-    /* ----------- CONFIG ----------
-       Guarda/lee todo desde localStorage para simular Firebase.
-       Key: 'loteria_game' y 'loteria_players'
-    --------------------------------*/
-    const CARD_COST = 10;
-    const HOUSE_PROFIT = 2;
-    const CARD_IMAGE_BASE_PATH = 'Cartas_baraja_loteria/';
-    const LOTERIA_CARDS = Array.from({length:54}, (_,i) => {
-      const id = i+1;
-      // nombres no estrictamente necesarios en simulación - puedes mantener los tuyos en assets
-      return { id, name: `Carta ${id}`, fileName: `${id} ${id===1?'el gallo-min.png':(id===2?'el diablito-min.png':`${id} carta.png`)}` };
-    });
-    // NOTE: user has real images named "1 el gallo-min.png" etc in folder, we'll generate filename mapping
-    const CARD_NAME_MAP = {
-      1: "1 el gallo-min.png",2:"2 el diablito-min.png",3:"3 la dama-min.png",4:"4 el catrin-min.png",
-      5:"5 el paraguas-min.png",6:"6 la sirena-min.png",7:"7 la escalera-min.png",8:"8 la botella-min.png",
-      9:"9 el barril-min.png",10:"10 el árbol-min.png",11:"11 el melón-min.png",12:"12 el valiente-min.png",
-      13:"13 el gorrito-min.png",14:"14 la muerte-min.png",15:"15 la pera-min.png",16:"16 la bandera-min.png",
-      17:"17 el bandolón-min.png",18:"18 el violoncello-min.png",19:"19 la garza-min.png",20:"20 el pájaro-min.png",
-      21:"21 la mano-min.png",22:"22 la bota-min.png",23:"23 la luna-min.png",24:"24 el cotorro-min.png",
-      25:"25 el borracho-min.png",26:"26 el negrito-min.png",27:"27 el corazón-min.png",28:"28 la sandía-min.png",
-      29:"29 el tambor-min.png",30:"30 el camarón-min.png",31:"31 las jaras-min.png",32:"32 el músico-min.png",
-      33:"33 la araña-min.png",34:"34 el soldado-min.png",35:"35 la estrella-min.png",36:"36 el cazo-min.png",
-      37:"37 el mundo-min.png",38:"38 el apache-min.png",39:"39 el nopal-min.png",40:"40 el alacrán-min.png",
-      41:"41 la rosa-min.png",42:"42 la calavera-min.png",43:"43 la campana-min.png",44:"44 el cantarito-min.png",
-      45:"45 el venado-min.png",46:"46 el sol-min.png",47:"47 la corona-min.png",48:"48 la chalupa-min.png",
-      49:"49 el pino-min.png",50:"50 el pescado-min.png",51:"51 la palma-min.png",52:"52 la maceta-min.png",
-      53:"53 el rayo-min.png",54:"54 la rana-min.png"
-    };
+  /************************************************************************
+   *  GANA YA! - V3 (Admin avanzado)
+   *  - Storage keys
+   *  - Prices per modality + house profit
+   *  - Players stored as "purchases" rows (each purchase = one modality for a player)
+   *  - Deck simulated, draw, auto mode, clean, etc.
+   ************************************************************************/
 
-    // Utilidades de localStorage
-    const saveGame = (game) => localStorage.setItem('loteria_game', JSON.stringify(game));
-    const loadGame = () => {
-      const raw = localStorage.getItem('loteria_game');
-      if (!raw) return null;
-      try { return JSON.parse(raw); } catch(e){ return null; }
-    };
-    const savePlayers = (players) => localStorage.setItem('loteria_players', JSON.stringify(players));
-    const loadPlayers = () => {
-      const raw = localStorage.getItem('loteria_players');
-      if (!raw) return [];
-      try { return JSON.parse(raw); } catch(e){ return []; }
-    };
+  // --- constants and maps ---
+  const CARD_IMAGE_BASE_PATH = 'Cartas_baraja_loteria/';
+  const CARD_NAME_MAP = {
+    1:"1 el gallo-min.png",2:"2 el diablito-min.png",3:"3 la dama-min.png",4:"4 el catrin-min.png",
+    5:"5 el paraguas-min.png",6:"6 la sirena-min.png",7:"7 la escalera-min.png",8:"8 la botella-min.png",
+    9:"9 el barril-min.png",10:"10 el árbol-min.png",11:"11 el melón-min.png",12:"12 el valiente-min.png",
+    13:"13 el gorrito-min.png",14:"14 la muerte-min.png",15:"15 la pera-min.png",16:"16 la bandera-min.png",
+    17:"17 el bandolón-min.png",18:"18 el violoncello-min.png",19:"19 la garza-min.png",20:"20 el pájaro-min.png",
+    21:"21 la mano-min.png",22:"22 la bota-min.png",23:"23 la luna-min.png",24:"24 el cotorro-min.png",
+    25:"25 el borracho-min.png",26:"26 el negrito-min.png",27:"27 el corazón-min.png",28:"28 la sandía-min.png",
+    29:"29 el tambor-min.png",30:"30 el camarón-min.png",31:"31 las jaras-min.png",32:"32 el músico-min.png",
+    33:"33 la araña-min.png",34:"34 el soldado-min.png",35:"35 la estrella-min.png",36:"36 el cazo-min.png",
+    37:"37 el mundo-min.png",38:"38 el apache-min.png",39:"39 el nopal-min.png",40:"40 el alacrán-min.png",
+    41:"41 la rosa-min.png",42:"42 la calavera-min.png",43:"43 la campana-min.png",44:"44 el cantarito-min.png",
+    45:"45 el venado-min.png",46:"46 el sol-min.png",47:"47 la corona-min.png",48:"48 la chalupa-min.png",
+    49:"49 el pino-min.png",50:"50 el pescado-min.png",51:"51 la palma-min.png",52:"52 la maceta-min.png",
+    53:"53 el rayo-min.png",54:"54 la rana-min.png"
+  };
 
-    // Estado por defecto (si no existe en localStorage)
-    const defaultGame = () => ({
-      modality: 9,
-      deck: Array.from({length:54}, (_,i) => i+1),
-      drawnCards: [],
-      currentCardId: 0,
-      totalActiveCards: 0,
-      isShuffling: false,
-      status: 'setup',
-      pendingWinners: [],
-      lastWinners: []
-    });
+  // storage keys
+  const KEY_PRICES = 'loteria_prices_v3';
+  const KEY_GAME = 'loteria_game_v3';
+  const KEY_PURCHASES = 'loteria_players_v3'; // purchases list
 
-    // Inicializa si no existe
-    if (!loadGame()) {
-      const g = defaultGame();
-      saveGame(g);
+  // default prices object
+  const defaultPrices = () => ({
+    price4: 10,
+    price6: 12,
+    price9: 15,
+    houseProfit: 2
+  });
+
+  const defaultGame = () => ({
+    modality: 9,
+    deck: Array.from({length:54}, (_,i) => i+1),
+    drawnCards: [],
+    currentCardId: 0,
+    pendingWinners: [],
+    lastWinners: []
+  });
+
+  // load/save
+  const loadPrices = ()=> JSON.parse(localStorage.getItem(KEY_PRICES) || JSON.stringify(defaultPrices()));
+  const savePrices = (p)=> localStorage.setItem(KEY_PRICES, JSON.stringify(p));
+
+  const loadGame = ()=> JSON.parse(localStorage.getItem(KEY_GAME) || JSON.stringify(defaultGame()));
+  const saveGame = (g)=> localStorage.setItem(KEY_GAME, JSON.stringify(g));
+
+  const loadPurchases = ()=> JSON.parse(localStorage.getItem(KEY_PURCHASES) || '[]');
+  const savePurchases = (arr)=> localStorage.setItem(KEY_PURCHASES, JSON.stringify(arr));
+
+  // state
+  let prices = loadPrices();
+  let gameState = loadGame();
+  let purchases = loadPurchases(); // list of purchase rows
+  let isAuto = false;
+  let autoInterval = null;
+  let lastWinnerRecords = []; // ephemeral to show modal link
+
+  // util: card image url
+  const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] || `${id}.png`);
+
+  // ensure deck exists
+  if (!gameState.deck || !gameState.deck.length) gameState.deck = Array.from({length:54}, (_,i)=>i+1);
+
+  // --- render functions ---
+  function renderAll(){
+    // prices
+    document.getElementById('price-4').value = prices.price4;
+    document.getElementById('price-6').value = prices.price6;
+    document.getElementById('price-9').value = prices.price9;
+    document.getElementById('house-profit').value = prices.houseProfit;
+
+    // modal selected
+    document.getElementById('modality-select').value = gameState.modality || 9;
+
+    // active purchases grid (for view-player)
+    const modality = parseInt(document.getElementById('modality-select').value || gameState.modality || 9);
+    gameState.modality = modality;
+
+    const activePurchases = purchases.filter(p => p.modality === modality);
+    const activeContainer = document.getElementById('active-players-cards');
+    if (!activePurchases.length) {
+      activeContainer.innerHTML = `<div class="text-center text-gray-500 p-8 col-span-full">No hay compras activas en esta modalidad.</div>`;
+    } else {
+      activeContainer.innerHTML = activePurchases.map(p => renderPurchaseCardHtml(p)).join('');
     }
-    if (!localStorage.getItem('loteria_players')) {
-      savePlayers([]);
+
+    // summary
+    document.getElementById('summary-active-count').textContent = purchases.length;
+    document.getElementById('summary-partidas').textContent = purchases.reduce((s,r)=>s+(r.gamesLeft||0),0);
+
+    // current card
+    const currentCardElem = document.getElementById('current-card-inner');
+    if (gameState.currentCardId) {
+      const img = cardImageUrl(gameState.currentCardId);
+      currentCardElem.innerHTML = `<div style="background-image:url('${img}'); background-size:contain; background-position:center; background-repeat:no-repeat; width:140px; height:140px; margin:0 auto;"></div>
+      <div class="text-sm font-semibold mt-2 text-gray-600">Carta: ${gameState.currentCardId}</div>`;
+    } else {
+      currentCardElem.innerHTML = `<span class="text-6xl">🎲</span><div class="text-sm font-semibold mt-2 text-gray-600">Esperando...</div>`;
     }
 
-    // Estado en memoria
-    let gameState = loadGame();
-    let players = loadPlayers();
+    // last 3 cards
+    const last = (gameState.drawnCards || []).slice(-3).reverse();
+    const lc = document.getElementById('last-cards');
+    if (!last.length) lc.innerHTML = `<div class="text-gray-400">Ninguna carta aún.</div>`; else {
+      lc.innerHTML = last.map(cid => `<div class="w-14 h-18 bg-cover bg-center rounded shadow-md border" style="background-image:url('${cardImageUrl(cid)}')"></div>`).join('');
+    }
 
-    // Helpers
-    const cardImageUrl = (cardId) => {
-      const fname = CARD_NAME_MAP[cardId] || `${cardId}.png`;
-      return `${CARD_IMAGE_BASE_PATH}${fname}`;
-    };
-    const getCardById = (id) => ({ id, name: `Carta ${id}`, fileName: CARD_NAME_MAP[id] || `${id}.png` });
-    const persistAll = () => { saveGame(gameState); savePlayers(players); renderAll(); };
+    // deck counts
+    document.getElementById('deck-count').textContent = gameState.deck.length;
+    document.getElementById('current-card-name').textContent = gameState.currentCardId ? `Carta ${gameState.currentCardId}` : 'Ninguna';
 
-    /* ---------------- RENDER (Ambas vistas) ---------------- */
+    // pot calculation: sum(payments) - houseProfit * totalCardsSold
+    const totalPaid = purchases.reduce((s,p)=> s + (p.totalPaid||0), 0);
+    const totalCardsSold = purchases.reduce((s,p)=> s + (p.initialGames||0), 0); // initialGames tracks how many bought originally
+    // We'll use totalActiveGames sold (sum of all initialGames) — this approximates sold count
+    const potAmount = Math.max(0, totalPaid - (prices.houseProfit * totalCardsSold));
+    document.getElementById('pot-amount').textContent = `$${potAmount.toFixed(2)}`;
 
-    // Render Vista Jugador: carta de cada jugador
-    const renderPlayerCard = (player, currentCardId, modality) => {
-      if (!player.isActive || player.gamesLeft <= 0) return '';
-      const numCols = modality === 4 ? 2 : (modality === 6 ? 3 : 3);
-      const cardSizeClass = modality === 4 ? 'grid-cols-2' : 'grid-cols-3';
-      const cells = player.card.map(cardId => {
-        const imageUrl = cardImageUrl(cardId);
-        const isMarked = (player.markedCards || []).includes(cardId);
-        const isCurrent = cardId === currentCardId;
-        return `
-          <div class="card-cell ${isMarked ? 'marked' : ''}" title="${cardId}"
-               style="background-image: url('${imageUrl}');">
-            ${isCurrent ? `<div class="absolute inset-0 border-4 border-yellow-400 rounded-lg animate-pulse z-10"></div>` : ''}
-          </div>
-        `;
-      }).join('');
-      return `
-        <div class="card-loteria p-3 flex flex-col">
-          <div class="text-lg font-extrabold text-gray-800 mb-2 truncate text-center">${player.name}</div>
-          <div class="text-sm font-semibold text-red-600 mb-2 text-center">Partidas ${player.gamesLeft}</div>
-          <div class="grid ${cardSizeClass} gap-1.5 h-full flex-grow">${cells}</div>
+    // last winners list
+    const lw = document.getElementById('last-winners');
+    if (!(gameState.lastWinners && gameState.lastWinners.length)) lw.innerHTML = 'Aún no hay ganadores.'; else {
+      lw.innerHTML = (gameState.lastWinners||[]).slice(-5).reverse().map(w => `<div class="text-sm font-semibold">${w.name} — $${w.amount.toFixed(2)} <span class="text-xs text-gray-500">(${new Date(w.timestamp).toLocaleString()})</span></div>`).join('');
+    }
+
+    // players table
+    renderPlayersTable();
+
+    // persist
+    savePrices(prices);
+    saveGame(gameState);
+    savePurchases(purchases);
+  }
+
+  // render purchase card for grid
+  function renderPurchaseCardHtml(p) {
+    const gridClass = p.modality === 4 ? 'grid-cols-2' : 'grid-cols-3';
+    const cells = (p.card || []).map(cid => `<div class="card-cell ${ (p.markedCards||[]).includes(cid) ? 'marked' : '' }" style="background-image:url('${cardImageUrl(cid)}'); aspect-ratio:1/1"></div>`).join('');
+    return `<div class="${p.gamesLeft <= 0 ? 'row-disabled' : ''} mex-border p-3 animate-create">
+      <div class="flex items-center justify-between mb-2">
+        <div>
+          <div class="text-lg font-extrabold">${escapeHtml(p.playerName)}</div>
+          <div class="text-xs text-gray-600">Partidas: ${p.gamesLeft}  •  Pagado: $${(p.totalPaid||0).toFixed(2)}</div>
         </div>
-      `;
-    };
+        <div class="text-sm text-green-700 font-bold">${p.wins||0} victorias</div>
+      </div>
+      <div class="grid ${gridClass} gap-2">${cells}</div>
+    </div>`;
+  }
 
-    const renderGameView = () => {
-      // Jugadores activos
-      const activePlayersHtml = players.filter(p => p.isActive && p.gamesLeft > 0)
-        .map(p => renderPlayerCard(p, gameState.currentCardId, gameState.modality))
-        .join('') || `<div class="text-center text-gray-500 p-8 card-loteria col-span-full">¡Aún no hay jugadores activos!</div>`;
-      document.getElementById('active-players-cards').innerHTML = activePlayersHtml;
+  // render players table rows
+  function renderPlayersTable(){
+    const tbody = document.getElementById('players-table-body');
+    if (!purchases.length) {
+      tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-gray-500">No hay compras registradas.</td></tr>`;
+      return;
+    }
+    const rows = purchases.map(p => {
+      const stateLabel = p.paymentState === 'pending' ? `<span class="text-xs px-2 py-1 bg-yellow-100 rounded">Pendiente</span>` : `<span class="text-xs px-2 py-1 bg-green-100 rounded">Pagado</span>`;
+      const disabledClass = p.gamesLeft <= 0 ? 'row-disabled' : '';
+      const modalityText = p.modality === 4 ? '2x2' : p.modality === 6 ? '2x3' : '3x3';
+      return `<tr class="${disabledClass}">
+        <td class="p-2 font-semibold">${escapeHtml(p.playerName)}</td>
+        <td class="p-2">${modalityText}</td>
+        <td class="p-2">${p.gamesLeft}</td>
+        <td class="p-2">$${(p.totalPaid||0).toFixed(2)}</td>
+        <td class="p-2">${p.wins||0}</td>
+        <td class="p-2">${stateLabel}</td>
+        <td class="p-2 space-x-2">
+          <button class="px-2 py-1 bg-green-500 text-white rounded text-xs" onclick="addGamesPrompt('${p.id}')">+ Partidas</button>
+          <button class="px-2 py-1 bg-yellow-500 text-white rounded text-xs" onclick="markPendingPaid('${p.id}')">Pagar premio</button>
+          <button class="px-2 py-1 bg-gray-300 text-black rounded text-xs" onclick="viewCard('${p.id}')">Ver carta</button>
+          <button class="px-2 py-1 bg-red-600 text-white rounded text-xs" onclick="deletePurchase('${p.id}')">Eliminar</button>
+        </td>
+      </tr>`;
+    }).join('');
+    tbody.innerHTML = rows;
+  }
 
-      // Carta actual
-      const currentCardElem = document.getElementById('current-card');
-      if (gameState.currentCardId) {
-        const imageUrl = cardImageUrl(gameState.currentCardId);
-        currentCardElem.innerHTML = '';
-        currentCardElem.style.backgroundImage = `url('${imageUrl}')`;
-        currentCardElem.classList.remove('card-placeholder');
-      } else {
-        currentCardElem.innerHTML = `<div class="flex flex-col items-center justify-center"><span class="text-6xl">🎲</span><span class="text-sm font-semibold mt-2 text-gray-600">Esperando...</span></div>`;
-        currentCardElem.style.backgroundImage = 'none';
-        currentCardElem.classList.add('card-placeholder');
-      }
+  // --- logic functions ---
 
-      // Últimas 5 cartas
-      const last = gameState.drawnCards.slice(-5).reverse();
-      const lastHtml = last.map(cid => {
-        const img = cardImageUrl(cid);
-        const name = getCardById(cid).name;
-        return `<div class="w-12 h-16 bg-cover bg-center rounded-lg shadow-md border-2 border-gray-300" style="background-image:url('${img}')" title="${name}"></div>`;
-      }).join('') || `<span class="text-gray-400 text-sm">Ninguna carta aún.</span>`;
-      document.getElementById('last-cards').innerHTML = lastHtml;
+  // shuffle deck (visually)
+  function shuffleDeck(){
+    const btn = document.getElementById('shuffle-btn');
+    btn.disabled = true; btn.textContent = 'BARAJANDO...';
+    setTimeout(()=> {
+      gameState.deck = shuffleArray(Array.from({length:54}, (_,i)=>i+1));
+      gameState.drawnCards = [];
+      gameState.currentCardId = 0;
+      saveGame(gameState);
+      btn.disabled = false; btn.textContent = 'BARAJEAR';
+      renderAll();
+    }, 800);
+  }
 
-      // Últimos ganadores (feed)
-      const lastWinnersHtml = (gameState.lastWinners || []).slice(-5).reverse().map(w => `
-        <div class="bg-yellow-100 p-2 rounded-lg text-sm font-medium border border-yellow-300 w-full">
-          <span class="font-bold">${w.name}</span> ganó <span class="text-green-700 font-extrabold">$${w.amount.toFixed(2)}</span>
-        </div>
-      `).join('') || `<span class="text-gray-500">Aún no hay ganadores.</span>`;
-      document.getElementById('last-winners').innerHTML = lastWinnersHtml;
-
-      // Bolsa
-      const potAmount = ((gameState.totalActiveCards || 0) * (CARD_COST - HOUSE_PROFIT));
-      document.getElementById('pot-amount').textContent = `$${potAmount.toFixed(2)}`;
-
-      // Admin: counts, monies, lists
-      document.getElementById('deck-count').textContent = gameState.deck.length;
-      const currentCardObj = getCardById(gameState.currentCardId);
-      document.getElementById('current-card-name').textContent = currentCardObj ? (currentCardObj.name || `Carta ${gameState.currentCardId}`) : 'Ninguna';
-
-      const activeCardsCount = players.filter(p => p.isActive && p.gamesLeft > 0).reduce((s,p)=>s+p.gamesLeft,0);
-      document.getElementById('admin-player-count').textContent = players.length;
-      document.getElementById('admin-active-card-count').textContent = activeCardsCount;
-      const profit = activeCardsCount * HOUSE_PROFIT;
-      document.getElementById('admin-profit').textContent = `$${profit.toFixed(2)}`;
-      document.getElementById('admin-pot-amount').textContent = `$${potAmount.toFixed(2)}`;
-
-      // Admin players list
-      const adminList = players.map(p => `
-        <tr class="${p.isActive ? '' : 'bg-red-50'}">
-          <td class="p-2 font-semibold">${p.name}</td>
-          <td class="p-2 text-lg font-bold ${p.gamesLeft>0 ? 'text-green-600' : 'text-red-600'}">${p.gamesLeft}</td>
-          <td class="p-2">$${(p.totalPaid||0).toFixed(2)}</td>
-          <td class="p-2 font-bold">${p.wins||0}</td>
-          <td class="p-2">
-            <button onclick="adjustPlayerGames('${p.id}',1)" class="px-2 py-1 bg-green-500 text-white rounded text-xs">+1</button>
-            <button onclick="adjustPlayerGames('${p.id}',-1)" class="px-2 py-1 bg-red-500 text-white rounded text-xs">-1</button>
-          </td>
-        </tr>
-      `).join('') || '<tr><td colspan="5" class="p-2 text-gray-500">No hay jugadores registrados.</td></tr>';
-      document.getElementById('admin-players-list').innerHTML = adminList;
-
-      // Pending winners
-      const pendingHtml = (gameState.pendingWinners || []).map(w => `
-        <div class="flex justify-between items-center p-2 border-b">
-          <span class="font-semibold text-gray-800">${w.name}</span>
-          <span class="font-bold text-lg text-red-600">$${w.amount.toFixed(2)}</span>
-          <button onclick="markWinnerPaid('${w.id}')" class="px-3 py-1 bg-red-600 text-white rounded-lg text-sm">Pagar</button>
-        </div>
-      `).join('') || '<p class="text-gray-500 p-2">Ningún ganador pendiente.</p>';
-      document.getElementById('pending-winners-list').innerHTML = pendingHtml;
-    };
-
-    const renderAll = () => {
-      gameState = loadGame() || gameState;
-      players = loadPlayers() || players;
-      renderGameView();
-    };
-
-    // Inicial render
+  // draw a card (manual)
+  function drawCard(){
+    if (isAuto) return;
+    if (!gameState.deck || gameState.deck.length === 0) { alert('El mazo está vacío. Barajea para continuar.'); return; }
+    const next = gameState.deck.pop();
+    gameState.drawnCards.push(next);
+    gameState.currentCardId = next;
+    processCard(next);
     renderAll();
+  }
 
-    /* ------------- FUNCIONES DEL JUEGO ------------- */
-
-    const setModality = (val) => {
-      gameState.modality = parseInt(val);
-      saveGame(gameState);
-      renderAll();
-    };
-    window.setModality = setModality;
-    document.getElementById('modality-select').addEventListener('change', (e) => {
-      setModality(e.target.value);
+  // process drawn card: mark purchases, check winners
+  function processCard(cardId){
+    const winners = [];
+    purchases.forEach((p, idx) => {
+      if (!p.isActive || (p.gamesLeft||0) <= 0) return;
+      if (p.modality && p.card && p.card.includes(cardId) && !(p.markedCards||[]).includes(cardId)) {
+        purchases[idx].markedCards = [...(p.markedCards||[]), cardId];
+      }
+      // winner condition: all card images in purchase are marked
+      if ((p.markedCards || []).length === p.modality) {
+        winners.push({ idx, id: p.id, name: p.playerName });
+      }
     });
 
-    const shuffleArray = (arr) => {
-      const a = arr.slice();
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
-    };
-
-    const shuffleDeck = () => {
-      gameState.isShuffling = true;
-      saveGame(gameState);
+    if (winners.length > 0) {
+      // stop auto
+      stopAutoMode();
+      // calculate pot
+      const totalPaid = purchases.reduce((s,p)=> s + (p.totalPaid||0), 0);
+      const totalCardsSold = purchases.reduce((s,p)=> s + (p.initialGames||0), 0);
+      const potAmount = Math.max(0, totalPaid - (prices.houseProfit * totalCardsSold));
+      // create winner records and change purchases (reduce gamesLeft by 1)
+      const newWinners = [];
+      winners.forEach(w => {
+        const p = purchases[w.idx];
+        // subtract 1 partida from that purchase
+        p.gamesLeft = Math.max(0, (p.gamesLeft||0) - 1);
+        p.wins = (p.wins||0) + 1;
+        // mark payment pending
+        p.paymentState = 'pending';
+        // reset marked cards for that purchase
+        p.markedCards = [];
+        // create winner record
+        const record = { id: crypto.randomUUID(), playerId: p.playerId, name: p.playerName, purchaseId: p.id, amount: potAmount / winners.length, timestamp: Date.now(), paid:false };
+        newWinners.push(record);
+        gameState.pendingWinners = (gameState.pendingWinners||[]).concat(record);
+        gameState.lastWinners = (gameState.lastWinners||[]).concat(record);
+      });
+      saveGame(gameState); savePurchases(purchases);
       renderAll();
-      // Simular tiempo de barajado
-      setTimeout(() => {
-        const full = Array.from({length:54}, (_,i)=>i+1);
-        const deck = shuffleArray(full);
-        gameState.deck = deck;
-        gameState.drawnCards = [];
-        gameState.currentCardId = 0;
-        gameState.status = 'playing';
-        gameState.isShuffling = false;
+      // show modal for first winner (or show aggregate text)
+      const first = newWinners[0];
+      const winnerName = newWinners.length === 1 ? first.name : `${newWinners.length} jugadores`;
+      showWinnerModal(winnerName, newWinners.reduce((s,w)=>s+w.amount,0), newWinners);
+    } else {
+      saveGame(gameState); savePurchases(purchases);
+      renderAll();
+    }
+  }
 
-        // reset marked cards for players who are active
-        players = players.map(p => ({...p, markedCards: p.gamesLeft>0 ? [] : p.markedCards}));
-        // recalcular totalActiveCards
-        gameState.totalActiveCards = players.reduce((s,p) => s + (p.gamesLeft||0), 0);
-
-        persistAll();
-      }, 800);
-    };
-    window.shuffleDeck = shuffleDeck;
-
-    const drawCard = () => {
-      if (!gameState.deck || gameState.deck.length === 0) {
-        alert('El mazo está vacío. Barajea para continuar.');
-        return;
+  // clean: clear drawnCards & subtract 1 partida to purchases of current modality
+  function cleanAction(){
+    const mod = parseInt(document.getElementById('modality-select').value || gameState.modality || 9);
+    if (!confirm(`¿Limpiar cartas pasadas y restar 1 partida a compras de la modalidad ${mod}?`)) return;
+    gameState.drawnCards = [];
+    gameState.currentCardId = 0;
+    purchases = purchases.map(p => {
+      if (p.modality === mod) {
+        p.gamesLeft = Math.max(0, (p.gamesLeft||0) - 1);
+        p.isActive = p.gamesLeft > 0;
       }
-      // Pop next
+      return p;
+    });
+    // do not delete purchases with 0; keep them grayed
+    savePurchases(purchases);
+    renderAll();
+  }
+
+  // auto mode toggle
+  function toggleAuto(){
+    if (isAuto) stopAutoMode(); else startAutoMode();
+  }
+  function startAutoMode(){
+    if (!gameState.deck || gameState.deck.length === 0) { alert('El mazo está vacío. Barajea para continuar.'); return; }
+    isAuto = true;
+    document.getElementById('auto-btn').textContent = 'DETENER AUTOMÁTICO';
+    document.getElementById('auto-btn').style.background = 'var(--verde)';
+    autoInterval = setInterval(()=> {
+      if (!isAuto) return;
+      if (!gameState.deck.length) { stopAutoMode(); return; }
       const next = gameState.deck.pop();
       gameState.drawnCards.push(next);
       gameState.currentCardId = next;
-      saveGame(gameState);
+      processCard(next);
+      renderAll();
+    }, 2000);
+  }
+  function stopAutoMode(){
+    isAuto = false;
+    document.getElementById('auto-btn').textContent = 'CARTAS AUTOMÁTICO';
+    document.getElementById('auto-btn').style.background = '#fee9d6';
+    if (autoInterval) { clearInterval(autoInterval); autoInterval = null; }
+  }
 
-      // Marcar en jugadores y verificar ganador
-      checkWinner(next);
+  // mark pending winners as paid (button from modal or table)
+  function markPendingPaid(purchaseId){
+    const p = purchases.find(x => x.id === purchaseId);
+    if (!p) { alert('Compra no encontrada'); return; }
+    p.paymentState = 'paid';
+    savePurchases(purchases);
+    renderAll();
+  }
+  window.markPendingPaid = markPendingPaid;
 
-      persistAll();
-    };
-    window.drawCard = drawCard;
+  // Add purchases when registering a player with budget and selected modalities
+  function calculatePartitions(budget, selectedModalities){
+    // divide equally the budget between selected modalities
+    const share = Math.floor((budget / selectedModalities.length) * 100) / 100; // two decimals
+    // for each modality compute number of partidas = floor(share / price)
+    const parts = selectedModalities.map(m => {
+      const price = m === 4 ? prices.price4 : m === 6 ? prices.price6 : prices.price9;
+      const games = Math.floor(share / price);
+      return { modality: m, price, share, games, requiredShareFor1: price };
+    });
+    return parts;
+  }
 
-    // Agregar jugador
-    const addPlayer = () => {
-      const nameInput = document.getElementById('player-name-input');
-      const gamesInput = document.getElementById('player-games-input');
-      const name = (nameInput.value || '').trim();
-      const games = parseInt(gamesInput.value) || 0;
-      if (!name || games <= 0) { alert('Ingresa nombre y partidas válidas.'); return; }
+  // Add player (creates purchases per modality)
+  function addPlayer(){
+    const name = (document.getElementById('player-name-input').value || '').trim();
+    const budget = parseFloat(document.getElementById('player-budget-input').value || 0);
+    const checked = Array.from(document.querySelectorAll('.modal-chk:checked')).map(i => parseInt(i.value));
+    const warningEl = document.getElementById('calc-warning');
+    warningEl.textContent = '';
+    if (!name) { alert('Captura el nombre del jugador'); return; }
+    if (!budget || budget <= 0) { alert('Captura un presupuesto válido'); return; }
+    if (!checked.length) { alert('Selecciona al menos una modalidad'); return; }
 
-      const id = crypto.randomUUID();
-      const modality = gameState.modality || 9;
-      // generar tablero aleatorio
-      const ids = shuffleArray(Array.from({length:54}, (_,i)=>i+1)).slice(0, modality);
-      const totalPaid = games * CARD_COST;
-      const player = {
-        id,
-        name,
+    // compute partitions
+    const parts = calculatePartitions(budget, checked);
+    // if any modality has 0 games -> block registration
+    const zero = parts.find(p => p.games < 1);
+    if (zero) {
+      document.getElementById('calc-warning').textContent = `La modalidad ${zero.modality} no alcanza 1 partida con la porción (${zero.share}$). Aumenta presupuesto o elige menos modalidades.`;
+      return;
+    }
+
+    // proceed: for each modality create a purchase record
+    const playerId = crypto.randomUUID();
+    const created = [];
+    parts.forEach(part => {
+      const games = part.games;
+      const totalPaid = games * part.price;
+      const purchase = {
+        id: crypto.randomUUID(),
+        playerId,
+        playerName: name,
+        modality: part.modality,
         gamesLeft: games,
+        initialGames: games,
         totalPaid,
         wins: 0,
-        card: ids,
-        markedCards: [],
-        isActive: true,
-        addedAt: Date.now()
+        paymentState: 'paid', // initial payments considered paid at registration
+        isActive: games > 0,
+        card: generateCardForPurchase(part.modality),
+        markedCards: []
       };
-      players.push(player);
-      gameState.totalActiveCards = (gameState.totalActiveCards || 0) + games;
-      persistAll();
-
-      nameInput.value = '';
-      gamesInput.value = '1';
-    };
-    window.addPlayer = addPlayer;
-
-    // Ajustar partidas de jugador
-    const adjustPlayerGames = (playerId, delta) => {
-      const idx = players.findIndex(p => p.id === playerId);
-      if (idx === -1) return;
-      const p = players[idx];
-      p.gamesLeft = Math.max(0, (p.gamesLeft||0) + delta);
-      p.totalPaid = (p.totalPaid || 0) + (delta>0? delta*CARD_COST : 0);
-      p.isActive = p.gamesLeft > 0;
-      // actualizar totalActiveCards: recomputar
-      gameState.totalActiveCards = players.reduce((s,pl)=>s+(pl.gamesLeft||0),0);
-      persistAll();
-    };
-    window.adjustPlayerGames = adjustPlayerGames;
-
-    // Marcar ganador como pagado
-    const markWinnerPaid = (winnerId) => {
-      gameState.pendingWinners = (gameState.pendingWinners || []).filter(w => w.id !== winnerId);
-      persistAll();
-    };
-    window.markWinnerPaid = markWinnerPaid;
-
-    // Check winner (similar a la lógica del admin real)
-    const checkWinner = (newCardId) => {
-      if (!newCardId) return;
-      const modality = gameState.modality || 9;
-      const cardsToWin = modality;
-      const winners = [];
-      let totalCardsToDeduct = 0;
-
-      // Para updates de jugadores usaremos marcado por transaction simulated
-      players.forEach((p, idx) => {
-        if (!p.isActive || p.gamesLeft <= 0) return;
-        const playerCard = p.card || [];
-        const marked = p.markedCards || [];
-        let localMarked = [...marked];
-
-        if (playerCard.includes(newCardId) && !marked.includes(newCardId)) {
-          localMarked.push(newCardId);
-          players[idx].markedCards = localMarked;
-        }
-
-        if ((players[idx].markedCards || []).length === cardsToWin) {
-          winners.push({ id: p.id, name: p.name, refIdx: idx });
-          totalCardsToDeduct++;
-        }
-      });
-
-      if (winners.length > 0) {
-        const totalActive = gameState.totalActiveCards || 0;
-        const potAmount = totalActive * (CARD_COST - HOUSE_PROFIT);
-        const winAmount = potAmount / winners.length;
-
-        const newPending = [];
-        winners.forEach(w => {
-          const p = players[w.refIdx];
-          p.gamesLeft = Math.max(0, (p.gamesLeft||0) - 1);
-          p.wins = (p.wins||0) + 1;
-          p.markedCards = [];
-          p.isActive = p.gamesLeft > 0;
-
-          const record = {
-            id: crypto.randomUUID(),
-            playerId: p.id,
-            name: p.name,
-            amount: winAmount,
-            timestamp: Date.now(),
-            status: 'pending'
-          };
-          newPending.push(record);
-
-          // Mostrar modal en Jugador
-          showWinnerModal(p.name, winAmount);
-        });
-
-        // Reiniciar y actualizar el mazo para siguiente ronda
-        const fullDeck = shuffleArray(Array.from({length:54}, (_,i)=>i+1));
-        gameState.deck = fullDeck;
-        gameState.drawnCards = [];
-        gameState.currentCardId = 0;
-        gameState.totalActiveCards = Math.max(0, (gameState.totalActiveCards||0) - totalCardsToDeduct);
-
-        // añadir pending winners y lastWinners
-        gameState.pendingWinners = (gameState.pendingWinners || []).concat(newPending);
-        gameState.lastWinners = (gameState.lastWinners || []).concat(newPending.map(w => ({ name: w.name, amount: w.amount, timestamp: w.timestamp })));
-      } else {
-        // si no hubo ganador, nada particular; persistimos marcas ya hechas arriba
-      }
-      persistAll();
-    };
-
-    // Mostrar modal ganador (visual + confetti)
-    const showWinnerModal = (name, amount) => {
-      document.getElementById('winner-name').textContent = name;
-      document.getElementById('winner-amount').textContent = `$${amount.toFixed(2)}`;
-      const modal = document.getElementById('winner-modal');
-      modal.classList.remove('hidden');
-
-      // Confetti simple
-      const container = document.getElementById('confetti-container');
-      container.innerHTML = '';
-      const colors = ['#f00','#0f0','#00f','#ff0','#0ff','#f0f'];
-      for (let i=0;i<60;i++){
-        const div = document.createElement('div');
-        div.className = 'confetti';
-        div.style.left = `${Math.random()*100}vw`;
-        div.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
-        div.style.animationDelay = `${Math.random()*0.6}s`;
-        div.style.width = `${6 + Math.random()*8}px`;
-        div.style.height = div.style.width;
-        container.appendChild(div);
-      }
-      setTimeout(() => {
-        // Ocultar automáticamente después de 4s
-        hideWinnerModal();
-      }, 4200);
-    };
-    window.showWinnerModal = showWinnerModal;
-
-    const hideWinnerModal = () => {
-      document.getElementById('winner-modal').classList.add('hidden');
-      const cont = document.getElementById('confetti-container');
-      cont.innerHTML = '';
-    };
-    window.hideWinnerModal = hideWinnerModal;
-
-    // Marcar ganador pagado ya implementado más arriba
-
-    /* ------------- Sincronización UI y eventos ------------- */
-
-    // Toggle vistas
-    const tabPlayer = document.getElementById('tab-player');
-    const tabAdmin = document.getElementById('tab-admin');
-    const viewPlayer = document.getElementById('view-player');
-    const viewAdmin = document.getElementById('view-admin');
-
-    const activatePlayerView = () => {
-      tabPlayer.classList.add('tab-active');
-      tabAdmin.classList.remove('tab-active');
-      viewPlayer.classList.remove('hidden');
-      viewAdmin.classList.add('hidden');
-    };
-    const activateAdminView = () => {
-      tabPlayer.classList.remove('tab-active');
-      tabAdmin.classList.add('tab-active');
-      viewPlayer.classList.add('hidden');
-      viewAdmin.classList.remove('hidden');
-    };
-    tabPlayer.addEventListener('click', activatePlayerView);
-    tabAdmin.addEventListener('click', activateAdminView);
-
-    // Tecla espacio para tirar carta (cuando admin visible)
-    document.addEventListener('keydown', (e) => {
-      if (e.code === 'Space') {
-        e.preventDefault();
-        // solo si admin visible
-        if (!viewAdmin.classList.contains('hidden')) drawCard();
-      }
+      purchases.push(purchase);
+      created.push(purchase);
     });
 
-    // Observador storage para sincronizar entre pestañas del navegador (opcional)
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'loteria_game' || e.key === 'loteria_players') {
-        renderAll();
-      }
-    });
+    // animation: confetti mini + pop
+    animateCreatePlayer(created);
 
-    // Guardar con botón de modalidad
-    document.getElementById('modality-select').addEventListener('change', (e) => {
-      const v = parseInt(e.target.value);
-      gameState.modality = v;
+    // clear inputs
+    document.getElementById('player-name-input').value = '';
+    document.getElementById('player-budget-input').value = '';
+    document.querySelectorAll('.modal-chk').forEach(c => c.checked = false);
+
+    // persist
+    savePurchases(purchases);
+    renderAll();
+  }
+
+  // generate a card for a purchase: avoid duplicates across purchases if possible
+  function generateCardForPurchase(modality){
+    // gather already used card ids across purchases
+    const used = new Set();
+    purchases.forEach(p => (p.card || []).forEach(cid => used.add(cid)));
+    // pool = all cards not used
+    let pool = Array.from({length:54}, (_,i)=>i+1).filter(id => !used.has(id));
+    // if pool too small, allow reuse
+    if (pool.length < modality) pool = Array.from({length:54}, (_,i)=>i+1);
+    // shuffle and take first modality
+    pool = shuffleArray(pool);
+    return pool.slice(0, modality);
+  }
+
+  // addGamesPrompt: prompt to add partidas to a purchase
+  function addGamesPrompt(purchaseId){
+    const val = prompt('¿Cuántas partidas quieres agregar (entero mayor 0)?', '1');
+    if (!val) return;
+    const add = parseInt(val);
+    if (isNaN(add) || add <= 0) return alert('Ingresa un número válido');
+    const p = purchases.find(x => x.id === purchaseId);
+    if (!p) return alert('Compra no encontrada');
+    // increase games and totalPaid accordingly (use price per modality)
+    const price = p.modality === 4 ? prices.price4 : p.modality === 6 ? prices.price6 : prices.price9;
+    p.gamesLeft = (p.gamesLeft || 0) + add;
+    p.initialGames = (p.initialGames||0) + add;
+    p.totalPaid = (p.totalPaid||0) + (add * price);
+    p.isActive = p.gamesLeft > 0;
+    // small visual effect: highlight row
+    highlightRow(purchaseId);
+    savePurchases(purchases);
+    renderAll();
+  }
+
+  // mark purchased prize as paid (table action)
+  function markPendingPaid(purchaseId){
+    const p = purchases.find(x => x.id === purchaseId);
+    if (!p) return alert('Compra no encontrada');
+    p.paymentState = 'paid';
+    // optional: clear pending winners entries linked to this purchase
+    if (gameState.pendingWinners && gameState.pendingWinners.length) {
+      gameState.pendingWinners = gameState.pendingWinners.filter(w => w.purchaseId !== purchaseId);
       saveGame(gameState);
-      renderAll();
+    }
+    savePurchases(purchases);
+    renderAll();
+  }
+  window.markPendingPaid = markPendingPaid;
+
+  // delete purchase
+  function deletePurchase(purchaseId){
+    if (!confirm('Eliminar esta compra para siempre?')) return;
+    purchases = purchases.filter(p => p.id !== purchaseId);
+    savePurchases(purchases);
+    renderAll();
+  }
+  window.deletePurchase = deletePurchase;
+
+  // view card (popup)
+  function viewCard(purchaseId){
+    const p = purchases.find(x => x.id === purchaseId);
+    if (!p) return alert('Compra no encontrada');
+    const list = (p.card||[]).map(cid => `<div style="background-image:url('${cardImageUrl(cid)}'); background-size:cover; background-position:center; width:80px; height:80px; border-radius:8px; display:inline-block; margin:4px;"></div>`).join('');
+    const w = window.open('', '_blank', 'width=420,height=420');
+    w.document.write(`<title>Cartas - ${escapeHtml(p.playerName)}</title><body style="font-family:Inter;padding:12px"><h3>${escapeHtml(p.playerName)} — Modalidad ${p.modality}</h3><div>${list}</div></body>`);
+  }
+  window.viewCard = viewCard;
+
+  // show winner modal
+  function showWinnerModal(name, amount, winnersList){
+    document.getElementById('winner-text').textContent = `${name} ha ganado`;
+    document.getElementById('winner-amount').textContent = `Ha recibido: $${amount.toFixed(2)}`;
+    const modal = document.getElementById('winner-modal');
+    modal.classList.remove('hidden');
+
+    // store last winners for marking payment
+    lastWinnerRecords = winnersList || [];
+
+    // confetti
+    const container = document.getElementById('confetti-container');
+    container.innerHTML = '';
+    const colors = ['#b42222','#0f8a3c','#caa43f','#ff6b6b','#ffd86b','#7ad3a2'];
+    for (let i=0;i<80;i++){
+      const d = document.createElement('div');
+      d.className = 'confetti';
+      d.style.left = `${Math.random()*100}vw`;
+      d.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
+      d.style.width = `${6 + Math.random()*8}px`;
+      d.style.height = d.style.width;
+      d.style.animationDelay = `${Math.random()*0.6}s`;
+      container.appendChild(d);
+    }
+  }
+
+  function closeWinner(){
+    document.getElementById('winner-modal').classList.add('hidden');
+    document.getElementById('confetti-container').innerHTML = '';
+  }
+
+  // mark paid from modal: marks all winner records as paid and sets purchase.paymentState = 'paid'
+  document.getElementById('mark-paid-btn').addEventListener('click', ()=> {
+    lastWinnerRecords.forEach(r => {
+      const purchase = purchases.find(p => p.id === r.purchaseId);
+      if (purchase) purchase.paymentState = 'paid';
+      // mark pending winners removal
+      if (gameState.pendingWinners) gameState.pendingWinners = gameState.pendingWinners.filter(w => w.id !== r.id);
     });
+    savePurchases(purchases);
+    saveGame(gameState);
+    renderAll();
+    closeWinner();
+  });
 
-    // Inicial: asegurar modalidad consistente
-    (function init(){
-      // Si juego no tiene deck, crear full deck
-      if (!gameState.deck || gameState.deck.length===0) {
-        gameState.deck = Array.from({length:54}, (_,i)=>i+1);
-      }
-      // Si totalActiveCards no definido, calcular
-      if (typeof gameState.totalActiveCards === 'undefined') {
-        gameState.totalActiveCards = players.reduce((s,p)=>s + (p.gamesLeft||0),0);
-      }
-      saveGame(gameState);
-      savePlayers(players);
-      renderAll();
-    })();
+  // animate create player purchases
+  function animateCreatePlayer(createdArray){
+    // small confetti and pop for grid items — we will create mini confetti at top-right
+    createdArray.forEach(c => {
+      // find active grid container and prepend? We will trigger CSS class on renderAll by using animate-create (already added)
+    });
+    // mini confetti at top-left
+    const container = document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.left = '20px';
+    container.style.top = '80px';
+    container.style.zIndex = 9999;
+    document.body.appendChild(container);
+    const colors = ['#b42222','#0f8a3c','#caa43f','#ff6b6b','#7ad3a2'];
+    for (let i=0;i<20;i++){
+      const d = document.createElement('div');
+      d.className = 'confetti-mini';
+      d.style.left = `${Math.random()*40}px`;
+      d.style.top = `${Math.random()*40}px`;
+      d.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
+      container.appendChild(d);
+    }
+    setTimeout(()=> container.remove(), 1200);
+  }
 
+  // helper: highlight row briefly
+  function highlightRow(purchaseId){
+    // nothing complex: renderAll will show row with normal style; we can flash background by creating a temporary overlay
+    // For simplicity, do nothing heavy here
+  }
+
+  // calculate function (button)
+  function calculateForForm(){
+    document.getElementById('calc-warning').textContent = '';
+    const budget = parseFloat(document.getElementById('player-budget-input').value || 0);
+    const checked = Array.from(document.querySelectorAll('.modal-chk:checked')).map(i => parseInt(i.value));
+    if (!budget || budget <= 0) { document.getElementById('calc-result').textContent = ''; return alert('Captura presupuesto válido'); }
+    if (!checked.length) { document.getElementById('calc-result').textContent = ''; return alert('Selecciona al menos una modalidad'); }
+    const parts = calculatePartitions(budget, checked);
+    // check any zero
+    const zero = parts.find(p => p.games < 1);
+    if (zero) {
+      document.getElementById('calc-warning').textContent = `La modalidad ${zero.modality} no alcanza 1 partida con la porción (${zero.share}$).`;
+      document.getElementById('calc-result').textContent = '';
+      return;
+    }
+    // show breakdown
+    document.getElementById('calc-result').innerHTML = 'Resultado: ' + parts.map(p => `${p.modality}: ${p.games} partidas (precio ${p.price}$, porción ${p.share}$)`).join(' • ');
+  }
+
+  // helper shuffle
+  function shuffleArray(a){
+    const arr = a.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // util: escape html
+  function escapeHtml(text){ return (text+'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  // helper: generate uuid (if crypto not available)
+  if (!crypto || !crypto.randomUUID) {
+    crypto.randomUUID = function() { return 'id-' + Math.random().toString(36).slice(2, 9); };
+  }
+
+  // event wiring
+  document.getElementById('shuffle-btn').addEventListener('click', shuffleDeck);
+  document.getElementById('draw-btn').addEventListener('click', () => { if (!isAuto) drawCard(); });
+  document.getElementById('clean-btn').addEventListener('click', cleanAction);
+  document.getElementById('auto-btn').addEventListener('click', toggleAuto);
+  document.getElementById('calc-btn').addEventListener('click', calculateForForm);
+  document.getElementById('add-player-btn').addEventListener('click', addPlayer);
+
+  // prices save / reset
+  document.getElementById('save-prices').addEventListener('click', ()=> {
+    prices.price4 = Math.max(1, parseFloat(document.getElementById('price-4').value || 0));
+    prices.price6 = Math.max(1, parseFloat(document.getElementById('price-6').value || 0));
+    prices.price9 = Math.max(1, parseFloat(document.getElementById('price-9').value || 0));
+    prices.houseProfit = Math.max(0, parseFloat(document.getElementById('house-profit').value || 0));
+    savePrices(prices);
+    renderAll();
+    alert('Precios guardados');
+  });
+  document.getElementById('reset-prices').addEventListener('click', ()=> {
+    if (!confirm('Restablecer precios por defecto?')) return;
+    prices = defaultPrices();
+    savePrices(prices);
+    renderAll();
+  });
+
+  // toggle tabs
+  const tabPlayer = document.getElementById('tab-player');
+  const tabAdmin = document.getElementById('tab-admin');
+  tabPlayer.addEventListener('click', ()=> { tabPlayer.classList.add('tab-active'); tabAdmin.classList.remove('tab-active'); window.scrollTo({top:0, behavior:'smooth'}); });
+  tabAdmin.addEventListener('click', ()=> { tabAdmin.classList.add('tab-active'); tabPlayer.classList.remove('tab-active'); window.scrollTo({top:0, behavior:'smooth'}); });
+
+  // keyboard: space to draw
+  document.addEventListener('keydown', (e)=> {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      if (!isAuto) drawCard();
+    }
+  });
+
+  // storage sync
+  window.addEventListener('storage', (e)=> {
+    if (e.key === KEY_PRICES) prices = loadPrices();
+    if (e.key === KEY_GAME) gameState = loadGame();
+    if (e.key === KEY_PURCHASES) purchases = loadPurchases();
+    renderAll();
+  });
+
+  // helpers used above
+  function calculatePartitions(budget, selectedModalities){
+    const shareRaw = budget / selectedModalities.length;
+    // limit to 2 decimals
+    const share = Math.floor(shareRaw * 100) / 100;
+    return selectedModalities.map(m => {
+      const price = m === 4 ? prices.price4 : m === 6 ? prices.price6 : prices.price9;
+      const games = Math.floor(share / price);
+      return { modality: m, price, share, games };
+    });
+  }
+
+  // initializations and UI hookups
+  document.getElementById('modality-select').addEventListener('change', (e)=> { gameState.modality = parseInt(e.target.value); saveGame(gameState); renderAll(); });
+
+  // addGames prompt exposed
+  window.addGamesPrompt = addGamesPrompt;
+  window.markPendingPaid = markPendingPaid;
+  window.viewCard = viewCard;
+  window.deletePurchase = deletePurchase;
+
+  // helper: generate a visual card for manual draw of sample (not used)
+  function generateCardForDebug(modality) { return generateCardForPurchase(modality); }
+
+  // initial render
+  prices = loadPrices();
+  gameState = loadGame();
+  purchases = loadPurchases();
+  renderAll();
+
+  // helper: drawCard exposure
+  window.drawCard = drawCard;
+  window.shuffleDeck = shuffleDeck;
+  window.cleanAction = cleanAction;
+  window.addPlayer = addPlayer;
+  window.resetAll = ()=> {
+    if (!confirm('¿Reiniciar todo? Se borrará localStorage del juego.')) return;
+    localStorage.removeItem(KEY_PRICES);
+    localStorage.removeItem(KEY_GAME);
+    localStorage.removeItem(KEY_PURCHASES);
+    prices = defaultPrices();
+    gameState = defaultGame();
+    purchases = [];
+    savePrices(prices); saveGame(gameState); savePurchases(purchases);
+    renderAll();
+  };
   </script>
-
-  <!-- Instrucciones rápidas -->
-  <footer class="max-w-6xl mx-auto mt-8 text-sm text-gray-600">
-    <p>Instrucciones: sube este <strong>index.html</strong>, coloca <strong>logo_1_entrada.png</strong> en la raíz y la carpeta <strong>Cartas_baraja_loteria/</strong> con las 54 imágenes. Abre en el navegador o publica en GitHub Pages.</p>
-  </footer>
 </body>
 </html>

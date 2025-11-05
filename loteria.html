@@ -1,1105 +1,731 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lotería Mexicana GANA YA! Interactiva</title>
-    <!-- Carga de Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
-    <!-- Carga de la fuente Inter --><style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        
-        /* Estilos base de la tarjeta - Solo para la carta GRANDE en juego */
-        .card-loteria-lg {
-            width: 100%;
-            height: 100%;
-            padding-top: 140%; 
-            background-size: cover;
-            background-position: center;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            border: 3px solid #2563EB; 
-            overflow: hidden;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GANA YA! - Lotería Interactiva (Admin + Jugador)</title>
 
-        /* MINIATURA DE CARTONES DE JUGADOR (EL GRAN CAMBIO) */
-        .player-card-compact {
-            aspect-ratio: 1 / 1.1; /* Ligera verticalidad */
-            width: 100%; 
-            padding: 4px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        .player-card-compact:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-        }
-        .player-grid-compact {
-            display: grid;
-            gap: 2px;
-        }
-        .board-grid-4-compact { grid-template-columns: repeat(2, 1fr); }
-        .board-grid-6-compact { grid-template-columns: repeat(2, 1fr); }
-        .board-grid-9-compact { grid-template-columns: repeat(3, 1fr); }
+  <!-- Tailwind (cdn) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 
-        .marked-cell {
-            background-color: #EF4444; /* Rojo: Marcado */
-            border-radius: 2px;
-        }
-        .unmarked-cell {
-            background-color: #D1D5DB; /* Gris: Sin Marcar */
-            border-radius: 2px;
-        }
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f7f3e8; }
+    .card-loteria {
+      background-color: white;
+      border: 4px solid #a32a2a;
+      box-shadow: 0 8px 16px rgba(0,0,0,.12);
+      border-radius: 1rem;
+      transition: transform .2s, opacity .3s;
+    }
+    .card-cell {
+      background-color: #f0f0f0;
+      position: relative;
+      border-radius: .5rem;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+      min-height: 56px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    /* Marca cuando está marcada: overlay oscuro + logo centrado */
+    .card-cell.marked::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-color: rgba(0,0,0,0.45);
+      background-image: url('logo_1_entrada.png');
+      background-size: 35%;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 10;
+      pointer-events: none;
+    }
+    #current-card {
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-color: white;
+      transition: all .5s;
+    }
+    .card-placeholder {
+      background-color: #e0e0e0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:3rem;
+    }
 
-        @keyframes fanfare {
-            0% { transform: scale(1) rotate(0deg); opacity: 0; }
-            50% { transform: scale(1.5) rotate(-5deg); opacity: 1; }
-            100% { transform: scale(1) rotate(0deg); opacity: 0; }
-        }
+    /* Modal confetti very simple */
+    @keyframes confetti {
+      0% { transform: translateY(0) rotate(0); opacity: 1; }
+      100% { transform: translateY(-420px) rotate(720deg); opacity: 0; }
+    }
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      top: 100%;
+      animation: confetti 2s ease-out forwards;
+      z-index: 60;
+    }
 
-        /* Animación para el overlay del ganador */
-        @keyframes winner-bounce {
-            0%, 100% { transform: translateY(0); }
-            20%, 80% { transform: translateY(-5px); }
-            40%, 60% { transform: translateY(-10px); }
-        }
-        .winner-overlay-content {
-            animation: winner-bounce 0.8s ease-in-out infinite alternate;
-        }
-
-        /* Animación para el efecto "¡Felicidades!" alrededor del nombre */
-        @keyframes glitter {
-            0% { opacity: 0; transform: scale(0.5); }
-            50% { opacity: 1; transform: scale(1.2); }
-            100% { opacity: 0; transform: scale(0.5); }
-        }
-        .winner-name-effect {
-            position: relative;
-            display: inline-block;
-            overflow: visible; /* Permitir que los elementos salgan del contenedor */
-        }
-        .winner-name-effect::before,
-        .winner-name-effect::after {
-            content: '✨'; /* Emoji o carácter para el efecto */
-            position: absolute;
-            font-size: 2rem;
-            opacity: 0;
-            animation: glitter 1.5s ease-out infinite;
-        }
-        .winner-name-effect::before {
-            top: -20px;
-            left: -20px;
-            animation-delay: 0s;
-        }
-        .winner-name-effect::after {
-            bottom: -20px;
-            right: -20px;
-            animation-delay: 0.75s;
-        }
-
-
-        .confetti {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        /* Estructura del Layout Principal de la Vista de Juego */
-        .game-layout {
-            display: grid;
-            /* 3 columnas: 1 columna pequeña, 2 columnas grandes (para jugadores) */
-            grid-template-columns: 1fr 3fr 1fr;
-            /* 3 filas: Logo/Titulo, Contenido Principal, Ganadores */
-            grid-template-rows: auto 1fr auto; 
-            gap: 16px;
-            height: 90vh; 
-        }
-        
-        /* Definición de Áreas */
-        .logo-area { grid-area: 1 / 1 / 2 / 2; }
-        .title-area { grid-area: 1 / 2 / 2 / 3; }
-        .pot-area { grid-area: 1 / 3 / 2 / 4; }
-        .players-area { grid-area: 2 / 1 / 3 / 3; } /* Ocupa 2 columnas */
-        .current-card-area { 
-            grid-area: 2 / 3 / 4 / 4; /* Ahora ocupa 2 filas (2 y 3) */
-            align-items: flex-start; /* Alineación arriba para dejar espacio al botón */
-        } 
-        .winners-area { grid-area: 3 / 1 / 4 / 3; } /* Ahora solo ocupa 2 columnas */
-        
-        /* Media Query para móvil (apilar contenido) */
-        @media (max-width: 1024px) {
-            .game-layout {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto auto 1fr auto; /* Más filas para apilar */
-                height: auto;
-            }
-             .logo-area, .title-area, .pot-area, .players-area, .current-card-area, .winners-area {
-                grid-area: unset !important; /* Deshabilitar grid-area */
-                grid-column: 1 / -1; /* Ocupar todo el ancho */
-            }
-             .current-card-area { order: -1; } /* Mover la carta actual al inicio en móvil */
-             .players-area { min-height: 400px; }
-        }
-
-    </style>
+    /* Toggle botón activo */
+    .tab-active { background: linear-gradient(90deg,#fef3f3,#fff); border-bottom: 4px solid #a32a2a; }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
-
-    <!-- Configuración e Inicialización de Firebase --><script type="module">
-        // Importaciones de Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, collection, query, setDoc, updateDoc, getDocs, addDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Establecer nivel de log para depuración de Firestore
-        setLogLevel('Debug');
-
-        // Variables Globales de Canvas (MANDATORIO)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { /* mock config */ };
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-        
-        // Instancias de Firebase
-        let app, db, auth;
-        let userId = 'loading'; // ID del usuario actual
-
-        // Estados Reactivos GLOBALES (Para que sean accesibles desde el HTML)
-        window.gameState = {
-            currentTab: 'game', // 'game' o 'admin'
-            isAuthReady: false,
-            // Estado del juego desde Firestore (loteria_state/game_status)
-            gameStatus: {
-                drawnCards: [],
-                deck: [], // Baraja completa
-                currentCard: null,
-                drawSpeed: 1, // 1, 2, o 3
-                gameId: null,
-                gameRunning: false,
-                winner: null, // Nuevo: almacena la info del ganador
-            },
-            // Datos del jugador desde Firestore (players/{userId})
-            players: {},
-            // Datos de ganadores desde Firestore (winners/{winnerId})
-            winners: [],
-            // Cartas de la lotería Mexicana (54 cartas)
-            allCards: [
-                { id: 1, name: "El Gallo", emoji: "🐓" }, { id: 2, name: "El Diablito", emoji: "😈" },
-                { id: 3, name: "La Dama", emoji: "👩" }, { id: 4, name: "El Catrín", emoji: "🤵" },
-                { id: 5, name: "El Paraguas", emoji: "☂️" }, { id: 6, name: "La Sirena", emoji: "🧜‍♀️" },
-                { id: 7, name: "La Escalera", emoji: "🪜" }, { id: 8, name: "La Botella", emoji: "🍾" },
-                { id: 9, name: "El Barril", emoji: "🛢️" }, { id: 10, name: "El Árbol", emoji: "🌳" },
-                { id: 11, name: "El Melón", emoji: "🍈" }, { id: 12, name: "El Valiente", emoji: "🦸‍♂️" },
-                { id: 13, name: "El Gorrito", emoji: "🤠" }, { id: 14, name: "La Muerte", emoji: "💀" },
-                { id: 15, name: "La Pera", emoji: "🍐" }, { id: 16, name: "La Bandera", emoji: "🇲🇽" },
-                { id: 17, name: "El Bandolón", emoji: "🎻" }, { id: 18, name: "El Violoncello", emoji: "🎸" },
-                { id: 19, name: "La Garza", emoji: "🦢" }, { id: 20, name: "El Pájaro", emoji: "🐦" },
-                { id: 21, name: "La Mano", emoji: "✋" }, { id: 22, name: "La Bota", emoji: "👢" },
-                { id: 23, name: "La Luna", emoji: "🌕" }, { id: 24, name: "El Cotorro", emoji: "🦜" },
-                { id: 25, name: "El Borracho", emoji: "🍻" }, { id: 26, name: "El Negrito", emoji: "👨" },
-                { id: 27, name: "El Corazón", emoji: "❤️" }, { id: 28, name: "La Sandía", emoji: "🍉" },
-                { id: 29, name: "El Tambor", emoji: "🥁" }, { id: 30, name: "El Camarón", emoji: "🦐" },
-                { id: 31, name: "Las Jaras", emoji: "🏹" }, { id: 32, name: "El Músico", emoji: "🎶" },
-                { id: 33, name: "La Araña", emoji: "🕷️" }, { id: 34, name: "El Soldado", emoji: "💂" },
-                { id: 35, name: "La Estrella", emoji: "⭐" }, { id: 36, name: "El Cazo", emoji: "🍲" },
-                { id: 37, name: "El Mundo", emoji: "🌎" }, { id: 38, name: "El Apache", emoji: "🏹" },
-                { id: 39, name: "El Nopal", emoji: "🌵" }, { id: 40, name: "El Alacrán", emoji: "🦂" },
-                { id: 41, name: "La Rosa", emoji: "🌹" }, { id: 42, name: "La Calavera", emoji: "💀" },
-                { id: 43, name: "La Campana", emoji: "🔔" }, { id: 44, name: "El Cantarito", emoji: "🏺" },
-                { id: 45, name: "El Venado", emoji: "🦌" }, { id: 46, name: "El Sol", emoji: "☀️" },
-                { id: 47, name: "La Corona", emoji: "👑" }, { id: 48, name: "La Chalupa", emoji: "🛶" },
-                { id: 49, name: "El Pino", emoji: "🌲" }, { id: 50, name: "El Pescado", emoji: "🐟" },
-                { id: 51, name: "La Palma", emoji: "🌴" }, { id: 52, name: "La Maceta", emoji: "🪴" },
-                { id: 53, name: "El Arpa", emoji: "🎼" }, { id: 54, name: "La Rana", emoji: "🐸" }
-            ]
-        };
-
-        // --- FUNCIONES DE UTILIDAD FIREBASE ---
-
-        // Rutas de Firestore
-        const getGameStatusRef = () => doc(db, 'artifacts', appId, 'public', 'data', 'loteria_state', 'game_status');
-        const getPlayersCollection = () => collection(db, 'artifacts', appId, 'public', 'data', 'players');
-        const getWinnersCollection = () => collection(db, 'artifacts', appId, 'public', 'data', 'winners');
-        
-        // Obtener el nombre del grid CSS basado en el tamaño del cartón
-        const getGridClassCompact = (size) => {
-            switch (size) {
-                case 4: return 'board-grid-4-compact'; 
-                case 6: return 'board-grid-6-compact'; 
-                case 9: return 'board-grid-9-compact'; 
-                default: return 'board-grid-4-compact';
-            }
-        };
-
-        // Inicialización de la aplicación y autenticación
-        const initializeFirebase = async () => {
-            try {
-                if (Object.keys(firebaseConfig).length > 0) {
-                    app = initializeApp(firebaseConfig);
-                    db = getFirestore(app);
-                    auth = getAuth(app);
-
-                    // Autenticación con token o anónima
-                    if (initialAuthToken) {
-                        await signInWithCustomToken(auth, initialAuthToken);
-                        console.log("Autenticación exitosa con token personalizado.");
-                    } else {
-                        await signInAnonymously(auth);
-                        console.log("Autenticación anónima exitosa.");
-                    }
-
-                    onAuthStateChanged(auth, (user) => {
-                        if (user) {
-                            userId = user.uid;
-                            console.log("UserID:", userId);
-                        } else {
-                            userId = crypto.randomUUID();
-                            console.warn("No se pudo obtener el UID. Usando ID temporal:", userId);
-                        }
-                        window.gameState.isAuthReady = true;
-                        startListeners(); // Iniciar la escucha de datos
-                        window.renderApp(); // Renderizar la interfaz
-                    });
-                } else {
-                    console.error("Configuración de Firebase no disponible. Ejecutando en modo demo.");
-                    window.gameState.isAuthReady = true;
-                    userId = 'demo-user';
-                    window.renderApp();
-                }
-            } catch (error) {
-                console.error("Error al inicializar Firebase o autenticar:", error);
-                window.gameState.isAuthReady = true;
-                userId = 'error-user';
-                window.renderApp();
-            }
-        };
-        
-        // Inicializa el documento de estado del juego si no existe
-        const initializeGameStatus = async () => {
-            if (!db) return;
-            const gameStatusRef = getGameStatusRef();
-            try {
-                const docSnap = await getDoc(gameStatusRef);
-                if (!docSnap.exists()) {
-                    console.log("Inicializando estado del juego por primera vez.");
-                    await setDoc(gameStatusRef, {
-                        drawnCards: [],
-                        deck: [],
-                        currentCard: null,
-                        drawSpeed: 1,
-                        gameId: null,
-                        gameRunning: false,
-                        winner: null,
-                    });
-                }
-            } catch (e) {
-                console.error("Error al inicializar el estado del juego:", e);
-            }
-        };
-
-        // Escuchadores de Firestore (onSnapshot)
-        const startListeners = () => {
-            if (!db || !window.gameState.isAuthReady) return;
-
-            initializeGameStatus(); 
-
-            // 1. Escuchar Estado del Juego
-            onSnapshot(getGameStatusRef(), (doc) => {
-                const status = doc.data();
-                if (status) {
-                    // Si el juego ha terminado y hay un ganador, detenemos el intervalo
-                    if (!status.gameRunning && status.winner) {
-                        window.stopDrawingInterval();
-                    } else if (status.gameRunning && drawingInterval === null) {
-                        // Si el juego se reactiva desde otro lado, reiniciamos el intervalo
-                        window.startDrawingInterval();
-                    }
-
-                    window.gameState.gameStatus = {
-                        ...window.gameState.gameStatus,
-                        ...status,
-                        drawnCards: Array.isArray(status.drawnCards) ? status.drawnCards : [],
-                        deck: Array.isArray(status.deck) ? status.deck : [],
-                        currentCard: status.currentCard || null,
-                        drawSpeed: status.drawSpeed || 1,
-                        gameRunning: status.gameRunning || false,
-                        winner: status.winner || null,
-                    };
-                    // Solo revisamos las marcas si el juego está corriendo
-                    if(window.gameState.gameStatus.gameRunning) {
-                        checkAndMarkBoards(); 
-                    }
-                }
-                window.renderApp();
-            }, (error) => console.error("Error listening to game status:", error));
-
-            // 2. Escuchar Jugadores
-            onSnapshot(getPlayersCollection(), (snapshot) => {
-                window.gameState.players = {};
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    if (Array.isArray(data.boards)) {
-                        data.boards = data.boards.map(board => ({
-                            ...board,
-                            cards: board.cards || [],
-                            matched_cards: board.matched_cards || [],
-                            boardId: board.boardId || crypto.randomUUID(), 
-                        }));
-                    } else {
-                         data.boards = [];
-                    }
-                    window.gameState.players[doc.id] = { id: doc.id, ...data };
-                });
-                window.renderApp();
-            }, (error) => console.error("Error listening to players:", error));
-
-            // 3. Escuchar Ganadores
-            onSnapshot(query(getWinnersCollection()), (snapshot) => {
-                window.gameState.winners = [];
-                snapshot.forEach(doc => {
-                    window.gameState.winners.push({ id: doc.id, ...doc.data() });
-                });
-                window.gameState.winners.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-                window.renderApp();
-            }, (error) => console.error("Error listening to winners:", error));
-        };
-
-        // --- LÓGICA DEL JUEGO ---
-
-        // Marcar cartas en los tableros de los jugadores y revisar si hay ganador
-        const checkAndMarkBoards = () => {
-            const { gameStatus, players } = window.gameState;
-            if (!gameStatus.gameRunning || gameStatus.winner) return;
-
-            const drawnIds = gameStatus.drawnCards.map(card => card.id);
-            let playerUpdates = [];
-            let winnerDetected = false;
-
-            Object.values(players).forEach(player => {
-                if (player.partidas_pagadas <= 0) return; // Ignorar jugadores sin partidas activas
-                
-                let playerUpdated = false;
-
-                const updatedBoards = player.boards.map(board => {
-                    if (board.status === 'won' || winnerDetected) return board; 
-
-                    let currentMatches = board.matched_cards.length;
-                    const newMatchedCards = board.cards
-                        .filter((card) => drawnIds.includes(card.id))
-                        .map(card => card.id);
-
-                    board.matched_cards = newMatchedCards;
-                    
-                    // Detección de Victoria (Llenar todas las cartas del cartón)
-                    if (board.matched_cards.length === board.cards.length && board.cards.length > 0) {
-                        winnerDetected = true; // Establecer bandera
-                        // Llamar a handleWin (que también se detiene el juego y se encarga de todo)
-                        handleWin(player.id, player.name, board);
-                        // Marcar el board como 'won' localmente
-                        return { ...board, status: 'won' }; 
-                    }
-                    // Si hubo cambios en las marcas
-                    else if (currentMatches !== board.matched_cards.length) {
-                        playerUpdated = true;
-                    }
-                    return board;
-                });
-
-                if (playerUpdated && !winnerDetected) {
-                    playerUpdates.push({
-                        id: player.id,
-                        name: player.name,
-                        boards: updatedBoards,
-                        partidas_pagadas: player.partidas_pagadas
-                    });
-                }
-            });
-
-            // Aplicar actualizaciones a Firestore si no hay ganador (si hay, handleWin se encarga)
-            if (!winnerDetected) {
-                playerUpdates.forEach(p => {
-                     updatePlayerInFirestore(p.id, p.name, p.boards, p.partidas_pagadas);
-                });
-            }
-        };
-
-        // Función que gestiona una victoria
-        const handleWin = async (playerId, playerName, winningBoard) => {
-            // Previene múltiples detecciones
-            if (window.gameState.gameStatus.winner) return;
-
-            try {
-                // 1. **DETENER EL JUEGO INMEDIATAMENTE** y registrar ganador en el estado del juego
-                await setDoc(getGameStatusRef(), { 
-                    gameRunning: false,
-                    winner: { id: playerId, name: playerName, boardId: winningBoard.boardId, time: new Date() }
-                }, { merge: true });
-                window.stopDrawingInterval();
-
-
-                // 2. Calcular el Bote y Registrar Ganador
-                // Se recalcula el total de partidas activas justo antes de la victoria
-                const totalPartidas = Object.values(window.gameState.players).reduce((acc, p) => acc + (p.partidas_pagadas || 0), 0);
-                const prize = totalPartidas * 20; // $20 MXN por cartón activo en juego
-                const winTime = new Date();
-
-                await addDoc(getWinnersCollection(), {
-                    timestamp: winTime,
-                    playerName: playerName,
-                    playerId: playerId,
-                    prizeAmount: prize,
-                    message: `Ganó con un cartón de ${winningBoard.cards.length} cartas`,
-                    status: 'PAGADO' 
-                });
-
-                // 3. Reducir partidas pagadas del jugador
-                const playerRef = doc(getPlayersCollection(), playerId);
-                const playerDoc = await getDoc(playerRef);
-                if (!playerDoc.exists()) return; 
-
-                const currentData = playerDoc.data();
-                
-                let newPartidasPagadas = (currentData.partidas_pagadas || 0) - 1;
-                if (newPartidasPagadas < 0) newPartidasPagadas = 0;
-                
-                // Marcar el board como ganado y remover la partida de la cuenta del jugador (partidas_pagadas -1)
-                const newBoards = currentData.boards.map(board => 
-                    board.boardId === winningBoard.boardId ? { ...board, status: 'won' } : board
-                );
-                
-                // Si ya no quedan partidas, el jugador se queda con sus boards ganados, pero ya no paga
-                await updateDoc(playerRef, {
-                    partidas_pagadas: newPartidasPagadas,
-                    boards: newBoards,
-                });
-
-                window.showConfetti(); // Mostrar confeti
-
-            } catch (e) {
-                console.error("Error gestionando la victoria:", e);
-            }
-        };
-
-
-        // Barajar y Reiniciar el juego (ADMIN) - GLOBALIZADA
-        window.startGame = async () => {
-            if (!db) return console.error("Firebase no disponible.");
-
-            // Reiniciar el estado del juego
-            const newDeck = [...window.gameState.allCards].sort(() => 0.5 - Math.random());
-            
-            try {
-                await setDoc(getGameStatusRef(), {
-                    drawnCards: [],
-                    currentCard: null,
-                    deck: newDeck,
-                    gameId: Date.now(),
-                    drawSpeed: window.gameState.gameStatus.drawSpeed || 1,
-                    gameRunning: true,
-                    winner: null, // Limpiar ganador
-                });
-                
-                // Limpiar el estado 'won' de todos los boards y las cartas marcadas
-                const playersSnapshot = await getDocs(getPlayersCollection());
-                playersSnapshot.forEach(async (playerDoc) => {
-                    const playerData = playerDoc.data();
-                    const cleanBoards = playerData.boards.map(board => {
-                        return { ...board, matched_cards: [], status: 'active' }; // Restablecer a 'active'
-                    });
-                    // Usamos updateDoc para solo actualizar los boards
-                    await updateDoc(doc(getPlayersCollection(), playerDoc.id), { boards: cleanBoards });
-                });
-
-                // Limpiar la lista de ganadores (opcional, pero ayuda a la simulación de una nueva ronda)
-                const winnersSnapshot = await getDocs(getWinnersCollection());
-                winnersSnapshot.forEach(async (winnerDoc) => {
-                    await deleteDoc(doc(getWinnersCollection(), winnerDoc.id));
-                });
-
-                window.startDrawingInterval();
-            } catch (e) {
-                console.error("Error al iniciar juego:", e);
-            }
-        };
-
-        // Detener el juego (ADMIN) - GLOBALIZADA
-        window.stopGame = async () => {
-            if (!db) return;
-            try {
-                // Detener sin declarar ganador (pausa)
-                await setDoc(getGameStatusRef(), { gameRunning: false }, { merge: true }); 
-                window.stopDrawingInterval();
-            } catch (e) {
-                console.error("Error al detener juego:", e);
-            }
-        };
-
-        // Cambiar la velocidad de extracción (ADMIN) - GLOBALIZADA
-        window.changeDrawSpeed = async (speed) => {
-            if (!db) return;
-            try {
-                await setDoc(getGameStatusRef(), { drawSpeed: speed }, { merge: true }); 
-            } catch (e) {
-                console.error("Error al cambiar velocidad:", e);
-            }
-        };
-
-        // Extraer la siguiente carta (ADMIN) - GLOBALIZADA
-        window.drawNextCard = async (numCards = 1) => {
-            const { gameStatus } = window.gameState;
-            if (!db || !gameStatus.gameRunning || gameStatus.winner) return;
-
-            let newDeck = [...gameStatus.deck];
-            let newDrawnCards = [...gameStatus.drawnCards];
-            let lastDrawn = null;
-
-            for (let i = 0; i < numCards; i++) {
-                if (newDeck.length > 0) {
-                    lastDrawn = newDeck.shift();
-                    newDrawnCards.push(lastDrawn);
-                }
-            }
-
-            if (lastDrawn) {
-                 try {
-                    await updateDoc(getGameStatusRef(), {
-                        deck: newDeck,
-                        drawnCards: newDrawnCards,
-                        currentCard: lastDrawn,
-                    });
-                } catch (e) {
-                    console.error("Error al extraer carta:", e);
-                }
-            } else {
-                 console.log("¡Baraja vacía! Juego terminado.");
-                 window.stopGame();
-            }
-        };
-        
-        // Control de tiempo para el avance automático (ADMIN) - GLOBALIZADA
-        let drawingInterval = null;
-        window.startDrawingInterval = () => {
-            window.stopDrawingInterval();
-            if (!window.gameState.gameStatus.gameRunning) return;
-
-            // La velocidad se ajusta en base a drawSpeed (1, 2, o 3 cartas por lanzamiento)
-            const speedMultiplier = window.gameState.gameStatus.drawSpeed;
-            // Un lanzamiento cada 5 segundos (más lento)
-            const intervalTime = 5000; 
-            drawingInterval = setInterval(() => {
-                if (!window.gameState.gameStatus.gameRunning || window.gameState.gameStatus.winner) {
-                    window.stopDrawingInterval();
-                    return;
-                }
-                window.drawNextCard(speedMultiplier);
-            }, intervalTime); 
-        };
-
-        window.stopDrawingInterval = () => {
-            if (drawingInterval) {
-                clearInterval(drawingInterval);
-                drawingInterval = null;
-            }
-        };
-
-        // Event listener para la barra espaciadora
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && window.gameState.gameStatus.gameRunning) {
-                e.preventDefault(); // Previene el scroll de la página
-                window.drawNextCard(window.gameState.gameStatus.drawSpeed);
-            }
-        });
-        
-        // --- FUNCIONES DE ADMINISTRACIÓN ---
-
-        // Función para actualizar la información del jugador en Firestore
-        const updatePlayerInFirestore = async (playerId, playerName, boards, partidasPagadas) => {
-            if (!db) return;
-            const playerRef = doc(getPlayersCollection(), playerId);
-            try {
-                await setDoc(playerRef, {
-                    name: playerName,
-                    partidas_pagadas: partidasPagadas,
-                    boards: boards,
-                }, { merge: true });
-            } catch (e) {
-                console.error("Error al guardar jugador:", e);
-            }
-        };
-
-        // Generar un nuevo tablero aleatorio
-        const generateBoard = (numCards) => {
-            const shuffled = [...window.gameState.allCards].sort(() => 0.5 - Math.random());
-            const boardCards = shuffled.slice(0, numCards); 
-            return {
-                cards: boardCards,
-                matched_cards: [],
-                boardId: crypto.randomUUID(), 
-                status: 'active'
-            };
-        };
-
-        // Añadir/Actualizar un jugador (ADMIN) - GLOBALIZADA
-        window.handlePlayerSubmit = (event) => {
-            event.preventDefault();
-            const form = event.target;
-            const playerName = form.playerName.value.trim();
-            const partidas = parseInt(form.partidas.value, 10);
-            const numCards = parseInt(form.numCards.value, 10); // 4, 6 o 9
-            const playerId = form.playerId.value || Date.now().toString(); 
-
-            if (!playerName || isNaN(partidas) || partidas < 1 || isNaN(numCards) || ![4, 6, 9].includes(numCards)) {
-                window.showAlert('Datos de jugador inválidos. Asegúrate de que las partidas sean al menos 1 y el cartón sea de 4, 6 o 9 cartas.', 'error');
-                return;
-            }
-            
-            let boards = [];
-            const existingPlayer = window.gameState.players[playerId];
-
-            if (existingPlayer) {
-                boards = existingPlayer.boards;
-            } else {
-                 // Generar UN cartón por esta acción, el contador de partidas controla la cantidad que está pagando
-                boards.push(generateBoard(numCards));
-            }
-            
-            const finalPlayerId = existingPlayer ? existingPlayer.id : 'player-' + playerId;
-
-            updatePlayerInFirestore(finalPlayerId, playerName, boards, partidas);
-            
-            form.reset();
-        };
-
-        // Eliminar jugador (ADMIN) - GLOBALIZADA
-        window.deletePlayer = (id) => {
-            if (!db) return;
-            const player = window.gameState.players[id];
-            window.showConfirmation(`¿Estás seguro de que quieres eliminar al jugador **${player.name}**?`, async () => {
-                try {
-                    await deleteDoc(doc(getPlayersCollection(), id));
-                    window.hideModal();
-                } catch (e) {
-                    console.error("Error al eliminar jugador:", e);
-                    window.hideModal();
-                }
-            });
-        };
-        
-        // --- UTILIDADES UI ---
-        
-        // Mostrar mensaje de alerta/confirmación
-        window.showConfirmation = (message, onConfirm) => {
-            const modalEl = document.getElementById('confirmationModal');
-            document.getElementById('modalTitle').textContent = 'Confirmar Acción';
-            document.getElementById('modalMessage').innerHTML = message;
-            
-            const confirmBtn = document.getElementById('confirmActionBtn');
-            confirmBtn.onclick = onConfirm;
-            confirmBtn.classList.remove('hidden');
-            document.getElementById('cancelActionBtn').classList.remove('hidden');
-
-            modalEl.classList.remove('hidden');
-        };
-        
-        window.showAlert = (message, type = 'info') => {
-            const modalEl = document.getElementById('confirmationModal');
-            document.getElementById('modalTitle').textContent = type === 'error' ? '¡Error!' : 'Información';
-            document.getElementById('modalMessage').innerHTML = message;
-            
-            const confirmBtn = document.getElementById('confirmActionBtn');
-            confirmBtn.classList.add('hidden');
-            document.getElementById('cancelActionBtn').classList.add('hidden');
-            
-            modalEl.classList.remove('hidden');
-        }
-
-        window.hideModal = () => {
-            document.getElementById('confirmationModal').classList.add('hidden');
-        };
-
-        // Generar Confeti para la victoria
-        window.showConfetti = () => {
-            const confettiContainer = document.getElementById('confetti-container');
-            confettiContainer.innerHTML = ''; // Limpiar confeti anterior
-            const colors = ['#f44336', '#ffeb3b', '#2196f3', '#4caf50', '#ff9800'];
-
-            for (let i = 0; i < 50; i++) {
-                const piece = document.createElement('div');
-                piece.style.cssText = `
-                    position: absolute;
-                    width: 10px;
-                    height: 10px;
-                    background-color: ${colors[Math.floor(Math.random() * colors.length)]};
-                    top: ${Math.random() * 100}vh;
-                    left: ${Math.random() * 100}vw;
-                    opacity: ${Math.random()};
-                    transform: rotate(${Math.random() * 360}deg);
-                    animation: fall ${2 + Math.random() * 3}s ease-in forwards;
-                `;
-                confettiContainer.appendChild(piece);
-            }
-
-            // CSS Keyframes para la animación de caída del confeti
-            const style = document.createElement('style');
-            style.innerHTML = `
-                @keyframes fall {
-                    0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
-                    100% { transform: translate(${Math.random() * 400 - 200}px, 100vh) rotate(${720 + Math.random() * 360}deg); opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
-
-            setTimeout(() => {
-                confettiContainer.innerHTML = ''; // Limpiar confeti
-            }, 5000);
-        };
-
-        // --- FUNCIONES DE RENDERIZADO (UI) ---
-
-        // Función para renderizar una carta GRANDE individual (solo para la carta actual)
-        const renderSingleCardLG = (card) => {
-            if (!card) return '';
-            // Usamos un placeholder con el nombre y el ID
-            const cardBg = `https://placehold.co/100x140/FFFFFF/2563EB/png?text=${encodeURIComponent(card.name)}\n(${card.id})`;
-            
-            return `
-                <div 
-                    class="card-loteria-lg bg-white shadow-2xl transition-transform duration-200" 
-                    style="background-image: url(${cardBg}); border-color: #EF4444;"
-                    title="${card.name}"
-                >
-                     <div class="absolute inset-0 flex items-center justify-center text-8xl">${card.emoji}</div>
-                </div>
-            `;
-        };
-
-        // Función para renderizar la tarjeta compacta de un jugador
-        const renderPlayerCardCompact = (player) => {
-            // Solo renderizamos la primera tabla activa
-            const activeBoard = player.boards.find(b => b.status !== 'won'); 
-            if (!activeBoard) return '';
-
-            const cardCount = activeBoard.cards.length;
-            const isMatched = (cardId) => activeBoard.matched_cards.includes(cardId);
-            const gridClass = getGridClassCompact(cardCount);
-            const isWinning = activeBoard.status === 'won';
-            const progress = cardCount > 0 ? (activeBoard.matched_cards.length / cardCount) : 0;
-            const progressColor = isWinning ? 'bg-green-600' : (progress > 0.6 ? 'bg-yellow-500' : 'bg-red-500');
-
-            return `
-                <div class="player-card-compact ${isWinning ? 'border-4 border-green-500 shadow-lg' : 'border border-gray-300'}"
-                     title="${player.name} - ${activeBoard.matched_cards.length}/${cardCount} Cartas"
-                >
-                    <!-- Encabezado compacto --><div class="flex justify-between items-center mb-1">
-                        <span class="text-xs font-bold truncate max-w-[60%]">${player.name}</span>
-                        <span class="text-[0.6rem] font-medium text-gray-500">${activeBoard.matched_cards.length}/${cardCount}</span>
-                    </div>
-
-                    <!-- Miniatura del Cartón (Grid) --><div class="${gridClass} player-grid-compact w-full h-full">
-                        ${activeBoard.cards.map(card => `
-                            <div class="w-full h-full ${isMatched(card.id) ? 'marked-cell' : 'unmarked-cell'} flex items-center justify-center text-[0.6rem] text-white" 
-                                 style="aspect-ratio: 1;"
-                                 title="${card.name}"
-                            >
-                                ${card.emoji}
-                            </div>
-                        `).join('')}
-                    </div>
-
-                    <!-- Barra de Progreso --><div class="h-1 mt-1 bg-gray-200 rounded-full overflow-hidden">
-                        <div class="h-1 rounded-full ${progressColor}" style="width: ${progress * 100}%;"></div>
-                    </div>
-                </div>
-            `;
-        };
-
-
-        // Función principal de renderizado - GLOBALIZADA
-        window.renderApp = () => {
-            const container = document.getElementById('app-container');
-            if (!container) return;
-
-            const isGameTab = window.gameState.currentTab === 'game';
-            
-            container.innerHTML = `
-                <div class="max-w-7xl mx-auto p-4">
-                    <!-- Tabs de Navegación --><div class="flex border-b border-gray-300 mb-6">
-                        <button 
-                            onclick="window.gameState.currentTab = 'game'; window.renderApp();" 
-                            class="py-2 px-6 text-sm font-medium ${isGameTab ? 'border-b-4 border-red-600 text-red-600' : 'text-gray-500 hover:text-red-500'}"
-                        >
-                            Juego (Live)
-                        </button>
-                        <button 
-                            onclick="window.gameState.currentTab = 'admin'; window.renderApp();" 
-                            class="py-2 px-6 text-sm font-medium ${!isGameTab ? 'border-b-4 border-red-600 text-red-600' : 'text-gray-500 hover:text-red-500'}"
-                        >
-                            Administrador
-                        </button>
-                    </div>
-
-                    ${isGameTab ? renderGameView() : renderAdminView()}
-                </div>
-                ${renderModal()}
-                <div id="confetti-container" class="confetti"></div>
-            `;
-        };
-        
-        // Renderizar la Vista del Juego (Live)
-        const renderGameView = () => {
-            const { gameStatus, players, winners } = window.gameState;
-            // Jugadores que tienen al menos 1 partida activa
-            const activePlayers = Object.values(players).filter(p => p.partidas_pagadas > 0 && p.boards.length > 0);
-            // Cálculo del bote: $20 MXN por CADA partida activa
-            const totalPot = activePlayers.reduce((acc, p) => acc + (p.partidas_pagadas || 0), 0) * 20;
-            const cardsRemaining = gameStatus.deck.length;
-
-            return `
-                
-                <!-- Overlay de Ganador -->${gameStatus.winner ? `
-                    <div class="fixed inset-0 bg-black/80 z-40 flex flex-col items-center justify-center p-4">
-                        <div class="bg-yellow-400 p-10 rounded-3xl border-8 border-red-600 text-center shadow-2xl winner-overlay-content">
-                            <h2 class="text-8xl font-black text-red-800 mb-4 tracking-wider">¡GANA YA!</h2>
-                            <p class="text-4xl font-extrabold text-gray-900">¡Ganador: <span class="text-red-600 winner-name-effect">${gameStatus.winner.name.toUpperCase()}</span>!</p>
-                            <p class="text-xl text-gray-700 mt-2">Ha ganado el Bote de **$${totalPot.toLocaleString('es-MX')} MXN**</p>
-                             <!-- El botón 'Terminar Partida y Cerrar' se ha eliminado como solicitaste --><!-- Ahora el juego permanece en la pantalla de ganador hasta que el administrador lo reinicie manualmente --></div>
-                    </div>
-                ` : ''}
-
-                <div class="game-layout">
-                    <!-- LOGO AREA (1/1) --><div class="logo-area flex items-center justify-center">
-                         <div class="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center font-black text-lg shadow-md">L</div>
-                    </div>
-                    
-                    <!-- TITULO AREA (1/2) --><div class="title-area flex items-center justify-center border-2 border-gray-300 rounded-lg p-2 bg-white shadow-md">
-                        <h1 class="text-2xl font-extrabold text-red-600 tracking-tighter">LOTERÍA MEXICANA ¡GANA YA!</h1>
-                    </div>
-                    
-                    <!-- $ EN JUEGO AREA (1/3) --><div class="pot-area flex flex-col items-center justify-center border-2 border-green-500 bg-green-50 rounded-lg p-2 shadow-md">
-                        <span class="text-xs font-semibold text-green-700">BOTE ACUMULADO</span>
-                        <p class="text-xl font-black text-green-800">$${totalPot.toLocaleString('es-MX')} MXN</p>
-                    </div>
-
-                    <!-- CARTAS EN JUEGO AREA (2/3 & 3/3) - Columna Lateral Derecha --><div class="current-card-area flex flex-col items-center bg-white p-4 rounded-xl shadow-2xl border-4 border-yellow-500">
-                        <h3 class="text-lg font-bold mb-3 text-yellow-700 border-b pb-2 w-full text-center">CARTA EN JUEGO</h3>
-                        <!-- Carta Actual --><div class="flex flex-col items-center w-full max-w-[200px] mb-4">
-                            ${gameStatus.currentCard ? `
-                                <div class="transition-all duration-500 transform scale-100 shadow-2xl rounded-xl w-full" style="aspect-ratio: 100/140;">
-                                    ${renderSingleCardLG(gameStatus.currentCard)}
-                                </div>
-                                <h2 class="text-xl font-black mt-3 text-red-800">${gameStatus.currentCard.name.toUpperCase()}</h2>
-                                <p class="text-xs text-gray-600 mt-1">¡Corre y se va corriendo!</p>
-                            ` : `
-                                <div class="text-center p-4 bg-gray-100/70 rounded-xl shadow-inner w-full" style="aspect-ratio: 100/140;">
-                                    <span class="text-4xl text-red-400">🃏</span>
-                                    <p class="text-sm text-gray-600 font-semibold mt-2">Esperando carta...</p>
-                                </div>
-                            `}
-                        </div>
-                        
-                        <!-- Controles de Lanzamiento Manual/Velocidad --><div class="w-full mt-2 space-y-3">
-                            <button 
-                                onclick="window.drawNextCard(window.gameState.gameStatus.drawSpeed)" 
-                                ${!gameStatus.gameRunning || gameStatus.winner ? 'disabled' : ''}
-                                class="w-full py-3 bg-red-600 text-white font-bold rounded-lg shadow-xl hover:bg-red-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                            >
-                                TIRAR CARTA (ESPACIO)
-                            </button>
-                             <button 
-                                onclick="window.startGame()" 
-                                class="w-full py-2 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-200 text-sm"
-                            >
-                                🔄 BARAJEAR Y REINICIAR
-                            </button>
-                        </div>
-                        
-                        <!-- Estado del Mazo y Velocidad --><div class="w-full mt-4 p-3 bg-gray-100 rounded-lg shadow-inner">
-                            <p class="text-xs font-semibold mb-2 text-gray-700 text-center">MAZO: ${gameStatus.drawnCards.length} / ${window.gameState.allCards.length} | Restantes: ${cardsRemaining}</p>
-                            <p class="text-xs font-semibold mb-1 text-gray-700">Velocidad:</p>
-                            <div class="flex justify-between space-x-1">
-                                <button onclick="window.changeDrawSpeed(1)" class="flex-1 py-1 text-xs rounded-full transition-all ${gameStatus.drawSpeed === 1 ? 'bg-red-600 text-white' : 'bg-gray-300 text-gray-700 hover:bg-red-200'}">🐢 1</button>
-                                <button onclick="window.changeDrawSpeed(2)" class="flex-1 py-1 text-xs rounded-full transition-all ${gameStatus.drawSpeed === 2 ? 'bg-red-600 text-white' : 'bg-gray-300 text-gray-700 hover:bg-red-200'}">🐇 2</button>
-                                <button onclick="window.changeDrawSpeed(3)" class="flex-1 py-1 text-xs rounded-full transition-all ${gameStatus.drawSpeed === 3 ? 'bg-red-600 text-white' : 'bg-gray-300 text-gray-700 hover:bg-red-200'}">🚀 3</button>
-                            </div>
-                        </div>
-                         <!-- ULTIMAS CARTAS (Miniaturas) --><div class="w-full mt-4 p-3 bg-red-50 rounded-lg border border-red-200 shadow-inner">
-                            <h3 class="text-xs font-bold mb-2 text-red-600 w-full text-center">HISTORIAL</h3>
-                            <div class="flex justify-center space-x-2">
-                                ${gameStatus.drawnCards.slice(-5).reverse().map(card => `
-                                    <div class="text-xl w-6 h-6 flex items-center justify-center rounded-full bg-red-200 shadow-inner" title="${card.name}">
-                                        ${card.emoji}
-                                    </div>
-                                `).join('')}
-                                ${gameStatus.drawnCards.length === 0 ? '<p class="text-gray-500 text-xs">Empieza la partida...</p>' : ''}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- CARTAS DE JUGADORES ACTIVOS AREA (2/1-2) - Mayor Espacio --><div class="players-area bg-white p-4 rounded-xl shadow-2xl border-4 border-red-600 overflow-y-auto">
-                        <h3 class="text-xl font-bold mb-3 text-red-600 border-b pb-2">JUGADORES ACTIVOS (${activePlayers.length})</h3>
-                        <!-- Usamos un grid denso para los cartones compactos --><div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-3">
-                            ${activePlayers.length > 0 ? activePlayers.map(renderPlayerCardCompact).join('') : '<p class="text-gray-500">No hay jugadores activos.</p>'}
-                        </div>
-                    </div>
-
-                    <!-- ULTIMOS GANADORES AREA (3/1-3) - Pie de página (Ahora solo 2 columnas) --><div class="winners-area bg-white p-4 rounded-xl shadow-2xl border-t-4 border-blue-500">
-                        <h3 class="text-xl font-bold mb-3 text-blue-600 border-b pb-2">ÚLTIMOS GANADORES</h3>
-                        <div class="flex overflow-x-auto space-x-4 pb-2">
-                            ${winners.length > 0 ? winners.slice(0, 5).map(winner => `
-                                <div class="flex-shrink-0 w-64 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-600 shadow-sm hover:shadow-md transition">
-                                    <p class="font-bold text-blue-800 truncate">${winner.playerName.toUpperCase()}</p>
-                                    <p class="text-sm text-gray-700">Ganó <span class="font-bold">$${winner.prizeAmount.toLocaleString('es-MX')} MXN</span></p>
-                                    <p class="text-xs text-gray-500">${new Date(winner.timestamp?.seconds * 1000).toLocaleString('es-MX')}</p>
-                                </div>
-                            `).join('') : '<p class="text-gray-500">Aún no hay ganadores en esta partida.</p>'}
-                        </div>
-                    </div>
-                </div>
-            `;
-        };
-
-        // Renderizar la Vista del Administrador (sin cambios en la lógica, solo para mantener la coherencia)
-        const renderAdminView = () => {
-             const { gameStatus, players } = window.gameState;
-             const activePlayersArray = Object.values(players);
-             
-             return `
-                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                     <!-- PANEL DE CONTROL DEL JUEGO --><div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-2xl border-t-4 border-red-600">
-                         <h2 class="text-2xl font-bold mb-4 text-red-600">Control de la Partida</h2>
-                         
-                         <!-- Estado y Controles --><div class="mb-4">
-                            <p class="font-semibold text-lg mb-2">Estado: 
-                                <span class="${gameStatus.gameRunning ? 'text-green-600' : gameStatus.winner ? 'text-yellow-600' : 'text-gray-500'} font-bold">
-                                    ${gameStatus.gameRunning ? 'CORRIENDO' : gameStatus.winner ? '¡TERMINADO (GANADOR)!': 'DETENIDO'}
-                                </span>
-                            </p>
-                            ${gameStatus.currentCard ? `<p class="text-sm text-gray-600">Última carta: ${gameStatus.currentCard.name} (${gameStatus.currentCard.id})</p>` : ''}
-                            <p class="text-sm text-gray-600">Cartas restantes: ${gameStatus.deck.length}</p>
-                         </div>
-                         
-                         <!-- Botones de Acción --><div class="flex flex-col space-y-3">
-                            ${gameStatus.gameRunning ? `
-                                <button onclick="window.drawNextCard(window.gameState.gameStatus.drawSpeed)" class="w-full py-3 bg-yellow-500 text-white font-bold rounded-lg shadow-md hover:bg-yellow-600 transition duration-200">
-                                    LANZAR SIGUIENTE (${gameStatus.drawSpeed})
-                                </button>
-                                <button onclick="window.stopGame()" class="w-full py-3 bg-red-600 text-white font-bold rounded-lg shadow-md hover:bg-red-700 transition duration-200">
-                                    PAUSAR JUEGO
-                                </button>
-                            ` : `
-                                <button onclick="window.startGame()" class="w-full py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-200">
-                                    INICIAR/REINICIAR JUEGO
-                                </button>
-                            `}
-                            <p class="text-xs text-gray-500 pt-2">El botón Iniciar/Reiniciar limpia la baraja, ganadores y el estado de los cartones.</p>
-                         </div>
-                     </div>
-                     
-                     <!-- FORMULARIO DE JUGADOR --><div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-2xl border-t-4 border-yellow-500">
-                         <h2 class="text-2xl font-bold mb-4 text-yellow-600">Gestión de Jugadores</h2>
-                         <form onsubmit="window.handlePlayerSubmit(event)" class="grid grid-cols-3 gap-4">
-                             <div class="col-span-3">
-                                 <label for="playerName" class="block text-sm font-medium text-gray-700">Nombre del Jugador</label>
-                                 <input type="text" id="playerName" name="playerName" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                             </div>
-                             <div>
-                                 <label for="partidas" class="block text-sm font-medium text-gray-700">Partidas a Pagar (Activas)</label>
-                                 <input type="number" id="partidas" name="partidas" required min="1" value="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                                  <p class="text-xs text-gray-500 mt-1">Cada partida es de $20 MXN.</p>
-                             </div>
-                             <div>
-                                 <label for="numCards" class="block text-sm font-medium text-gray-700">Tamaño del Cartón</label>
-                                 <select id="numCards" name="numCards" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                                    <option value="4">4 Cartas (2x2)</option>
-                                    <option value="6">6 Cartas (2x3)</option>
-                                    <option value="9">9 Cartas (3x3)</option>
-                                 </select>
-                                 <p class="text-xs text-gray-500 mt-1">Define el tamaño del cartón generado.</p>
-                             </div>
-                             <div class="col-span-3">
-                                 <input type="hidden" id="playerId" name="playerId">
-                                 <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition duration-200">
-                                     Generar Cartón y Actualizar Partidas
-                                 </button>
-                             </div>
-                         </form>
-                     </div>
-                     
-                     <!-- TABLA DE JUGADORES ACTIVOS --><div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-2xl">
-                         <h2 class="text-2xl font-bold mb-4 text-gray-700">Jugadores Registrados (${activePlayersArray.length})</h2>
-                         <div class="overflow-x-auto">
-                             <table class="min-w-full divide-y divide-gray-200">
-                                 <thead class="bg-gray-50">
-                                     <tr>
-                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">JUGADOR</th>
-                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CARTONES</th>
-                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PARTIDAS ACTIVAS ($)</th>
-                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">ACCIONES</th>
-                                     </tr>
-                                 </thead>
-                                 <tbody class="bg-white divide-y divide-gray-200">
-                                     ${activePlayersArray.length > 0 ? activePlayersArray.map(player => `
-                                         <tr>
-                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 truncate max-w-xs" title="${player.name}">${player.name} (${player.id.substring(0, 4)}...)</td>
-                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${player.boards.length} (Ganados: ${player.boards.filter(b => b.status === 'won').length})</td>
-                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-semibold">$${(player.partidas_pagadas * 20).toLocaleString('es-MX')} (${player.partidas_pagadas})</td>
-                                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                                 <button onclick="window.deletePlayer('${player.id}')" class="text-red-600 hover:text-red-900 transition-colors">Eliminar</button>
-                                             </td>
-                                         </tr>
-                                     `).join('') : `
-                                         <tr>
-                                             <td colspan="4" class="px-6 py-4 text-center text-gray-500">No hay jugadores registrados.</td>
-                                         </tr>
-                                     `}
-                                 </tbody>
-                             </table>
-                         </div>
-                     </div>
-                 </div>
-             `;
-        };
-
-        // Renderizado de la Modal de Confirmación
-        const renderModal = () => `
-            <div id="confirmationModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden z-50 transition-opacity flex items-center justify-center">
-                <div class="bg-white rounded-lg shadow-xl max-w-sm w-full p-6">
-                    <h3 class="text-xl font-bold text-red-600 mb-4" id="modalTitle">Confirmar Acción</h3>
-                    <p id="modalMessage" class="text-gray-700 mb-6"></p>
-                    <div class="flex justify-end space-x-4">
-                        <button id="cancelActionBtn" onclick="window.hideModal()" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">
-                            Cancelar
-                        </button>
-                        <button id="confirmActionBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                            Confirmar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // Iniciar la aplicación al cargar la ventana
-        window.onload = initializeFirebase;
-    </script>
-
-    <!-- Contenedor Principal de la Aplicación --><div id="app-container">
-        <div class="text-center p-10">
-            <div class="animate-spin inline-block w-8 h-8 border-4 border-t-red-500 border-red-200 rounded-full"></div>
-            <p class="text-gray-600 mt-2">Cargando Lotería Mexicana y autenticando...</p>
-        </div>
+<body class="min-h-screen p-4 md:p-8">
+
+  <!-- NAV superior / conmutador -->
+  <nav class="max-w-6xl mx-auto flex items-center justify-between gap-4 mb-6">
+    <div class="flex items-center gap-4">
+      <img src="logo_1_entrada.png" alt="Logo" class="w-14 h-14 rounded-full shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/60x60/a32a2a/ffffff?text=LOGO'">
+      <h1 class="text-3xl md:text-4xl font-black text-[#a32a2a] uppercase tracking-wide">GANA YA!</h1>
     </div>
 
+    <div class="flex items-center gap-2">
+      <button id="tab-player" class="px-4 py-2 rounded-lg font-bold tab-active">Vista Jugador</button>
+      <button id="tab-admin" class="px-4 py-2 rounded-lg font-bold">Vista Administrador</button>
+    </div>
+  </nav>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <main class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+    <!-- VISTA JUGADOR (oculta/visible según pestaña) -->
+    <section id="view-player" class="lg:col-span-3">
+      <!-- Header Jugador -->
+      <header class="flex items-center justify-between mb-6 p-4 rounded-xl bg-white shadow-lg border-b-4 border-red-600">
+        <div class="flex items-center gap-4">
+          <img src="logo_1_entrada.png" alt="Logo" class="w-12 h-12 rounded-full shadow" onerror="this.onerror=null;this.src='https://placehold.co/60x60/a32a2a/ffffff?text=LOGO'">
+          <div>
+            <h2 class="text-2xl font-black text-[#a32a2a]">GANA YA! - Vista Jugador</h2>
+            <p class="text-sm text-gray-600">Interfaz pública — muestra cartas y cartas marcadas</p>
+          </div>
+        </div>
+
+        <div class="bg-green-700 text-white p-3 rounded-xl shadow-xl border-4 border-green-800 flex flex-col items-center min-w-[150px]">
+          <span class="text-xs font-bold uppercase">Bolsa en Juego</span>
+          <span id="pot-amount" class="text-3xl font-extrabold">$0.00</span>
+        </div>
+      </header>
+
+      <div class="grid lg:grid-cols-3 gap-6">
+
+        <!-- Cartas de jugadores -->
+        <div class="lg:col-span-2">
+          <h3 class="text-xl font-black text-gray-700 mb-3">Cartas de Jugadores Activos</h3>
+          <div id="active-players-cards" class="grid gap-4 grid-cols-1 sm:grid-cols-2 cards-grid">
+            <div class="text-center text-gray-500 p-8 card-loteria col-span-full">Cargando jugadores...</div>
+          </div>
+        </div>
+
+        <!-- Columna derecha: carta actual, últimas cartas, ganadores -->
+        <aside class="lg:col-span-1 flex flex-col space-y-6">
+          <div class="bg-white p-4 rounded-2xl shadow-xl border-4 border-red-500 text-center">
+            <h4 class="text-xl font-bold text-red-600 mb-2">Carta en Juego</h4>
+            <div id="current-card" class="card-loteria w-full h-48 p-4 card-placeholder">
+              <div class="flex flex-col items-center justify-center">
+                <span class="text-6xl">🎲</span>
+                <span class="text-sm font-semibold mt-2 text-gray-600">Esperando...</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white p-4 rounded-2xl shadow-xl border-4 border-gray-300">
+            <h4 class="text-xl font-bold text-gray-700 mb-2">Últimas 5 Cartas</h4>
+            <div id="last-cards" class="flex flex-wrap gap-2 justify-center">
+              <span class="text-gray-400 text-sm">Ninguna carta aún.</span>
+            </div>
+          </div>
+
+          <div class="bg-white p-4 rounded-2xl shadow-xl border-4 border-gray-300">
+            <h4 class="text-xl font-bold text-gray-700 mb-2">Últimos Ganadores</h4>
+            <div id="last-winners" class="flex flex-col justify-center gap-2 text-center">
+              <span class="text-gray-500">Aún no hay ganadores.</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Modal Ganador -->
+      <div id="winner-modal" class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+        <div id="confetti-container" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+        <div class="bg-yellow-300 p-8 md:p-12 rounded-2xl shadow-2xl text-center border-4 border-yellow-500 z-50">
+          <h1 class="text-6xl font-black text-red-600 mb-4 animate-bounce">¡GANA YA!</h1>
+          <h2 class="text-4xl font-extrabold text-gray-800 mb-2">¡FELICIDADES!</h2>
+          <p id="winner-name" class="text-5xl font-black text-red-800 mb-4">NOMBRE</p>
+          <p class="text-3xl font-bold text-gray-700">Ganaste <span id="winner-amount" class="text-green-700 text-5xl font-extrabold">$0.00 MXN</span></p>
+          <button onclick="hideWinnerModal()" class="mt-8 px-8 py-3 bg-red-600 text-white font-bold text-xl rounded-full shadow-lg hover:bg-red-700">Cerrar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VISTA ADMIN -->
+    <section id="view-admin" class="hidden lg:col-span-1">
+      <div class="bg-white p-6 rounded-2xl shadow-2xl border-4 border-red-700">
+        <header class="mb-6">
+          <h3 class="text-2xl font-black text-red-700 uppercase text-center">PANEL DE ADMINISTRACIÓN</h3>
+          <p class="text-center text-gray-500 text-sm mt-1">Control de partida y gestión</p>
+        </header>
+
+        <!-- Controles principales -->
+        <div class="grid gap-4 mb-6">
+          <label class="text-sm font-semibold">Modalidad</label>
+          <select id="modality-select" class="w-full p-2 border rounded-lg">
+            <option value="4">4 imágenes (2x2)</option>
+            <option value="6">6 imágenes (2x3)</option>
+            <option value="9" selected>9 imágenes (3x3)</option>
+          </select>
+
+          <div class="flex gap-2">
+            <button id="shuffle-btn" onclick="shuffleDeck()" class="flex-1 px-4 py-2 rounded-lg bg-blue-600 text-white font-bold">BARAJEAR</button>
+            <button id="draw-btn" onclick="drawCard()" class="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white font-bold">TIRAR CARTA (Espacio)</button>
+          </div>
+
+          <div class="flex justify-between text-sm text-gray-600 p-2 rounded-lg bg-gray-100">
+            <span>Cartas restantes: <span id="deck-count" class="font-bold">0</span></span>
+            <span>Carta actual: <span id="current-card-name" class="font-bold text-red-600">Ninguna</span></span>
+          </div>
+        </div>
+
+        <!-- Finanzas -->
+        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-300 mb-6">
+          <p class="flex justify-between"><span>Jugadores registrados:</span> <span id="admin-player-count" class="font-bold">0</span></p>
+          <p class="flex justify-between"><span>Total de cartas activas:</span> <span id="admin-active-card-count" class="font-bold">0</span></p>
+          <p class="flex justify-between font-extrabold text-green-700"><span>Ganancia Potencial:</span> <span id="admin-profit">$0.00</span></p>
+          <p class="flex justify-between text-blue-700"><span>Bolsa en juego:</span> <span id="admin-pot-amount">$0.00</span></p>
+        </div>
+
+        <!-- Registrar jugador -->
+        <div class="mb-4">
+          <h4 class="font-bold mb-2">Registrar nuevo jugador</h4>
+          <div class="grid grid-cols-1 gap-2">
+            <input id="player-name-input" type="text" placeholder="Nombre del jugador" class="p-2 border rounded" />
+            <input id="player-games-input" type="number" min="1" value="1" class="p-2 border rounded" />
+            <button onclick="addPlayer()" class="mt-2 p-2 bg-green-600 text-white rounded font-bold">Añadir Jugador</button>
+          </div>
+        </div>
+
+        <!-- Lista jugadores -->
+        <div>
+          <h4 class="font-bold mb-2">Jugadores activos</h4>
+          <div class="max-h-56 overflow-y-auto">
+            <table class="min-w-full text-left">
+              <thead class="text-sm text-gray-600">
+                <tr>
+                  <th class="p-2">Nombre</th>
+                  <th class="p-2">Partidas</th>
+                  <th class="p-2">Pagado</th>
+                  <th class="p-2">Victorias</th>
+                  <th class="p-2">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="admin-players-list" class="text-sm">
+                <tr><td colspan="5" class="p-2 text-gray-500">Cargando jugadores...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Ganadores pendientes -->
+        <div class="mt-4">
+          <h4 class="font-bold mb-2">Ganadores pendientes</h4>
+          <div id="pending-winners-list" class="space-y-2 max-h-36 overflow-y-auto">
+            <p class="text-gray-500">Ningún ganador pendiente.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- SCRIPT: LÓGICA SIMULADA (localStorage) -->
+  <script>
+    /* ----------- CONFIG ----------
+       Guarda/lee todo desde localStorage para simular Firebase.
+       Key: 'loteria_game' y 'loteria_players'
+    --------------------------------*/
+    const CARD_COST = 10;
+    const HOUSE_PROFIT = 2;
+    const CARD_IMAGE_BASE_PATH = 'Cartas_baraja_loteria/';
+    const LOTERIA_CARDS = Array.from({length:54}, (_,i) => {
+      const id = i+1;
+      // nombres no estrictamente necesarios en simulación - puedes mantener los tuyos en assets
+      return { id, name: `Carta ${id}`, fileName: `${id} ${id===1?'el gallo-min.png':(id===2?'el diablito-min.png':`${id} carta.png`)}` };
+    });
+    // NOTE: user has real images named "1 el gallo-min.png" etc in folder, we'll generate filename mapping
+    const CARD_NAME_MAP = {
+      1: "1 el gallo-min.png",2:"2 el diablito-min.png",3:"3 la dama-min.png",4:"4 el catrin-min.png",
+      5:"5 el paraguas-min.png",6:"6 la sirena-min.png",7:"7 la escalera-min.png",8:"8 la botella-min.png",
+      9:"9 el barril-min.png",10:"10 el árbol-min.png",11:"11 el melón-min.png",12:"12 el valiente-min.png",
+      13:"13 el gorrito-min.png",14:"14 la muerte-min.png",15:"15 la pera-min.png",16:"16 la bandera-min.png",
+      17:"17 el bandolón-min.png",18:"18 el violoncello-min.png",19:"19 la garza-min.png",20:"20 el pájaro-min.png",
+      21:"21 la mano-min.png",22:"22 la bota-min.png",23:"23 la luna-min.png",24:"24 el cotorro-min.png",
+      25:"25 el borracho-min.png",26:"26 el negrito-min.png",27:"27 el corazón-min.png",28:"28 la sandía-min.png",
+      29:"29 el tambor-min.png",30:"30 el camarón-min.png",31:"31 las jaras-min.png",32:"32 el músico-min.png",
+      33:"33 la araña-min.png",34:"34 el soldado-min.png",35:"35 la estrella-min.png",36:"36 el cazo-min.png",
+      37:"37 el mundo-min.png",38:"38 el apache-min.png",39:"39 el nopal-min.png",40:"40 el alacrán-min.png",
+      41:"41 la rosa-min.png",42:"42 la calavera-min.png",43:"43 la campana-min.png",44:"44 el cantarito-min.png",
+      45:"45 el venado-min.png",46:"46 el sol-min.png",47:"47 la corona-min.png",48:"48 la chalupa-min.png",
+      49:"49 el pino-min.png",50:"50 el pescado-min.png",51:"51 la palma-min.png",52:"52 la maceta-min.png",
+      53:"53 el rayo-min.png",54:"54 la rana-min.png"
+    };
+
+    // Utilidades de localStorage
+    const saveGame = (game) => localStorage.setItem('loteria_game', JSON.stringify(game));
+    const loadGame = () => {
+      const raw = localStorage.getItem('loteria_game');
+      if (!raw) return null;
+      try { return JSON.parse(raw); } catch(e){ return null; }
+    };
+    const savePlayers = (players) => localStorage.setItem('loteria_players', JSON.stringify(players));
+    const loadPlayers = () => {
+      const raw = localStorage.getItem('loteria_players');
+      if (!raw) return [];
+      try { return JSON.parse(raw); } catch(e){ return []; }
+    };
+
+    // Estado por defecto (si no existe en localStorage)
+    const defaultGame = () => ({
+      modality: 9,
+      deck: Array.from({length:54}, (_,i) => i+1),
+      drawnCards: [],
+      currentCardId: 0,
+      totalActiveCards: 0,
+      isShuffling: false,
+      status: 'setup',
+      pendingWinners: [],
+      lastWinners: []
+    });
+
+    // Inicializa si no existe
+    if (!loadGame()) {
+      const g = defaultGame();
+      saveGame(g);
+    }
+    if (!localStorage.getItem('loteria_players')) {
+      savePlayers([]);
+    }
+
+    // Estado en memoria
+    let gameState = loadGame();
+    let players = loadPlayers();
+
+    // Helpers
+    const cardImageUrl = (cardId) => {
+      const fname = CARD_NAME_MAP[cardId] || `${cardId}.png`;
+      return `${CARD_IMAGE_BASE_PATH}${fname}`;
+    };
+    const getCardById = (id) => ({ id, name: `Carta ${id}`, fileName: CARD_NAME_MAP[id] || `${id}.png` });
+    const persistAll = () => { saveGame(gameState); savePlayers(players); renderAll(); };
+
+    /* ---------------- RENDER (Ambas vistas) ---------------- */
+
+    // Render Vista Jugador: carta de cada jugador
+    const renderPlayerCard = (player, currentCardId, modality) => {
+      if (!player.isActive || player.gamesLeft <= 0) return '';
+      const numCols = modality === 4 ? 2 : (modality === 6 ? 3 : 3);
+      const cardSizeClass = modality === 4 ? 'grid-cols-2' : 'grid-cols-3';
+      const cells = player.card.map(cardId => {
+        const imageUrl = cardImageUrl(cardId);
+        const isMarked = (player.markedCards || []).includes(cardId);
+        const isCurrent = cardId === currentCardId;
+        return `
+          <div class="card-cell ${isMarked ? 'marked' : ''}" title="${cardId}"
+               style="background-image: url('${imageUrl}');">
+            ${isCurrent ? `<div class="absolute inset-0 border-4 border-yellow-400 rounded-lg animate-pulse z-10"></div>` : ''}
+          </div>
+        `;
+      }).join('');
+      return `
+        <div class="card-loteria p-3 flex flex-col">
+          <div class="text-lg font-extrabold text-gray-800 mb-2 truncate text-center">${player.name}</div>
+          <div class="text-sm font-semibold text-red-600 mb-2 text-center">Partidas ${player.gamesLeft}</div>
+          <div class="grid ${cardSizeClass} gap-1.5 h-full flex-grow">${cells}</div>
+        </div>
+      `;
+    };
+
+    const renderGameView = () => {
+      // Jugadores activos
+      const activePlayersHtml = players.filter(p => p.isActive && p.gamesLeft > 0)
+        .map(p => renderPlayerCard(p, gameState.currentCardId, gameState.modality))
+        .join('') || `<div class="text-center text-gray-500 p-8 card-loteria col-span-full">¡Aún no hay jugadores activos!</div>`;
+      document.getElementById('active-players-cards').innerHTML = activePlayersHtml;
+
+      // Carta actual
+      const currentCardElem = document.getElementById('current-card');
+      if (gameState.currentCardId) {
+        const imageUrl = cardImageUrl(gameState.currentCardId);
+        currentCardElem.innerHTML = '';
+        currentCardElem.style.backgroundImage = `url('${imageUrl}')`;
+        currentCardElem.classList.remove('card-placeholder');
+      } else {
+        currentCardElem.innerHTML = `<div class="flex flex-col items-center justify-center"><span class="text-6xl">🎲</span><span class="text-sm font-semibold mt-2 text-gray-600">Esperando...</span></div>`;
+        currentCardElem.style.backgroundImage = 'none';
+        currentCardElem.classList.add('card-placeholder');
+      }
+
+      // Últimas 5 cartas
+      const last = gameState.drawnCards.slice(-5).reverse();
+      const lastHtml = last.map(cid => {
+        const img = cardImageUrl(cid);
+        const name = getCardById(cid).name;
+        return `<div class="w-12 h-16 bg-cover bg-center rounded-lg shadow-md border-2 border-gray-300" style="background-image:url('${img}')" title="${name}"></div>`;
+      }).join('') || `<span class="text-gray-400 text-sm">Ninguna carta aún.</span>`;
+      document.getElementById('last-cards').innerHTML = lastHtml;
+
+      // Últimos ganadores (feed)
+      const lastWinnersHtml = (gameState.lastWinners || []).slice(-5).reverse().map(w => `
+        <div class="bg-yellow-100 p-2 rounded-lg text-sm font-medium border border-yellow-300 w-full">
+          <span class="font-bold">${w.name}</span> ganó <span class="text-green-700 font-extrabold">$${w.amount.toFixed(2)}</span>
+        </div>
+      `).join('') || `<span class="text-gray-500">Aún no hay ganadores.</span>`;
+      document.getElementById('last-winners').innerHTML = lastWinnersHtml;
+
+      // Bolsa
+      const potAmount = ((gameState.totalActiveCards || 0) * (CARD_COST - HOUSE_PROFIT));
+      document.getElementById('pot-amount').textContent = `$${potAmount.toFixed(2)}`;
+
+      // Admin: counts, monies, lists
+      document.getElementById('deck-count').textContent = gameState.deck.length;
+      const currentCardObj = getCardById(gameState.currentCardId);
+      document.getElementById('current-card-name').textContent = currentCardObj ? (currentCardObj.name || `Carta ${gameState.currentCardId}`) : 'Ninguna';
+
+      const activeCardsCount = players.filter(p => p.isActive && p.gamesLeft > 0).reduce((s,p)=>s+p.gamesLeft,0);
+      document.getElementById('admin-player-count').textContent = players.length;
+      document.getElementById('admin-active-card-count').textContent = activeCardsCount;
+      const profit = activeCardsCount * HOUSE_PROFIT;
+      document.getElementById('admin-profit').textContent = `$${profit.toFixed(2)}`;
+      document.getElementById('admin-pot-amount').textContent = `$${potAmount.toFixed(2)}`;
+
+      // Admin players list
+      const adminList = players.map(p => `
+        <tr class="${p.isActive ? '' : 'bg-red-50'}">
+          <td class="p-2 font-semibold">${p.name}</td>
+          <td class="p-2 text-lg font-bold ${p.gamesLeft>0 ? 'text-green-600' : 'text-red-600'}">${p.gamesLeft}</td>
+          <td class="p-2">$${(p.totalPaid||0).toFixed(2)}</td>
+          <td class="p-2 font-bold">${p.wins||0}</td>
+          <td class="p-2">
+            <button onclick="adjustPlayerGames('${p.id}',1)" class="px-2 py-1 bg-green-500 text-white rounded text-xs">+1</button>
+            <button onclick="adjustPlayerGames('${p.id}',-1)" class="px-2 py-1 bg-red-500 text-white rounded text-xs">-1</button>
+          </td>
+        </tr>
+      `).join('') || '<tr><td colspan="5" class="p-2 text-gray-500">No hay jugadores registrados.</td></tr>';
+      document.getElementById('admin-players-list').innerHTML = adminList;
+
+      // Pending winners
+      const pendingHtml = (gameState.pendingWinners || []).map(w => `
+        <div class="flex justify-between items-center p-2 border-b">
+          <span class="font-semibold text-gray-800">${w.name}</span>
+          <span class="font-bold text-lg text-red-600">$${w.amount.toFixed(2)}</span>
+          <button onclick="markWinnerPaid('${w.id}')" class="px-3 py-1 bg-red-600 text-white rounded-lg text-sm">Pagar</button>
+        </div>
+      `).join('') || '<p class="text-gray-500 p-2">Ningún ganador pendiente.</p>';
+      document.getElementById('pending-winners-list').innerHTML = pendingHtml;
+    };
+
+    const renderAll = () => {
+      gameState = loadGame() || gameState;
+      players = loadPlayers() || players;
+      renderGameView();
+    };
+
+    // Inicial render
+    renderAll();
+
+    /* ------------- FUNCIONES DEL JUEGO ------------- */
+
+    const setModality = (val) => {
+      gameState.modality = parseInt(val);
+      saveGame(gameState);
+      renderAll();
+    };
+    window.setModality = setModality;
+    document.getElementById('modality-select').addEventListener('change', (e) => {
+      setModality(e.target.value);
+    });
+
+    const shuffleArray = (arr) => {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    };
+
+    const shuffleDeck = () => {
+      gameState.isShuffling = true;
+      saveGame(gameState);
+      renderAll();
+      // Simular tiempo de barajado
+      setTimeout(() => {
+        const full = Array.from({length:54}, (_,i)=>i+1);
+        const deck = shuffleArray(full);
+        gameState.deck = deck;
+        gameState.drawnCards = [];
+        gameState.currentCardId = 0;
+        gameState.status = 'playing';
+        gameState.isShuffling = false;
+
+        // reset marked cards for players who are active
+        players = players.map(p => ({...p, markedCards: p.gamesLeft>0 ? [] : p.markedCards}));
+        // recalcular totalActiveCards
+        gameState.totalActiveCards = players.reduce((s,p) => s + (p.gamesLeft||0), 0);
+
+        persistAll();
+      }, 800);
+    };
+    window.shuffleDeck = shuffleDeck;
+
+    const drawCard = () => {
+      if (!gameState.deck || gameState.deck.length === 0) {
+        alert('El mazo está vacío. Barajea para continuar.');
+        return;
+      }
+      // Pop next
+      const next = gameState.deck.pop();
+      gameState.drawnCards.push(next);
+      gameState.currentCardId = next;
+      saveGame(gameState);
+
+      // Marcar en jugadores y verificar ganador
+      checkWinner(next);
+
+      persistAll();
+    };
+    window.drawCard = drawCard;
+
+    // Agregar jugador
+    const addPlayer = () => {
+      const nameInput = document.getElementById('player-name-input');
+      const gamesInput = document.getElementById('player-games-input');
+      const name = (nameInput.value || '').trim();
+      const games = parseInt(gamesInput.value) || 0;
+      if (!name || games <= 0) { alert('Ingresa nombre y partidas válidas.'); return; }
+
+      const id = crypto.randomUUID();
+      const modality = gameState.modality || 9;
+      // generar tablero aleatorio
+      const ids = shuffleArray(Array.from({length:54}, (_,i)=>i+1)).slice(0, modality);
+      const totalPaid = games * CARD_COST;
+      const player = {
+        id,
+        name,
+        gamesLeft: games,
+        totalPaid,
+        wins: 0,
+        card: ids,
+        markedCards: [],
+        isActive: true,
+        addedAt: Date.now()
+      };
+      players.push(player);
+      gameState.totalActiveCards = (gameState.totalActiveCards || 0) + games;
+      persistAll();
+
+      nameInput.value = '';
+      gamesInput.value = '1';
+    };
+    window.addPlayer = addPlayer;
+
+    // Ajustar partidas de jugador
+    const adjustPlayerGames = (playerId, delta) => {
+      const idx = players.findIndex(p => p.id === playerId);
+      if (idx === -1) return;
+      const p = players[idx];
+      p.gamesLeft = Math.max(0, (p.gamesLeft||0) + delta);
+      p.totalPaid = (p.totalPaid || 0) + (delta>0? delta*CARD_COST : 0);
+      p.isActive = p.gamesLeft > 0;
+      // actualizar totalActiveCards: recomputar
+      gameState.totalActiveCards = players.reduce((s,pl)=>s+(pl.gamesLeft||0),0);
+      persistAll();
+    };
+    window.adjustPlayerGames = adjustPlayerGames;
+
+    // Marcar ganador como pagado
+    const markWinnerPaid = (winnerId) => {
+      gameState.pendingWinners = (gameState.pendingWinners || []).filter(w => w.id !== winnerId);
+      persistAll();
+    };
+    window.markWinnerPaid = markWinnerPaid;
+
+    // Check winner (similar a la lógica del admin real)
+    const checkWinner = (newCardId) => {
+      if (!newCardId) return;
+      const modality = gameState.modality || 9;
+      const cardsToWin = modality;
+      const winners = [];
+      let totalCardsToDeduct = 0;
+
+      // Para updates de jugadores usaremos marcado por transaction simulated
+      players.forEach((p, idx) => {
+        if (!p.isActive || p.gamesLeft <= 0) return;
+        const playerCard = p.card || [];
+        const marked = p.markedCards || [];
+        let localMarked = [...marked];
+
+        if (playerCard.includes(newCardId) && !marked.includes(newCardId)) {
+          localMarked.push(newCardId);
+          players[idx].markedCards = localMarked;
+        }
+
+        if ((players[idx].markedCards || []).length === cardsToWin) {
+          winners.push({ id: p.id, name: p.name, refIdx: idx });
+          totalCardsToDeduct++;
+        }
+      });
+
+      if (winners.length > 0) {
+        const totalActive = gameState.totalActiveCards || 0;
+        const potAmount = totalActive * (CARD_COST - HOUSE_PROFIT);
+        const winAmount = potAmount / winners.length;
+
+        const newPending = [];
+        winners.forEach(w => {
+          const p = players[w.refIdx];
+          p.gamesLeft = Math.max(0, (p.gamesLeft||0) - 1);
+          p.wins = (p.wins||0) + 1;
+          p.markedCards = [];
+          p.isActive = p.gamesLeft > 0;
+
+          const record = {
+            id: crypto.randomUUID(),
+            playerId: p.id,
+            name: p.name,
+            amount: winAmount,
+            timestamp: Date.now(),
+            status: 'pending'
+          };
+          newPending.push(record);
+
+          // Mostrar modal en Jugador
+          showWinnerModal(p.name, winAmount);
+        });
+
+        // Reiniciar y actualizar el mazo para siguiente ronda
+        const fullDeck = shuffleArray(Array.from({length:54}, (_,i)=>i+1));
+        gameState.deck = fullDeck;
+        gameState.drawnCards = [];
+        gameState.currentCardId = 0;
+        gameState.totalActiveCards = Math.max(0, (gameState.totalActiveCards||0) - totalCardsToDeduct);
+
+        // añadir pending winners y lastWinners
+        gameState.pendingWinners = (gameState.pendingWinners || []).concat(newPending);
+        gameState.lastWinners = (gameState.lastWinners || []).concat(newPending.map(w => ({ name: w.name, amount: w.amount, timestamp: w.timestamp })));
+      } else {
+        // si no hubo ganador, nada particular; persistimos marcas ya hechas arriba
+      }
+      persistAll();
+    };
+
+    // Mostrar modal ganador (visual + confetti)
+    const showWinnerModal = (name, amount) => {
+      document.getElementById('winner-name').textContent = name;
+      document.getElementById('winner-amount').textContent = `$${amount.toFixed(2)}`;
+      const modal = document.getElementById('winner-modal');
+      modal.classList.remove('hidden');
+
+      // Confetti simple
+      const container = document.getElementById('confetti-container');
+      container.innerHTML = '';
+      const colors = ['#f00','#0f0','#00f','#ff0','#0ff','#f0f'];
+      for (let i=0;i<60;i++){
+        const div = document.createElement('div');
+        div.className = 'confetti';
+        div.style.left = `${Math.random()*100}vw`;
+        div.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
+        div.style.animationDelay = `${Math.random()*0.6}s`;
+        div.style.width = `${6 + Math.random()*8}px`;
+        div.style.height = div.style.width;
+        container.appendChild(div);
+      }
+      setTimeout(() => {
+        // Ocultar automáticamente después de 4s
+        hideWinnerModal();
+      }, 4200);
+    };
+    window.showWinnerModal = showWinnerModal;
+
+    const hideWinnerModal = () => {
+      document.getElementById('winner-modal').classList.add('hidden');
+      const cont = document.getElementById('confetti-container');
+      cont.innerHTML = '';
+    };
+    window.hideWinnerModal = hideWinnerModal;
+
+    // Marcar ganador pagado ya implementado más arriba
+
+    /* ------------- Sincronización UI y eventos ------------- */
+
+    // Toggle vistas
+    const tabPlayer = document.getElementById('tab-player');
+    const tabAdmin = document.getElementById('tab-admin');
+    const viewPlayer = document.getElementById('view-player');
+    const viewAdmin = document.getElementById('view-admin');
+
+    const activatePlayerView = () => {
+      tabPlayer.classList.add('tab-active');
+      tabAdmin.classList.remove('tab-active');
+      viewPlayer.classList.remove('hidden');
+      viewAdmin.classList.add('hidden');
+    };
+    const activateAdminView = () => {
+      tabPlayer.classList.remove('tab-active');
+      tabAdmin.classList.add('tab-active');
+      viewPlayer.classList.add('hidden');
+      viewAdmin.classList.remove('hidden');
+    };
+    tabPlayer.addEventListener('click', activatePlayerView);
+    tabAdmin.addEventListener('click', activateAdminView);
+
+    // Tecla espacio para tirar carta (cuando admin visible)
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        // solo si admin visible
+        if (!viewAdmin.classList.contains('hidden')) drawCard();
+      }
+    });
+
+    // Observador storage para sincronizar entre pestañas del navegador (opcional)
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'loteria_game' || e.key === 'loteria_players') {
+        renderAll();
+      }
+    });
+
+    // Guardar con botón de modalidad
+    document.getElementById('modality-select').addEventListener('change', (e) => {
+      const v = parseInt(e.target.value);
+      gameState.modality = v;
+      saveGame(gameState);
+      renderAll();
+    });
+
+    // Inicial: asegurar modalidad consistente
+    (function init(){
+      // Si juego no tiene deck, crear full deck
+      if (!gameState.deck || gameState.deck.length===0) {
+        gameState.deck = Array.from({length:54}, (_,i)=>i+1);
+      }
+      // Si totalActiveCards no definido, calcular
+      if (typeof gameState.totalActiveCards === 'undefined') {
+        gameState.totalActiveCards = players.reduce((s,p)=>s + (p.gamesLeft||0),0);
+      }
+      saveGame(gameState);
+      savePlayers(players);
+      renderAll();
+    })();
+
+  </script>
+
+  <!-- Instrucciones rápidas -->
+  <footer class="max-w-6xl mx-auto mt-8 text-sm text-gray-600">
+    <p>Instrucciones: sube este <strong>index.html</strong>, coloca <strong>logo_1_entrada.png</strong> en la raíz y la carpeta <strong>Cartas_baraja_loteria/</strong> con las 54 imágenes. Abre en el navegador o publica en GitHub Pages.</p>
+  </footer>
 </body>
 </html>

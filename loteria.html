@@ -181,8 +181,8 @@
         setLogLevel('Debug');
         
         // --- CONSTANTES ---
-        // 🚨 RUTA CRUCIAL: AJUSTADA para usar la carpeta 'Cartas_baraja_loteria'
-        const CARD_IMAGE_PATH = './Cartas_baraja_loteria/'; 
+        // 🚨 RUTA CRUCIAL: AJUSTADA a todo en MINÚSCULAS para coincidir con GitHub Pages
+        const CARD_IMAGE_PATH = './cartas_baraja_loteria/'; 
 
         // Variables Globales de Canvas (MANDATORIO)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -211,35 +211,35 @@
             players: {},
             // Datos de ganadores desde Firestore (winners/{winnerId})
             winners: [],
-            // 🚨 CARTAS ACTUALIZADAS: Ahora con ESPACIOS en el nombre del archivo (para corregir el error de ruta)
+            // 🚨 CARTAS AJUSTADAS: con ESPACIOS, en MINÚSCULAS y el sufijo -min
             allCards: [
-                { id: 1, name: "El Gallo", fileName: "01 El Gallo.jpg" }, { id: 2, name: "El Diablito", fileName: "02 El Diablito.jpg" },
-                { id: 3, name: "La Dama", fileName: "03 La Dama.jpg" }, { id: 4, name: "El Catrín", fileName: "04 El Catrín.jpg" },
-                { id: 5, name: "El Paraguas", fileName: "05 El Paraguas.jpg" }, { id: 6, name: "La Sirena", fileName: "06 La Sirena.jpg" },
-                { id: 7, name: "La Escalera", fileName: "07 La Escalera.jpg" }, { id: 8, name: "La Botella", fileName: "08 La Botella.jpg" },
-                { id: 9, name: "El Barril", fileName: "09 El Barril.jpg" }, { id: 10, name: "El Árbol", fileName: "10 El Árbol.jpg" },
-                { id: 11, name: "El Melón", fileName: "11 El Melón.jpg" }, { id: 12, name: "El Valiente", fileName: "12 El Valiente.jpg" },
-                { id: 13, name: "El Gorrito", fileName: "13 El Gorrito.jpg" }, { id: 14, name: "La Muerte", fileName: "14 La Muerte.jpg" },
-                { id: 15, name: "La Pera", fileName: "15 La Pera.jpg" }, { id: 16, name: "La Bandera", fileName: "16 La Bandera.jpg" },
-                { id: 17, name: "El Bandolón", fileName: "17 El Bandolón.jpg" }, { id: 18, name: "El Violoncello", fileName: "18 El Violoncello.jpg" },
-                { id: 19, name: "La Garza", fileName: "19 La Garza.jpg" }, { id: 20, name: "El Pájaro", fileName: "20 El Pájaro.jpg" },
-                { id: 21, name: "La Mano", fileName: "21 La Mano.jpg" }, { id: 22, name: "La Bota", fileName: "22 La Bota.jpg" },
-                { id: 23, name: "La Luna", fileName: "23 La Luna.jpg" }, { id: 24, name: "El Cotorro", fileName: "24 El Cotorro.jpg" },
-                { id: 25, name: "El Borracho", fileName: "25 El Borracho.jpg" }, { id: 26, name: "El Negrito", fileName: "26 El Negrito.jpg" },
-                { id: 27, name: "El Corazón", fileName: "27 El Corazón.jpg" }, { id: 28, name: "La Sandía", fileName: "28 La Sandía.jpg" },
-                { id: 29, name: "El Tambor", fileName: "29 El Tambor.jpg" }, { id: 30, name: "El Camarón", fileName: "30 El Camarón.jpg" },
-                { id: 31, name: "Las Jaras", fileName: "31 Las Jaras.jpg" }, { id: 32, name: "El Músico", fileName: "32 El Músico.jpg" },
-                { id: 33, name: "La Araña", fileName: "33 La Araña.jpg" }, { id: 34, name: "El Soldado", fileName: "34 El Soldado.jpg" },
-                { id: 35, name: "La Estrella", fileName: "35 La Estrella.jpg" }, { id: 36, name: "El Cazo", fileName: "36 El Cazo.jpg" },
-                { id: 37, name: "El Mundo", fileName: "37 El Mundo.jpg" }, { id: 38, name: "El Apache", fileName: "38 El Apache.jpg" },
-                { id: 39, name: "El Nopal", fileName: "39 El Nopal.jpg" }, { id: 40, name: "El Alacrán", fileName: "40 El Alacrán.jpg" },
-                { id: 41, name: "La Rosa", fileName: "41 La Rosa.jpg" }, { id: 42, name: "La Calavera", fileName: "42 La Calavera.jpg" },
-                { id: 43, name: "La Campana", fileName: "43 La Campana.jpg" }, { id: 44, name: "El Cantarito", fileName: "44 El Cantarito.jpg" },
-                { id: 45, name: "El Venado", fileName: "45 El Venado.jpg" }, { id: 46, name: "El Sol", fileName: "46 El Sol.jpg" },
-                { id: 47, name: "La Corona", fileName: "47 La Corona.jpg" }, { id: 48, name: "La Chalupa", fileName: "48 La Chalupa.jpg" },
-                { id: 49, name: "El Pino", fileName: "49 El Pino.jpg" }, { id: 50, name: "El Pescado", fileName: "50 El Pescado.jpg" },
-                { id: 51, name: "La Palma", fileName: "51 La Palma.jpg" }, { id: 52, name: "La Maceta", fileName: "52 La Maceta.jpg" },
-                { id: 53, name: "El Arpa", fileName: "53 El Arpa.jpg" }, { id: 54, name: "La Rana", fileName: "54 La Rana.jpg" }
+                { id: 1, name: "El Gallo", fileName: "01 el gallo-min.jpg" }, { id: 2, name: "El Diablito", fileName: "02 el diablito-min.jpg" },
+                { id: 3, name: "La Dama", fileName: "03 la dama-min.jpg" }, { id: 4, name: "El Catrín", fileName: "04 el catrín-min.jpg" },
+                { id: 5, name: "El Paraguas", fileName: "05 el paraguas-min.jpg" }, { id: 6, name: "La Sirena", fileName: "06 la sirena-min.jpg" },
+                { id: 7, name: "La Escalera", fileName: "07 la escalera-min.jpg" }, { id: 8, name: "La Botella", fileName: "08 la botella-min.jpg" },
+                { id: 9, name: "El Barril", fileName: "09 el barril-min.jpg" }, { id: 10, name: "El Árbol", fileName: "10 el árbol-min.jpg" },
+                { id: 11, name: "El Melón", fileName: "11 el melón-min.jpg" }, { id: 12, name: "El Valiente", fileName: "12 el valiente-min.jpg" },
+                { id: 13, name: "El Gorrito", fileName: "13 el gorrito-min.jpg" }, { id: 14, name: "La Muerte", fileName: "14 la muerte-min.jpg" },
+                { id: 15, name: "La Pera", fileName: "15 la pera-min.jpg" }, { id: 16, name: "La Bandera", fileName: "16 la bandera-min.jpg" },
+                { id: 17, name: "El Bandolón", fileName: "17 el bandolón-min.jpg" }, { id: 18, name: "El Violoncello", fileName: "18 el violoncello-min.jpg" },
+                { id: 19, name: "La Garza", fileName: "19 la garza-min.jpg" }, { id: 20, name: "El Pájaro", fileName: "20 el pájaro-min.jpg" },
+                { id: 21, name: "La Mano", fileName: "21 la mano-min.jpg" }, { id: 22, name: "La Bota", fileName: "22 la bota-min.jpg" },
+                { id: 23, name: "La Luna", fileName: "23 la luna-min.jpg" }, { id: 24, name: "El Cotorro", fileName: "24 el cotorro-min.jpg" },
+                { id: 25, name: "El Borracho", fileName: "25 el borracho-min.jpg" }, { id: 26, name: "El Negrito", fileName: "26 el negrito-min.jpg" },
+                { id: 27, name: "El Corazón", fileName: "27 el corazón-min.jpg" }, { id: 28, name: "La Sandía", fileName: "28 la sandía-min.jpg" },
+                { id: 29, name: "El Tambor", fileName: "29 el tambor-min.jpg" }, { id: 30, name: "El Camarón", fileName: "30 el camarón-min.jpg" },
+                { id: 31, name: "Las Jaras", fileName: "31 las jaras-min.jpg" }, { id: 32, name: "El Músico", fileName: "32 el músico-min.jpg" },
+                { id: 33, name: "La Araña", fileName: "33 la araña-min.jpg" }, { id: 34, name: "El Soldado", fileName: "34 el soldado-min.jpg" },
+                { id: 35, name: "La Estrella", fileName: "35 la estrella-min.jpg" }, { id: 36, name: "El Cazo", fileName: "36 el cazo-min.jpg" },
+                { id: 37, name: "El Mundo", fileName: "37 el mundo-min.jpg" }, { id: 38, name: "El Apache", fileName: "38 el apache-min.jpg" },
+                { id: 39, name: "El Nopal", fileName: "39 el nopal-min.jpg" }, { id: 40, name: "El Alacrán", fileName: "40 el alacrán-min.jpg" },
+                { id: 41, name: "La Rosa", fileName: "41 la rosa-min.jpg" }, { id: 42, name: "La Calavera", fileName: "42 la calavera-min.jpg" },
+                { id: 43, name: "La Campana", fileName: "43 la campana-min.jpg" }, { id: 44, name: "El Cantarito", fileName: "44 el cantarito-min.jpg" },
+                { id: 45, name: "El Venado", fileName: "45 el venado-min.jpg" }, { id: 46, name: "El Sol", fileName: "46 el sol-min.jpg" },
+                { id: 47, name: "La Corona", fileName: "47 la corona-min.jpg" }, { id: 48, name: "La Chalupa", fileName: "48 la chalupa-min.jpg" },
+                { id: 49, name: "El Pino", fileName: "49 el pino-min.jpg" }, { id: 50, name: "El Pescado", fileName: "50 el pescado-min.jpg" },
+                { id: 51, name: "La Palma", fileName: "51 la palma-min.jpg" }, { id: 52, name: "La Maceta", fileName: "52 la maceta-min.jpg" },
+                { id: 53, name: "El Arpa", fileName: "53 el arpa-min.jpg" }, { id: 54, name: "La Rana", fileName: "54 la rana-min.jpg" }
             ]
         };
 
@@ -878,7 +878,7 @@
                     </div>
 
                     <div class="title-area flex items-center justify-center border-2 border-gray-300 rounded-lg p-2 bg-white shadow-md">
-                        <h1 class="text-2xl font-extrabold text-red-600 tracking-tighter">LOTERÍA MEXICANA ¡GANA YA!</h1>
+                        <h1 class="text-2xl font-extrabold text-red-600 tracking-tighter">LOTERÍA MEXICANA ¡FELICIDADES!</h1>
                     </div>
 
                     <div class="pot-area flex flex-col items-center justify-center border-2 border-green-500 bg-green-50 rounded-lg p-2 shadow-md">
@@ -947,7 +947,7 @@
                                     <p class="text-sm font-black text-green-700">$${w.prizeAmount.toLocaleString('es-MX')} MXN</p>
                                 </div>
                             `).join('')}
-                            ${winners.length === 0 ? '<p class="text-gray-500">Aún no hay ganadores en esta ronda.</p>' : ''}
+                            ${winners.length === 0 ? '<p class="text-gray-500">Aún no hay ganadores en esta ronda.</p></div>' : ''}
                         </div>
                     </div>
 

@@ -3,36 +3,33 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>GANA YA! — Lotería (v6.1)</title>
-
-  <!-- Tailwind + fonts -->
+  <title>GANA YA! — Lotería (v6)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-
   <style>
     :root{
       --rojo:#b42222; --verde:#0f8a3c; --dorado:#caa43f; --crema:#f6f1e6; --sombra: 0 10px 24px rgba(0,0,0,0.08);
     }
     body{ font-family:Inter,system-ui,-apple-system; background:var(--crema); color:#1f2937; margin:0; -webkit-font-smoothing:antialiased;}
-    .brand-title{ font-family:'Alfa Slab One', serif; color:var(--rojo); letter-spacing:1px;}
-    .tab-btn{ border-radius:999px; padding:.45rem .85rem; font-weight:700; box-shadow:0 6px 18px rgba(0,0,0,.06); background:transparent; border:none; cursor:pointer; }
-    .tab-active{ background: linear-gradient(90deg,#fef2f2,#fff); border:3px solid var(--rojo); color:var(--rojo); }
+    .brand-title{ font-family: "Alfa Slab One", serif; color:var(--rojo); letter-spacing:1px; }
+    .tab-btn{ border-radius:999px; padding:.45rem .85rem; font-weight:700; box-shadow: 0 6px 18px rgba(0,0,0,.06); background:transparent; border:none; cursor:pointer; }
+    .tab-active{ background: linear-gradient(90deg,#fef2f2,#fff); border: 3px solid var(--rojo); color: var(--rojo); }
     .mex-frame{ background:#fff; border-radius:12px; padding:14px; box-shadow: var(--sombra); position:relative; overflow:visible; }
-    .mex-border{ border:4px solid var(--rojo); border-radius:10px; padding:10px; box-shadow:0 6px 18px rgba(0,0,0,0.04); background:#fff; }
+    .mex-border{ border:4px solid var(--rojo); border-radius:10px; padding:10px; box-shadow: 0 6px 18px rgba(0,0,0,0.04); background:#fff; }
     .title-accent{ display:inline-block; height:8px; width:72px; background: linear-gradient(90deg,var(--dorado),#e6c05b); border-radius:6px; margin-top:6px; }
-    .card-cell{ border-radius:8px; overflow:hidden; background-size:cover; background-position:center; min-height:50px; position:relative; box-shadow:0 4px 8px rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; }
+    .card-cell{ border-radius:8px; overflow:hidden; background-size:cover; background-position:center; min-height:50px; position:relative; box-shadow: 0 4px 8px rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; }
     .card-img-small{ width:64px; height:64px; border-radius:6px; object-fit:cover; display:block; }
     .card-grid-gap{ gap:6px; }
     .sticker{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:20; pointer-events:none; opacity:0; transform:scale(.6); animation: stickerPop .6s ease forwards; }
-    @keyframes stickerPop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes stickerPop{ 0%{ transform: scale(.4); opacity:0;}60%{transform:scale(1.2);opacity:1;}100%{transform:scale(1);opacity:1;} }
     .grayed{ filter:grayscale(100%) contrast(.9); opacity:.5; transition:filter .35s, opacity .35s; }
-    .current-card{ border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,0.08); min-height:170px; display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg,#fff,#fff); }
+    .current-card{ border-radius:14px; box-shadow: 0 12px 30px rgba(0,0,0,0.08); min-height:170px; display:flex; align-items:center; justify-content:center; background: linear-gradient(180deg,#fff,#fff); }
     .confetti{ position: fixed; width: 10px; height: 10px; top:100%; animation: confetti 2s ease-out forwards; z-index:120; border-radius:2px; }
-    @keyframes confetti{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(-420px) rotate(720deg);opacity:0}}
+    @keyframes confetti{ 0%{ transform: translateY(0) rotate(0); opacity:1 } 100%{ transform: translateY(-420px) rotate(720deg); opacity:0 } }
     .shuffle-overlay{ position: fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:60; pointer-events:none; background: rgba(0,0,0,0.15); }
     .shuffle-card{ width:120px; height:160px; border-radius:10px; background-size:cover; background-position:center; box-shadow:0 10px 30px rgba(0,0,0,0.25); transform-origin:center; }
     .reset-glow{ box-shadow:0 0 18px 4px rgba(202,164,63,0.45); animation: glow 1.2s infinite; }
-    @keyframes glow{0%{box-shadow:0 0 6px rgba(202,164,63,0.25)}50%{box-shadow:0 0 24px rgba(202,164,63,0.45)}100%{box-shadow:0 0 6px rgba(202,164,63,0.25)}}
+    @keyframes glow{ 0%{box-shadow:0 0 6px rgba(202,164,63,0.25);}50%{box-shadow:0 0 24px rgba(202,164,63,0.45);}100%{box-shadow:0 0 6px rgba(202,164,63,0.25);} }
     .btn{ padding:.55rem .9rem; border-radius:.6rem; font-weight:700; cursor:pointer; }
     .btn-red{ background:var(--rojo); color:white; }
     .btn-blue{ background:#1565d8; color:white; }
@@ -40,20 +37,12 @@
     .small{ font-size:.85rem; }
     .row-disabled{ opacity:.45; filter:grayscale(.2); }
     .animate-create{ transform-origin:center; animation: create-pop .45s ease forwards; }
-    @keyframes create-pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.05);opacity:1}100%{transform:scale(1)}}
+    @keyframes create-pop{ 0%{ transform: scale(.6); opacity:0 } 60%{ transform: scale(1.05); opacity:1 } 100%{ transform: scale(1); } }
     @media (max-width:1024px){ .current-card{ min-height:140px } .card-img-small{ width:52px;height:52px } }
     .small-muted{ font-size:.85rem; color:#6b7280; }
-    /* selection grid for selection page */
-    .select-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:8px; }
-    .select-thumb{ width:96px;height:96px;border-radius:8px;background-size:cover;background-position:center;border:3px solid transparent; cursor:pointer; }
-    .select-thumb.selected{ border-color:var(--rojo); transform:scale(1.03); }
   </style>
-
-  <!-- jsPDF for PDF export -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-JCq5QxR0xg2sXr3o8mRk4R6E2G6b1iYJ+6m1wC5Q4Gk7g8tQb8q7W8yF3V0yZ9J6s0m8Kq3s3GZ2d3T4e5y6w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body class="min-h-screen">
-
   <!-- HEADER -->
   <header class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center gap-6 justify-between">
     <div class="flex items-center gap-4">
@@ -63,13 +52,11 @@
         <div class="text-xs text-gray-600 mt-1">Lotería interactiva — estilo tradicional mexicano</div>
       </div>
     </div>
-
     <div class="flex items-center gap-4">
       <div class="flex items-center gap-2">
         <button id="tab-game" class="tab-btn tab-active">🃏 En Juego</button>
         <button id="tab-admin" class="tab-btn">⚙</button>
       </div>
-
       <div class="bg-green-700 text-white p-3 rounded-xl shadow-lg flex flex-col items-center min-w-[120px]">
         <span class="text-xs font-semibold uppercase">BOLSA EN JUEGO</span>
         <span id="pot-amount" class="text-xl md:text-2xl font-extrabold">$0.00</span>
@@ -77,6 +64,7 @@
     </div>
   </header>
 
+  <!-- MAIN -->
   <main class="max-w-7xl mx-auto px-4 pb-12">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- EN JUEGO VIEW -->
@@ -122,7 +110,6 @@
               <option value="6">6 imágenes (2x3)</option>
               <option value="9" selected>9 imágenes (3x3)</option>
             </select>
-
             <div class="flex gap-2 mt-3">
               <button id="shuffle-btn" class="btn btn-blue flex-1">BARAJEAR</button>
               <button id="draw-btn" class="btn btn-red flex-1">TIRAR CARTA</button>
@@ -138,32 +125,11 @@
         <div class="mex-frame">
           <h3 class="text-lg font-extrabold text-gray-800">CAJA / CONFIGURACIÓN</h3>
           <div class="title-accent"></div>
-
-          <!-- Prices + profits per modality -->
-          <div class="grid grid-cols-3 gap-3 mt-3">
-            <div>
-              <label class="text-sm text-gray-700 font-semibold">Costo 2×2</label>
-              <input id="price4" type="number" class="w-full border rounded-lg p-2" value="10">
-              <label class="text-xs text-gray-500 mt-1 block">Ganancia casa</label>
-              <input id="profit4" type="number" class="w-full border rounded-lg p-1" value="2">
-            </div>
-            <div>
-              <label class="text-sm text-gray-700 font-semibold">Costo 2×3</label>
-              <input id="price6" type="number" class="w-full border rounded-lg p-2" value="12">
-              <label class="text-xs text-gray-500 mt-1 block">Ganancia casa</label>
-              <input id="profit6" type="number" class="w-full border rounded-lg p-1" value="3">
-            </div>
-            <div>
-              <label class="text-sm text-gray-700 font-semibold">Costo 3×3</label>
-              <input id="price9" type="number" class="w-full border rounded-lg p-2" value="15">
-              <label class="text-xs text-gray-500 mt-1 block">Ganancia casa</label>
-              <input id="profit9" type="number" class="w-full border rounded-lg p-1" value="4">
-            </div>
-          </div>
-
-          <div class="flex gap-2 mt-3">
-            <button id="save-prices" class="btn btn-green flex-1">Guardar precios</button>
-            <button id="reset-prices" class="btn flex-1" style="background:#f3f4f6;border-radius:.6rem">Reset</button>
+          <div class="grid grid-cols-2 gap-3 mt-3">
+            <div><label class="text-sm text-gray-700 font-semibold">Costo carta 2×2</label><input id="price4" type="number" class="w-full border rounded-lg p-2" value="10"></div>
+            <div><label class="text-sm text-gray-700 font-semibold">Costo carta 2×3</label><input id="price6" type="number" class="w-full border rounded-lg p-2" value="12"></div>
+            <div><label class="text-sm text-gray-700 font-semibold">Costo carta 3×3</label><input id="price9" type="number" class="w-full border rounded-lg p-2" value="15"></div>
+            <div><label class="text-sm text-gray-700 font-semibold">Ganancia casa por carta</label><input id="houseProfit" type="number" class="w-full border rounded-lg p-2" value="2"></div>
           </div>
         </div>
 
@@ -174,16 +140,9 @@
             <div><label class="text-sm font-semibold text-gray-600">Nombre del jugador</label><input id="player-name" type="text" class="w-full border rounded-lg p-2" placeholder="Ej. Juan Pérez"></div>
             <div><label class="text-sm font-semibold text-gray-600">Presupuesto ($)</label><input id="player-budget" type="number" class="w-full border rounded-lg p-2" value="0"></div>
             <div><label class="text-sm font-semibold text-gray-600">Modalidades</label>
-              <div class="flex gap-3 mt-1">
-                <label><input type="checkbox" id="mod4" class="mr-1"> 2×2</label>
-                <label><input type="checkbox" id="mod6" class="mr-1"> 2×3</label>
-                <label><input type="checkbox" id="mod9" class="mr-1"> 3×3</label>
-              </div>
+              <div class="flex gap-3 mt-1"><label><input type="checkbox" id="mod4" class="mr-1"> 2×2</label><label><input type="checkbox" id="mod6" class="mr-1"> 2×3</label><label><input type="checkbox" id="mod9" class="mr-1"> 3×3</label></div>
             </div>
-            <div class="flex gap-2">
-              <button id="btn-calc" class="btn btn-blue">Calcular partidas</button>
-              <button id="btn-add-player" class="btn btn-green">AÑADIR JUGADOR</button>
-            </div>
+            <button id="btn-add-player" class="btn btn-green mt-2">AÑADIR JUGADOR</button>
             <div id="calc-info" class="text-sm text-gray-600"></div>
           </div>
         </div>
@@ -192,21 +151,21 @@
           <h3 class="text-lg font-extrabold text-gray-800">REPORTES / TRANSACCIONES</h3>
           <div class="title-accent"></div>
           <div class="mt-3 space-y-2">
-            <button id="export-btn" class="btn btn-blue w-full">Exportar reporte (PDF)</button>
-            <button id="clear-btn" class="btn" style="background:#fee9d6;border-radius:.6rem;width:100%">Reiniciar Día (Borrar registros)</button>
-            <div class="text-xs text-gray-500 mt-2">Esto eliminará partidas, transacciones y enlaces. Guarda el PDF antes de borrar.</div>
+            <button id="export-btn" class="btn btn-blue w-full">Exportar reporte (JSON)</button>
+            <button id="clear-btn" class="btn" style="background:#fee9d6;border-radius:.6rem;width:100%">Borrar registros / Nuevo día</button>
+            <div class="text-xs text-gray-500 mt-2">Guarda el JSON antes de borrar.</div>
           </div>
         </div>
       </aside>
     </div>
 
-    <!-- Admin table -->
+    <!-- Tabla admin -->
     <section id="admin-purchases-section" class="mt-8 mex-frame hidden">
       <h3 class="text-xl font-extrabold text-gray-800">ADMINISTRACIÓN DE JUGADORES</h3>
       <div class="title-accent"></div>
       <div class="overflow-x-auto mt-4">
         <table class="w-full text-sm border-collapse">
-          <thead><tr class="bg-gray-100 text-gray-700"><th class="p-2 border">Jugador</th><th class="p-2 border">Modalidad</th><th class="p-2 border">Partidas</th><th class="p-2 border">Pagado</th><th class="p-2 border">Ganadas</th><th class="p-2 border">Estado</th><th class="p-2 border">Enlace/Acciones</th></tr></thead>
+          <thead><tr class="bg-gray-100 text-gray-700"><th class="p-2 border">Jugador</th><th class="p-2 border">Modalidad</th><th class="p-2 border">Partidas</th><th class="p-2 border">Pagado</th><th class="p-2 border">Ganadas</th><th class="p-2 border">Pago</th><th class="p-2 border">Acciones</th></tr></thead>
           <tbody id="players-table" class="text-center"><tr><td colspan="7" class="p-4 text-gray-500">No hay compras registradas.</td></tr></tbody>
         </table>
       </div>
@@ -230,11 +189,11 @@
     <p>Sube <strong>logo_1_entrada.png</strong> en la raíz y la carpeta <strong>Cartas_baraja_loteria/</strong> con las 54 imágenes (.jpg) con nombres exactos.</p>
   </footer>
 
-  <!-- SCRIPT -->
   <script>
-  /* ================= Lotería v6.1 — Script completo ================= */
-
-  // ------------------ Config (nombres de archivos) ------------------
+  /*******************************
+   * Lotería GANA YA! — Script v6
+   *******************************/
+  // Card name map (exact file names you provided)
   const CARD_IMAGE_BASE_PATH = 'Cartas_baraja_loteria/';
   const CARD_NAME_MAP = {
     1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",
@@ -253,28 +212,17 @@
     53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg"
   };
 
-  // ------------------ Storage keys ------------------
-  const KEY_PRICES = 'loteria_prices_v61';
-  const KEY_GAME = 'loteria_game_v61';
-  const KEY_PURCHASES = 'loteria_purchases_v61';
-  const KEY_TRANSACTIONS = 'loteria_transactions_v61';
+  // storage keys
+  const KEY_PRICES = 'loteria_prices_v6';
+  const KEY_GAME = 'loteria_game_v6';
+  const KEY_PURCHASES = 'loteria_purchases_v6';
+  const KEY_TRANSACTIONS = 'loteria_transactions_v6';
 
-  // ------------------ Defaults ------------------
-  const defaultPrices = ()=>({
-    price4:10, profit4:2,
-    price6:12, profit6:3,
-    price9:15, profit9:4
-  });
-  const defaultGame = ()=>({
-    modality:9,
-    deck: Array.from({length:54},(_,i)=>i+1),
-    drawnCards:[],
-    currentCardId:0,
-    pendingWinners:[],
-    lastWinners:[]
-  });
+  // defaults
+  const defaultPrices = ()=>({ price4:10, price6:12, price9:15, houseProfit:2 });
+  const defaultGame = ()=>({ modality:9, deck:Array.from({length:54},(_,i)=>i+1), drawnCards:[], currentCardId:0, pendingWinners:[], lastWinners:[] });
 
-  // ------------------ State ------------------
+  // state
   let prices = loadPrices();
   let gameState = loadGame();
   let purchases = loadPurchases();
@@ -282,11 +230,12 @@
   let isAuto=false, autoInterval=null, shuffleAnimating=false;
   let lastWinnerRecords=[];
 
-  // ------------------ Audio (WebAudio shuffle) ------------------
+  // AUDIO: generate shuffle sound with Web Audio API (no external files)
   const audioCtx = (typeof AudioContext !== 'undefined') ? new AudioContext() : null;
   function playShuffleSound(){
     if (!audioCtx) return;
     const now = audioCtx.currentTime;
+    // create short noise burst filtered to sound like cards
     const bufferSize = audioCtx.sampleRate * 0.25;
     const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
     const data = buffer.getChannelData(0);
@@ -298,57 +247,46 @@
     src.start(now); src.stop(now+0.3);
   }
 
-  // ------------------ Storage helpers ------------------
-  function loadPrices(){ try{ return JSON.parse(localStorage.getItem(KEY_PRICES)) || defaultPrices(); }catch(e){return defaultPrices();} }
-  function savePrices(p){ localStorage.setItem(KEY_PRICES, JSON.stringify(p)); prices=p; }
-  function loadGame(){ try{ return JSON.parse(localStorage.getItem(KEY_GAME)) || defaultGame(); }catch(e){return defaultGame();} }
-  function saveGame(g){ localStorage.setItem(KEY_GAME, JSON.stringify(g)); gameState=g; }
-  function loadPurchases(){ try{ return JSON.parse(localStorage.getItem(KEY_PURCHASES)) || []; }catch(e){return []; } }
-  function savePurchases(arr){ localStorage.setItem(KEY_PURCHASES, JSON.stringify(arr)); purchases=arr; }
-  function loadTransactions(){ try{ return JSON.parse(localStorage.getItem(KEY_TRANSACTIONS)) || []; }catch(e){return []; } }
-  function saveTransactions(arr){ localStorage.setItem(KEY_TRANSACTIONS, JSON.stringify(arr)); transactions=arr; }
+  // helpers for storage
+  function loadPrices(){ try{ return JSON.parse(localStorage.getItem(KEY_PRICES)) || defaultPrices(); } catch(e){ return defaultPrices(); } }
+  function savePrices(p){ localStorage.setItem(KEY_PRICES, JSON.stringify(p)); }
+  function loadGame(){ try{ return JSON.parse(localStorage.getItem(KEY_GAME)) || defaultGame(); } catch(e){ return defaultGame(); } }
+  function saveGame(g){ localStorage.setItem(KEY_GAME, JSON.stringify(g)); }
+  function loadPurchases(){ try{ return JSON.parse(localStorage.getItem(KEY_PURCHASES)) || []; } catch(e){ return []; } }
+  function savePurchases(arr){ localStorage.setItem(KEY_PURCHASES, JSON.stringify(arr)); }
+  function loadTransactions(){ try{ return JSON.parse(localStorage.getItem(KEY_TRANSACTIONS)) || []; } catch(e){ return []; } }
+  function saveTransactions(arr){ localStorage.setItem(KEY_TRANSACTIONS, JSON.stringify(arr)); }
 
-  // ------------------ Utils ------------------
+  // util card URL
   const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] || `${id}.jpg`);
-  function shuffleArray(a){ const arr=a.slice(); for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
-  function escapeHtml(text){ return (text+'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-  if (!crypto || !crypto.randomUUID) { crypto = crypto || {}; crypto.randomUUID = ()=> 'id-'+Math.random().toString(36).slice(2,9); }
 
-  // ------------------ Ensure deck ------------------
+  // ensure deck
   if (!gameState.deck || !gameState.deck.length) gameState.deck = Array.from({length:54},(_,i)=>i+1);
 
-  // ------------------ Render ------------------
+  // RENDER
   function renderAll(){
-    // set prices inputs
+    // header values
     document.getElementById('price4').value = prices.price4;
-    document.getElementById('profit4').value = prices.profit4;
     document.getElementById('price6').value = prices.price6;
-    document.getElementById('profit6').value = prices.profit6;
     document.getElementById('price9').value = prices.price9;
-    document.getElementById('profit9').value = prices.profit9;
-
-    // modality select
+    document.getElementById('houseProfit').value = prices.houseProfit;
     document.getElementById('modality-select').value = gameState.modality || 9;
     document.getElementById('deck-count').textContent = gameState.deck.length;
-
-    // pot (sales minus house profits per modality)
+    // pot
     const sales = purchases.reduce((s,p)=> s + (p.totalPaid||0), 0);
-    const totalHouse = purchases.reduce((s,p)=>{
-      const pr = p.modality===4?prices.profit4: p.modality===6?prices.profit6: prices.profit9;
-      return s + (pr * (p.initialGames||0));
-    }, 0);
-    const pot = Math.max(0, sales - totalHouse);
+    const totalCards = purchases.reduce((s,p)=> s + (p.initialGames||0), 0);
+    const pot = Math.max(0, sales - (prices.houseProfit * totalCards));
     document.getElementById('pot-amount').textContent = `$${pot.toFixed(2)}`;
 
-    // players area (public) - only purchases of current modality
+    // players area (public)
     const modality = parseInt(document.getElementById('modality-select').value || gameState.modality || 9);
     gameState.modality = modality;
     const playersArea = document.getElementById('players-area');
-    const active = purchases.filter(p => p.modality === modality);
+    const active = purchases.filter(p=>p.modality===modality);
     if (!active.length){
       playersArea.innerHTML = `<div class="text-center text-gray-500 p-8 col-span-full">Aún no hay jugadores / compras en esta modalidad.</div>`;
     } else {
-      playersArea.innerHTML = active.map(p => purchaseCardHtmlPublic(p)).join('');
+      playersArea.innerHTML = active.map(purchaseCardHtmlPublic).join('');
     }
 
     // current card
@@ -359,25 +297,26 @@
       currentCardEl.innerHTML = `<div class="text-gray-400">Esperando barajeo...</div>`;
     }
 
-    // last cards
+    // last 3 cards
     const last = (gameState.drawnCards||[]).slice(-3).reverse();
     const lc = document.getElementById('last-cards');
     lc.innerHTML = last.length ? last.map(cid=>`<div class="w-14 h-18 bg-cover bg-center rounded shadow-md border" style="background-image:url('${cardImageUrl(cid)}')"></div>`).join('') : `<div class="text-gray-400">Ninguna carta aún.</div>`;
 
     // last winners
-    document.getElementById('last-winners').innerHTML = (gameState.lastWinners||[]).slice(-5).reverse().map(w => `<div class="text-sm font-semibold">${escapeHtml(w.playerName)} — $${w.amount.toFixed(2)} <span class="text-xs text-gray-500">(${new Date(w.timestamp).toLocaleString()})</span></div>`).join('') || 'Aún no hay ganadores.';
+    const lw = document.getElementById('last-winners');
+    lw.innerHTML = (gameState.lastWinners||[]).slice(-5).reverse().map(w => `<div class="text-sm font-semibold">${escapeHtml(w.playerName)} — $${w.amount.toFixed(2)} <span class="text-xs text-gray-500">(${new Date(w.timestamp).toLocaleString()})</span></div>`).join('') || 'Aún no hay ganadores.';
 
-    // admin players table
+    // admin table
     renderPlayersTable();
 
-    // admin purchases section visibility
+    // admin purchases section toggle visibility depending on admin tab
     document.getElementById('admin-purchases-section').classList.toggle('hidden', document.getElementById('view-admin').classList.contains('hidden'));
 
     // persist
     savePrices(prices); saveGame(gameState); savePurchases(purchases); saveTransactions(transactions);
   }
 
-  // purchase card public html (no sensitive info)
+  // Generate public card HTML (minimal info)
   function purchaseCardHtmlPublic(p){
     const cols = p.modality===4?2: p.modality===6?3:3;
     const cells = (p.card||[]).map(cid => {
@@ -400,7 +339,6 @@
     tbody.innerHTML = purchases.map(p=>{
       const state = p.paymentState==='pending'? `<span class="text-xs px-2 py-1 bg-yellow-100 rounded">Pendiente</span>` : `<span class="text-xs px-2 py-1 bg-green-100 rounded">Pagado</span>`;
       const modText = p.modality===4? '2x2' : p.modality===6? '2x3' : '3x3';
-      const linkBtn = p.selectionToken && !p.selectionUsed ? `<button class="px-2 py-1 bg-indigo-600 text-white rounded text-xs" onclick="copySelectionLink('${p.selectionToken}')">Copiar enlace</button>` : (p.selectionUsed?'<span class="text-xs text-gray-500">Enlace usado</span>':'<span class="text-xs text-gray-400">Sin enlace</span>');
       return `<tr class="${p.gamesLeft<=0? 'row-disabled':''}">
         <td class="p-2 font-semibold">${escapeHtml(p.playerName)}</td>
         <td class="p-2">${modText}</td>
@@ -409,21 +347,22 @@
         <td class="p-2">${p.wins||0}</td>
         <td class="p-2">${state}</td>
         <td class="p-2 space-x-2">
-          ${linkBtn}
+          <button class="px-2 py-1 bg-green-500 text-white rounded text-xs" onclick="addGamesPrompt('${p.id}')">+ Partidas</button>
           <button class="px-2 py-1 bg-yellow-500 text-white rounded text-xs" onclick="markPendingPaid('${p.id}')">Marcar Pagado</button>
-          <button class="px-2 py-1 bg-gray-300 text-black rounded text-xs" onclick="viewCard('${p.id}')">Ver</button>
+          <button class="px-2 py-1 bg-gray-300 text-black rounded text-xs" onclick="viewCard('${p.id}')">Ver carta</button>
           <button class="px-2 py-1 bg-red-600 text-white rounded text-xs" onclick="deletePurchase('${p.id}')">Eliminar</button>
         </td>
       </tr>`;
     }).join('');
   }
 
-  // ------------------ Shuffle visual + logical ------------------
+  // SHUFFLE visual (real cards) and logical shuffle
   function shuffleDeckVisual(){
     if (shuffleAnimating) return;
     shuffleAnimating = true;
     disableControls(true);
-    try{ playShuffleSound(); }catch(e){}
+    // play sound
+    try{ playShuffleSound(); }catch(e){ console.warn(e); }
     const overlay = document.getElementById('shuffle-overlay');
     overlay.innerHTML=''; overlay.classList.remove('hidden');
     const picks = shuffleArray(Array.from({length:54},(_,i)=>i+1)).slice(0,12);
@@ -433,7 +372,7 @@
       const angle = (Math.random()*60-30);
       div.style.transform = `translate(${(Math.random()*400-200)}px, ${(Math.random()*200-100)}px) rotate(${angle}deg) scale(${0.9+Math.random()*0.4})`;
       overlay.appendChild(div);
-      setTimeout(()=>{ div.style.transition='transform .45s ease, opacity .5s ease'; div.style.transform = `translate(0px,0px) rotate(${Math.random()*360-180}deg) scale(1)`; }, 80 + i*40);
+      setTimeout(()=>{ div.style.transition = 'transform .45s ease, opacity .5s ease'; div.style.transform = `translate(0px,0px) rotate(${Math.random()*360-180}deg) scale(1)`; }, 80 + i*40);
       setTimeout(()=>{ div.style.transform = `translate(${(Math.random()*300-150)}px, ${(Math.random()*300-150)}px) rotate(${Math.random()*720-360}deg) scale(.6)`; div.style.opacity='0'; }, 900 + i*30);
     });
     setTimeout(()=>{
@@ -471,12 +410,14 @@
       if ((p.markedCards||[]).length === p.modality) winners.push({ idx, id: p.id, name: p.playerName });
     });
 
+    // if any winners -> stop and show modal
     if (winners.length > 0){
       stopAutoMode();
       disableControls(true);
+      // pot calculation
       const totalPaid = purchases.reduce((s,p)=> s + (p.totalPaid||0), 0);
-      const totalHouse = purchases.reduce((s,p)=> s + ((p.modality===4?prices.profit4: p.modality===6?prices.profit6: prices.profit9) * (p.initialGames||0)), 0);
-      const potAmount = Math.max(0, totalPaid - totalHouse);
+      const totalCardsSold = purchases.reduce((s,p)=> s + (p.initialGames||0), 0);
+      const potAmount = Math.max(0, totalPaid - (prices.houseProfit * totalCardsSold));
       const winnerRecords = [];
       winners.forEach(w=>{
         const p = purchases[w.idx];
@@ -509,93 +450,75 @@
     saveTransactions(transactions); savePurchases(purchases); renderAll();
   }
 
-  // ------------------ Auto mode ------------------
   function startAutoMode(){
     if (!gameState.deck.length){ alert('Mazo vacío. Barajea.'); return; }
-    isAuto=true; document.getElementById('auto-btn').textContent='DETENER AUTOMÁTICO'; document.getElementById('auto-btn').style.background='var(--verde)';
+    isAuto = true; document.getElementById('auto-btn').textContent = 'DETENER AUTOMÁTICO'; document.getElementById('auto-btn').style.background = 'var(--verde)';
     autoInterval = setInterval(()=>{ if (!isAuto) return; if (!gameState.deck.length){ stopAutoMode(); return; } const next = gameState.deck.pop(); gameState.drawnCards.push(next); gameState.currentCardId = next; transactions.push({ id: crypto.randomUUID(), type:'draw', card: next, timestamp: Date.now()}); processCard(next); renderAll(); }, 2000);
   }
-  function stopAutoMode(){ isAuto=false; document.getElementById('auto-btn').textContent='CARTAS AUTOMÁTICO'; document.getElementById('auto-btn').style.background='#fee9d6'; if (autoInterval){ clearInterval(autoInterval); autoInterval=null; } }
+  function stopAutoMode(){ isAuto=false; document.getElementById('auto-btn').textContent = 'CARTAS AUTOMÁTICO'; document.getElementById('auto-btn').style.background = '#fee9d6'; if (autoInterval){ clearInterval(autoInterval); autoInterval=null; } }
   function toggleAuto(){ if (isAuto) stopAutoMode(); else startAutoMode(); }
 
-  // ------------------ Controls helpers ------------------
   function disableControls(disable){
-    ['shuffle-btn','draw-btn','auto-btn','reset-btn','btn-add-player','btn-calc','save-prices','clear-btn','export-btn'].forEach(id=>{ const el=document.getElementById(id); if (el) el.disabled = disable; });
-    document.querySelectorAll('#view-admin button').forEach(b=> b.style.opacity = disable? '0.5':'1');
+    ['shuffle-btn','draw-btn','auto-btn','reset-btn','btn-add-player','btn-shuffle'].forEach(id=>{ const el=document.getElementById(id); if(el) el.disabled = disable; });
+    // style disable (opacity)
+    document.querySelectorAll('#view-admin button').forEach(b=>b.style.opacity = disable? '0.5':'1');
   }
-  function highlightReset(on){ const btn=document.getElementById('reset-btn'); if(!btn) return; if(on) btn.classList.add('reset-glow'); else btn.classList.remove('reset-glow'); }
 
-  // ------------------ Registration & purchases ------------------
+  function highlightReset(on){
+    const btn = document.getElementById('reset-btn');
+    if (!btn) return;
+    if (on) btn.classList.add('reset-glow'); else btn.classList.remove('reset-glow');
+  }
+
+  // PURCHASES / REGISTRATION
   function calculatePartitions(budget, mods){
-    const shareRaw = budget / mods.length; const share = Math.floor(shareRaw*100)/100;
-    return mods.map(m => { const price = m===4?prices.price4: m===6?prices.price6: prices.price9; const profit = m===4?prices.profit4: m===6?prices.profit6: prices.profit9; const games = Math.floor(share / price); return { modality:m, price, profit, share, games }; });
+    const share = Math.floor((budget / mods.length) * 100) / 100;
+    return mods.map(m => { const price = m===4? prices.price4 : m===6? prices.price6 : prices.price9; const games = Math.floor(share / price); return { modality:m, price, share, games }; });
   }
 
   function addPlayer(){
-    const name = (document.getElementById('player-name').value||'').trim();
-    const budget = parseFloat(document.getElementById('player-budget').value||0);
-    const mods = []; if(document.getElementById('mod4').checked) mods.push(4); if(document.getElementById('mod6').checked) mods.push(6); if(document.getElementById('mod9').checked) mods.push(9);
-    document.getElementById('calc-info').textContent='';
-    if(!name) return alert('Captura nombre'); if(!budget || budget<=0) return alert('Captura presupuesto'); if(!mods.length) return alert('Selecciona modalidades');
+    const name = (document.getElementById('player-name').value || '').trim();
+    const budget = parseFloat(document.getElementById('player-budget').value || 0);
+    const mods = []; if (document.getElementById('mod4').checked) mods.push(4); if (document.getElementById('mod6').checked) mods.push(6); if (document.getElementById('mod9').checked) mods.push(9);
+    document.getElementById('calc-info').textContent = '';
+    if (!name) return alert('Captura nombre'); if (!budget || budget<=0) return alert('Captura presupuesto'); if (!mods.length) return alert('Selecciona modalidaes');
     const parts = calculatePartitions(budget, mods);
     const zero = parts.find(p=>p.games<1);
-    if (zero){ document.getElementById('calc-info').textContent = `Modalidad ${zero.modality} no alcanza 1 partida con la porción (${zero.share}$).`; return; }
-
-    // create a separate purchase per modality (one record per modality)
+    if (zero) { document.getElementById('calc-info').textContent = `La modalidad ${zero.modality} no alcanza 1 partida con la porción (${zero.share}$).`; return; }
+    const playerId = crypto.randomUUID(); const created = [];
     parts.forEach(part=>{
       const games = part.games; const totalPaid = games * part.price;
-      for (let i=0;i<games;i++){
-        const purchase = {
-          id: crypto.randomUUID(),
-          playerId: crypto.randomUUID(),
-          playerName: name,
-          modality: part.modality,
-          initialGames: 1,
-          gamesLeft: 1,
-          totalPaid: part.price,
-          wins:0,
-          paymentState:'paid',
-          isActive:true,
-          card: [], // to be selected via link or generated
-          markedCards: [],
-          selectionToken: crypto.randomUUID(), // unique link token
-          selectionUsed: false,
-          createdAt: Date.now()
-        };
-        // assign an automatic card to avoid duplicates OR leave empty for player to choose via link
-        // We'll leave card empty and expect player to pick via link; however if we want auto-assign, use generateCardForPurchase(part.modality)
-        purchases.push(purchase);
-        transactions.push({ id: crypto.randomUUID(), type:'purchase', player: name, modality: part.modality, games:1, amount: part.price, purchaseId: purchase.id, timestamp: Date.now()});
-      }
+      const purchase = { id: crypto.randomUUID(), playerId, playerName: name, modality: part.modality, initialGames: games, gamesLeft: games, totalPaid, wins:0, paymentState:'paid', isActive: games>0, card: generateCardForPurchase(part.modality), markedCards: [] };
+      purchases.push(purchase);
+      transactions.push({ id: crypto.randomUUID(), type:'purchase', player: name, modality: part.modality, games, amount: totalPaid, timestamp: Date.now()});
+      created.push(purchase);
     });
-
     saveTransactions(transactions); savePurchases(purchases);
+    // animation mini confetti
     miniConfetti();
     document.getElementById('player-name').value=''; document.getElementById('player-budget').value=''; ['mod4','mod6','mod9'].forEach(id=>document.getElementById(id).checked=false);
     renderAll();
-    alert('Jugador agregado. En admin -> tabla puedes copiar el enlace para que el jugador seleccione sus cartas.');
   }
 
-  // generate a card avoiding duplicates (not used if player chooses via link)
   function generateCardForPurchase(modality){
-    const used = new Set(); purchases.forEach(p=> (p.card||[]).forEach(cid=> used.add(cid)));
-    let pool = Array.from({length:54},(_,i)=>i+1).filter(id=> !used.has(id));
+    const used = new Set(); purchases.forEach(p => (p.card||[]).forEach(cid => used.add(cid)));
+    let pool = Array.from({length:54},(_,i)=>i+1).filter(id=>!used.has(id));
     if (pool.length < modality) pool = Array.from({length:54},(_,i)=>i+1);
     pool = shuffleArray(pool);
     return pool.slice(0, modality);
   }
 
   function addGamesPrompt(purchaseId){
-    const val = prompt('¿Cuántas partidas agregar?','1'); if (!val) return; const add = parseInt(val); if (isNaN(add)|| add<=0) return alert('Número inválido');
+    const val = prompt('¿Cuántas partidas agregar?','1'); if (!val) return; const add = parseInt(val); if (isNaN(add)||add<=0) return alert('Número inválido');
     const p = purchases.find(x=>x.id===purchaseId); if (!p) return alert('Compra no encontrada');
-    p.gamesLeft = (p.gamesLeft||0) + add; p.initialGames = (p.initialGames||0) + add; p.totalPaid = (p.totalPaid||0) + (add*(p.modality===4?prices.price4:p.modality===6?prices.price6:prices.price9));
-    p.isActive = p.gamesLeft>0;
-    transactions.push({ id: crypto.randomUUID(), type:'add_games', player: p.playerName, purchaseId: p.id, added: add, amount: add*(p.modality===4?prices.price4:p.modality===6?prices.price6:prices.price9), timestamp: Date.now()});
+    const price = p.modality===4?prices.price4: p.modality===6?prices.price6: prices.price9;
+    p.gamesLeft = (p.gamesLeft||0) + add; p.initialGames = (p.initialGames||0) + add; p.totalPaid = (p.totalPaid||0) + (add*price); p.isActive = p.gamesLeft>0;
+    transactions.push({ id: crypto.randomUUID(), type:'add_games', player: p.playerName, purchaseId: p.id, added: add, amount: add*price, timestamp: Date.now()});
     saveTransactions(transactions); savePurchases(purchases); renderAll();
   }
 
   function markPendingPaid(purchaseId){
-    const p = purchases.find(x=>x.id===purchaseId); if(!p) return; p.paymentState='paid'; savePurchases(purchases); renderAll();
+    const p = purchases.find(x=>x.id===purchaseId); if (!p) return; p.paymentState = 'paid'; savePurchases(purchases); renderAll();
   }
 
   function deletePurchase(purchaseId){
@@ -606,208 +529,7 @@
   }
 
   function viewCard(purchaseId){
-    const p = purchases.find(x=>x.id===purchaseId); if(!p) return alert('Compra no encontrada');
+    const p = purchases.find(x=>x.id===purchaseId); if (!p) return alert('Compra no encontrada');
     const list = (p.card||[]).map(cid=>`<div style="background-image:url('${cardImageUrl(cid)}');background-size:cover;background-position:center;width:80px;height:80px;border-radius:8px;display:inline-block;margin:4px;"></div>`).join('');
-    const w = window.open('','_blank','width=420,height=420'); w.document.write(`<title>Cartas - ${escapeHtml(p.playerName)}</title><body style="font-family:Inter;padding:12px"><h3>${escapeHtml(p.playerName)} — Modalidad ${p.modality}</h3><div>${list}</div></body>`);
-  }
-
-  // copy selection link to clipboard
-  function copySelectionLink(token){
-    const url = `${location.origin}${location.pathname}?select=${token}`;
-    navigator.clipboard.writeText(url).then(()=> alert('Enlace copiado al portapapeles:\n' + url));
-  }
-
-  // ------------------ Selection flow (single-use links) ------------------
-  // When page loads, check URL param ?select=TOKEN
-  function handleSelectionLinkOnLoad(){
-    const params = new URLSearchParams(location.search);
-    const token = params.get('select');
-    if (!token) return;
-    // find purchase with token
-    const p = purchases.find(x=> x.selectionToken === token);
-    if (!p) {
-      document.body.innerHTML = `<main class="max-w-3xl mx-auto p-6"><div class="mex-frame"><h2 class="text-xl font-bold">Enlace inválido</h2><p>El enlace no es válido o ya fue usado.</p></div></main>`;
-      return;
-    }
-    if (p.selectionUsed) {
-      document.body.innerHTML = `<main class="max-w-3xl mx-auto p-6"><div class="mex-frame"><h2 class="text-xl font-bold">Ya estás en juego</h2><p>Este enlace ya fue usado para seleccionar cartas.</p></div></main>`;
-      return;
-    }
-
-    // render a simple selection UI: show all cards available (not used in other purchases)
-    const used = new Set();
-    purchases.forEach(pp => (pp.card||[]).forEach(cid=> used.add(cid)));
-    const pool = Array.from({length:54},(_,i)=>i+1).filter(id=> !used.has(id));
-    // if not enough pool, allow all
-    const poolToShow = pool.length >= p.modality ? pool : Array.from({length:54},(_,i)=>i+1);
-
-    // build page
-    document.body.innerHTML = `
-      <main class="max-w-5xl mx-auto p-6">
-        <div class="mex-frame">
-          <h2 class="text-2xl font-extrabold">Selecciona tus ${p.modality} cartas — ${escapeHtml(p.playerName)}</h2>
-          <div class="title-accent"></div>
-          <p class="text-sm text-gray-600 mt-2">Selecciona las ${p.modality} cartas que quieres jugar. Una vez confirmes, el enlace quedará inhabilitado.</p>
-          <div id="select-grid" class="select-grid mt-4"></div>
-          <div class="mt-4 flex items-center gap-3">
-            <button id="confirm-selection" class="btn btn-green">Confirmar selección</button>
-            <button id="cancel-selection" class="btn" style="background:#f3f4f6">Cancelar</button>
-            <div id="select-count" class="text-sm text-gray-600 ml-auto">0 / ${p.modality}</div>
-          </div>
-        </div>
-      </main>
-    `;
-    const grid = document.getElementById('select-grid');
-    let selected = new Set();
-    poolToShow.forEach(cid=>{
-      const d = document.createElement('div'); d.className='select-thumb'; d.style.backgroundImage = `url('${cardImageUrl(cid)}')`;
-      d.dataset.cid = cid;
-      d.onclick = ()=> {
-        const idn = parseInt(d.dataset.cid);
-        if (selected.has(idn)){ selected.delete(idn); d.classList.remove('selected'); }
-        else {
-          if (selected.size >= p.modality) { alert(`Sólo puedes seleccionar ${p.modality} cartas.`); return; }
-          selected.add(idn); d.classList.add('selected');
-        }
-        document.getElementById('select-count').textContent = `${selected.size} / ${p.modality}`;
-      };
-      grid.appendChild(d);
-    });
-
-    document.getElementById('confirm-selection').onclick = ()=>{
-      if (selected.size !== p.modality){ alert(`Debes seleccionar ${p.modality} cartas.`); return; }
-      // save selection to purchase
-      p.card = Array.from(selected);
-      p.selectionUsed = true;
-      p.selectionToken = null; // invalidate token
-      savePurchases(purchases);
-      transactions.push({ id: crypto.randomUUID(), type:'select_cards', purchaseId: p.id, player:p.playerName, cards: p.card, timestamp: Date.now() });
-      saveTransactions(transactions);
-      document.body.innerHTML = `<main class="max-w-3xl mx-auto p-6"><div class="mex-frame text-center"><h2 class="text-2xl font-bold">¡Listo!</h2><p>Ya estás en juego — tus cartas se seleccionaron correctamente.</p><p class="text-sm text-gray-600 mt-2">Cierra esta ventana y espera el inicio del juego.</p></div></main>`;
-    };
-    document.getElementById('cancel-selection').onclick = ()=> { location.href = location.pathname; };
-  }
-
-  // ------------------ Winner modal & confetti ------------------
-  function showWinnerModal(winnersList){
-    const modal = document.getElementById('winner-modal');
-    const totalAmount = winnersList.reduce((s,w)=> s + (w.amount||0),0);
-    document.getElementById('winner-text').textContent = `${winnersList.map(w=>w.playerName).join(', ')} ha ganado $${totalAmount.toFixed(2)}`;
-    modal.classList.remove('hidden');
-    // confetti
-    const container = document.createElement('div'); container.id = 'confetti-local'; container.style.position='fixed'; container.style.inset='0'; container.style.pointerEvents='none'; document.body.appendChild(container);
-    const colors = ['#b42222','#0f8a3c','#caa43f','#ff6b6b','#ffd86b','#7ad3a2'];
-    for (let i=0;i<100;i++){
-      const d = document.createElement('div'); d.className='confetti'; d.style.left = `${Math.random()*100}vw`; d.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)]; d.style.width = `${6 + Math.random()*10}px`; d.style.height = d.style.width; d.style.animationDelay = `${Math.random()*0.6}s`; container.appendChild(d);
-    }
-    // reset highlight
-    highlightReset(true);
-  }
-  function closeWinnerModal(){ document.getElementById('winner-modal').classList.add('hidden'); const c=document.getElementById('confetti-local'); if(c) c.remove(); highlightReset(false); disableControls(false); renderAll(); }
-  document.getElementById('btn-close-winner').addEventListener('click', closeWinnerModal);
-
-  // ------------------ Export PDF (report) ------------------
-  async function exportPdfReport(){
-    // simple PDF summary using jsPDF
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit:'pt', format:'a4' });
-    const now = new Date();
-    const dateStr = now.toISOString().slice(0,10);
-    doc.setFontSize(18); doc.text('REPORTE LOTERÍA', 40, 50);
-    doc.setFontSize(11); doc.text(`Fecha: ${now.toLocaleString()}`, 40, 72);
-
-    // sales summary
-    const sales = purchases.reduce((s,p)=> s + (p.totalPaid||0), 0);
-    const totalHouse = purchases.reduce((s,p)=> s + ((p.modality===4?prices.profit4: p.modality===6?prices.profit6: prices.profit9) * (p.initialGames||0)), 0);
-    const pot = Math.max(0, sales - totalHouse);
-    doc.text(`Total ventas: $${sales.toFixed(2)}`, 40, 100);
-    doc.text(`Ganancia casa (estimada): $${totalHouse.toFixed(2)}`, 40, 116);
-    doc.text(`Bolsa en juego: $${pot.toFixed(2)}`, 40, 132);
-
-    // table of purchases (simple)
-    doc.setFontSize(12);
-    let y = 160;
-    doc.text('Compras:', 40, y); y+=16;
-    doc.setFontSize(9);
-    purchases.forEach(p=>{
-      const line = `${p.playerName} | modal:${p.modality} | pagado:$${(p.totalPaid||0).toFixed(2)} | partidas:${p.initialGames} | estado:${p.paymentState} | seleccionado:${p.selectionUsed? 'sí':'no'}`;
-      doc.text(line, 40, y); y+=12;
-      if (y > 720){ doc.addPage(); y = 40; }
-    });
-
-    const fname = `REPORTE_LOTERIA_${dateStr}.pdf`;
-    doc.save(fname);
-  }
-
-  // ------------------ Clear / New day ------------------
-  function clearRecordsForNewDay(){
-    if (!confirm('Borrar todas las compras, transacciones y registros para iniciar un nuevo día?')) return;
-    purchases = []; transactions.push({ id: crypto.randomUUID(), type:'clear_day', timestamp: Date.now()});
-    gameState = defaultGame();
-    saveTransactions(transactions); saveGame(gameState); savePurchases(purchases);
-    alert('Registros borrados. Nuevo día listo.');
-    renderAll();
-  }
-
-  // ------------------ small helpers & UI wiring ------------------
-  function miniConfetti(){ const container = document.createElement('div'); container.style.position='fixed'; container.style.left='20px'; container.style.top='80px'; container.style.zIndex=9999; document.body.appendChild(container); const colors=['#b42222','#0f8a3c','#caa43f','#ff6b6b','#7ad3a2']; for(let i=0;i<20;i++){ const d=document.createElement('div'); d.style.width='6px'; d.style.height='6px'; d.style.borderRadius='50%'; d.style.position='absolute'; d.style.left=(Math.random()*40)+'px'; d.style.top=(Math.random()*40)+'px'; d.style.backgroundColor=colors[Math.floor(Math.random()*colors.length)]; container.appendChild(d); } setTimeout(()=>container.remove(),1200); }
-
-  // Expose some functions to global (used by HTML)
-  window.copySelectionLink = copySelectionLink;
-  window.addGamesPrompt = addGamesPrompt;
-  window.markPendingPaid = markPendingPaid;
-  window.viewCard = viewCard;
-  window.deletePurchase = deletePurchase;
-
-  // ------------------ Event listeners ------------------
-  document.getElementById('shuffle-btn').addEventListener('click', shuffleDeckVisual);
-  document.getElementById('draw-btn').addEventListener('click', drawCard);
-  document.getElementById('auto-btn').addEventListener('click', toggleAuto);
-  document.getElementById('reset-btn').addEventListener('click', ()=> { if(confirm('Reiniciar mazo y estado del juego?')){ gameState = defaultGame(); saveGame(gameState); renderAll(); } });
-
-  document.getElementById('btn-calc').addEventListener('click', ()=>{
-    const budget = parseFloat(document.getElementById('player-budget').value||0);
-    const mods = []; if(document.getElementById('mod4').checked) mods.push(4); if(document.getElementById('mod6').checked) mods.push(6); if(document.getElementById('mod9').checked) mods.push(9);
-    if(!budget || !mods.length) return alert('Captura presupuesto y modalidades');
-    const parts = calculatePartitions(budget, mods);
-    const zero = parts.find(p=>p.games<1); if(zero){ document.getElementById('calc-info').textContent = `Modalidad ${zero.modality} no alcanza 1 partida con la porción (${zero.share}$).`; return; }
-    document.getElementById('calc-info').textContent = 'Resultado: ' + parts.map(p=>`${p.modality}: ${p.games} partidas (precio ${p.price}$, ganancia ${p.profit}$)`).join(' • ');
-  });
-
-  document.getElementById('btn-add-player').addEventListener('click', addPlayer);
-  document.getElementById('save-prices').addEventListener('click', ()=>{
-    prices.price4 = Math.max(1, parseFloat(document.getElementById('price4').value||0));
-    prices.profit4 = Math.max(0, parseFloat(document.getElementById('profit4').value||0));
-    prices.price6 = Math.max(1, parseFloat(document.getElementById('price6').value||0));
-    prices.profit6 = Math.max(0, parseFloat(document.getElementById('profit6').value||0));
-    prices.price9 = Math.max(1, parseFloat(document.getElementById('price9').value||0));
-    prices.profit9 = Math.max(0, parseFloat(document.getElementById('profit9').value||0));
-    savePrices(prices); renderAll(); alert('Precios y ganancias guardadas');
-  });
-  document.getElementById('reset-prices').addEventListener('click', ()=>{ if(!confirm('Reestablecer precios por defecto?')) return; prices = defaultPrices(); savePrices(prices); renderAll(); });
-
-  document.getElementById('export-btn').addEventListener('click', exportPdfReport);
-  document.getElementById('clear-btn').addEventListener('click', clearRecordsForNewDay);
-
-  // Tabs
-  const tabGame = document.getElementById('tab-game'), tabAdmin = document.getElementById('tab-admin');
-  tabGame.addEventListener('click', ()=> { tabGame.classList.add('tab-active'); tabAdmin.classList.remove('tab-active'); document.getElementById('view-admin').classList.add('hidden'); document.getElementById('view-en-game').classList.remove('hidden'); document.getElementById('admin-purchases-section').classList.add('hidden'); window.scrollTo({top:0, behavior:'smooth'}); });
-  tabAdmin.addEventListener('click', ()=> { tabAdmin.classList.add('tab-active'); tabGame.classList.remove('tab-active'); document.getElementById('view-admin').classList.remove('hidden'); document.getElementById('view-en-game').classList.add('hidden'); document.getElementById('admin-purchases-section').classList.remove('hidden'); window.scrollTo({top:0, behavior:'smooth'}); });
-
-  // Keyboard: space draws only in admin mode and if not auto
-  document.addEventListener('keydown',(e)=>{ if(e.code==='Space'){ e.preventDefault(); if(!isAuto && !shuffleAnimating && !document.getElementById('view-admin').classList.contains('hidden')) drawCard(); } });
-
-  // storage sync
-  window.addEventListener('storage',(e)=>{ if(e.key===KEY_PRICES) prices = loadPrices(); if(e.key===KEY_GAME) gameState = loadGame(); if(e.key===KEY_PURCHASES) purchases = loadPurchases(); if(e.key===KEY_TRANSACTIONS) transactions = loadTransactions(); renderAll(); });
-
-  // on load
-  (function init(){
-    prices = loadPrices(); gameState = loadGame(); purchases = loadPurchases(); transactions = loadTransactions();
-    // check if page opened as selection link
-    handleSelectionLinkOnLoad();
-    renderAll();
-  })();
-
-  </script>
-</body>
-</html>
+    const w = window.open('','_blank','width=420,height=420');
+    w.document.write(`<title>Cartas - ${escapeHtml(p.playerName)}</title><body style="font-family:Inter;padding:12px"><

@@ -1116,17 +1116,26 @@ window.addEventListener('storage',(e)=>{
 
 /* handle selection link on load (if present) */
 /* handle selection link on load (if present) */
+/* handle selection link on load (if present) */
 (function init(){
   prices = loadPrices(); gameState = loadGame(); purchases = loadPurchases(); transactions = loadTransactions();
+
+  // *** NUEVO CÓDIGO AÑADIDO: Forzar el reinicio si el estado es corrupto/finalizado ***
+  // Si no hay cartas en el mazo (mazo corrupto) O si el estado es de juego terminado, reiniciamos.
+  if (gameState.deck.length === 0 || gameState.state === 'FINISHED') {
+    gameState = defaultGameState(); // Carga el estado inicial (READY)
+    saveGame(gameState); // Guarda el estado limpio
+  }
+  // *** FIN CÓDIGO REINICIO ***
   
-  // *** SOLUCIÓN FINAL: CIERRE FORZADO DEL MODAL PEGADO ***
+  // *** SOLUCIÓN ANTERIOR: CIERRE FORZADO DEL MODAL PEGADO ***
   const modal = document.getElementById('player-detail-modal');
   if (modal) {
-    modal.style.display = 'none'; // Anula cualquier 'display: block' que lo haya abierto
-    modal.classList.remove('active'); // Anula cualquier clase CSS que lo haya activado
+    modal.style.display = 'none';
+    modal.classList.remove('active');
   }
   // *** FIN CIERRE FORZADO ***
-  
+
   handleSelectionLinkOnLoad();
   renderAll();
 })();

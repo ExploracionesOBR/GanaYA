@@ -22,3 +22,99 @@
     min-height: 100vh;
     padding: 20px;
   }
+header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .mex-title {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #d00000;
+    text-shadow: 3px 3px #fff, 6px 6px #e63946;
+    animation: pulseTitle 2.5s infinite;
+  }
+  .mex-subtitle {
+    color: #008000;
+    font-size: 1.3rem;
+    text-shadow: 1px 1px #fff, 2px 2px #ffd60a;
+  }
+  @keyframes pulseTitle {
+    0%, 100% { color: #d00000; text-shadow: 3px 3px #fff, 6px 6px #e63946; }
+    50% { color: #008000; text-shadow: 3px 3px #fff, 6px 6px #ffd60a; }
+  }
+
+  .btn {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+    transition: transform 0.15s ease;
+  }
+  .btn:hover { transform: scale(1.05); }
+  .btn-blue { background: #0077b6; }
+  .btn-red { background: #d62828; }
+  .btn-green { background: #2a9d8f; }
+
+  .mex-frame {
+    background: white;
+    border: 4px solid #d00000;
+    border-radius: 16px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    padding: 16px;
+  }
+  .mex-frame-small {
+    background: white;
+    border: 3px solid #d00000;
+    border-radius: 14px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 10px;
+  }
+
+  .title-accent {
+    height: 4px;
+    width: 80px;
+    background: linear-gradient(90deg, #e63946, #ffd60a, #2a9d8f);
+    margin: 4px 0 10px;
+    border-radius: 3px;
+  }
+
+  .grid {
+    display: grid;
+    gap: 1rem;
+  }
+  .grid-cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .col-span-2 {
+    grid-column: span 2;
+  }
+  .col-span-1 {
+    grid-column: span 1;
+  }
+
+  .current-card img {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+
+  #players-area img {
+    width: 90px;
+    height: 130px;
+    border-radius: 10px;
+    transition: filter 0.3s ease, transform 0.3s ease;
+  }
+  #players-area img.used {
+    filter: grayscale(1) brightness(0.8);
+    position: relative;
+  }
+
+  .hidden { display: none; }
+
+  #winner-modal {
+    backdrop-filter: blur(3px);
+  }

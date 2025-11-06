@@ -1,131 +1,1127 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎴 GANA YA! 🎴 - Lotería Interactiva Mexicana</title>
-<style>
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #fff8ec;
-    background-image:
-      radial-gradient(#ffd60a 1px, transparent 1px),
-      radial-gradient(#e63946 1px, transparent 1px);
-    background-position: 0 0, 25px 25px;
-    background-size: 50px 50px;
-    color: #222;
-    min-height: 100vh;
-    padding: 20px;
-  }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🎴 GANA YA! 🎴 - Lotería Interactiva Mexicana</title>
 
-  header {
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
+  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    /* Estilos basados en el nuevo tema visual */
+    :root{
+      --rojo:#d00000;
+      --verde:#2a9d8f;
+      --dorado:#ffd60a;
+      --crema:#fff8ec;
+      --sombra: 0 6px 12px rgba(0,0,0,0.15);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--crema);
+      background-image:
+        radial-gradient(#ffd60a 1px, transparent 1px),
+        radial-gradient(#e63946 1px, transparent 1px);
+      background-position: 0 0, 25px 25px;
+      background-size: 50px 50px;
+      color: #222;
+      min-height: 100vh;
+      padding: 20px;
+      -webkit-font-smoothing: antialiased;
+    }
 
-  .mex-title {
-    font-size: 3rem;
-    font-weight: 900;
-    color: #d00000;
-    text-shadow: 3px 3px #fff, 6px 6px #e63946;
-    animation: pulseTitle 2.5s infinite;
-  }
-  .mex-subtitle {
-    color: #008000;
-    font-size: 1.3rem;
-    text-shadow: 1px 1px #fff, 2px 2px #ffd60a;
-  }
-  @keyframes pulseTitle {
-    0%, 100% { color: #d00000; text-shadow: 3px 3px #fff, 6px 6px #e63946; }
-    50% { color: #008000; text-shadow: 3px 3px #fff, 6px 6px #ffd60a; }
-  }
+    header {
+      margin-bottom: 1.5rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .header-content {
+      text-align: center;
+    }
+    .logo-container {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .logo-container img {
+      height: 60px;
+      width: auto;
+    }
 
-  .btn {
-    padding: 10px 14px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    color: white;
-    transition: transform 0.15s ease;
-  }
-  .btn:hover { transform: scale(1.05); }
-  .btn-blue { background: #0077b6; }
-  .btn-red { background: #d62828; }
-  .btn-green { background: #2a9d8f; }
+    /* Nuevo estilo de Título */
+    .mex-title {
+      font-size: 3rem;
+      font-weight: 900;
+      color: #d00000;
+      text-shadow: 3px 3px #fff, 6px 6px #e63946;
+      animation: pulseTitle 2.5s infinite;
+      display: block;
+    }
+    .mex-subtitle {
+      color: #008000;
+      font-size: 1.3rem;
+      text-shadow: 1px 1px #fff, 2px 2px #ffd60a;
+      display: block;
+    }
+    @keyframes pulseTitle {
+      0%, 100% { color: #d00000; text-shadow: 3px 3px #fff, 6px 6px #e63946; }
+      50% { color: #008000; text-shadow: 3px 3px #fff, 6px 6px #ffd60a; }
+    }
 
-  .mex-frame {
-    background: white;
-    border: 4px solid #d00000;
-    border-radius: 16px;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    padding: 16px;
-  }
-  .mex-frame-small {
-    background: white;
-    border: 3px solid #d00000;
-    border-radius: 14px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    padding: 10px;
-  }
+    /* Estilos de Botones */
+    .btn {
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .btn:hover { transform: scale(1.05); }
+    .btn-blue { background: #0077b6; }
+    .btn-red { background: #d62828; }
+    .btn-green { background: #2a9d8f; }
+    .btn-muted{ background:#f3f4f6; color:#111; }
 
-  .title-accent {
-    height: 4px;
-    width: 80px;
-    background: linear-gradient(90deg, #e63946, #ffd60a, #2a9d8f);
-    margin: 4px 0 10px;
-    border-radius: 3px;
-  }
+    /* Estilos de Marcos (Frames) */
+    .mex-frame {
+      background: white;
+      border: 4px solid var(--rojo);
+      border-radius: 16px;
+      box-shadow: var(--sombra);
+      padding: 16px;
+    }
+    .mex-frame-small {
+      background: white;
+      border: 3px solid var(--rojo);
+      border-radius: 14px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 10px;
+    }
 
-  .grid {
-    display: grid;
-    gap: 1rem;
-  }
-  .grid-cols-3 {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .col-span-2 {
-    grid-column: span 2;
-  }
-  .col-span-1 {
-    grid-column: span 1;
-  }
+    /* Estilo de Acento */
+    .title-accent {
+      height: 4px;
+      width: 80px;
+      background: linear-gradient(90deg, #e63946, #ffd60a, #2a9d8f);
+      margin: 4px auto 10px;
+      border-radius: 3px;
+    }
 
-  .current-card img {
-    max-width: 100%;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  }
+    /* Estilos existentes necesarios */
+    .grid { display:grid; gap:12px; }
+    .two-col { grid-template-columns: 2fr 1fr; gap:12px; align-items:start; }
+    .card-grid{ display:grid; gap:6px; }
+    .card-cell{ border-radius:8px; overflow:hidden; background-size:cover; background-position:center; min-height:60px; display:flex; align-items:center; justify-content:center; position:relative; }
+    .grayed{ filter:grayscale(100%) contrast(.9); opacity:.45; transition:filter .35s, opacity .35s; }
+    .sticker{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:20; pointer-events:none; opacity:0.95; }
+    .current-card{ border-radius:10px; min-height:100px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:linear-gradient(180deg,#fff,#fff); box-shadow:0 8px 22px rgba(0,0,0,0.08); }
+    .small-muted{ font-size:13px; color:#6b7280; }
+    .select-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:8px; }
+    .select-thumb{ width:96px;height:96px;border-radius:8px;background-size:cover;background-position:center;border:3px solid transparent; cursor:pointer; }
+    .select-thumb.selected{ border-color:var(--rojo); transform:scale(1.03); }
+    .hidden{ display:none; }
 
-  #players-area img {
-    width: 90px;
-    height: 130px;
-    border-radius: 10px;
-    transition: filter 0.3s ease, transform 0.3s ease;
-  }
-  #players-area img.used {
-    filter: grayscale(1) brightness(0.8);
-    position: relative;
-  }
+    /* New styles for compact player cards */
+    #players-area{
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:12px;
+    }
+    #players-area .player-card{
+      display:flex; flex-direction:column; align-items:center; gap:4px; padding:6px; border-radius:10px; background:#fff;
+      box-shadow:0 4px 10px rgba(0,0,0,0.06); cursor:pointer;
+    }
+    #players-area .cards-row{
+      display:flex; gap:3px; flex-wrap:wrap; justify-content:center;
+    }
+    .mini-card-cell{
+      width:32px; height:42px; border-radius:4px; overflow:hidden; background-size:cover; background-position:center;
+      position:relative;
+    }
+    .player-name-mini{
+      font-weight:700; font-size:12px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; max-width:100%;
+    }
 
-  .hidden { display: none; }
+    /* Player Detail Modal */
+    #player-detail-modal {
+      position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:99999;
+    }
+    #player-detail-modal .modal-content {
+      background:var(--crema);padding:18px;border-radius:12px;max-width:500px;width:94%;
+      border:4px solid var(--rojo);box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    }
+    .player-full-card-grid{
+      display:grid; grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); gap:6px; margin-top:12px;
+    }
+    .player-full-card-grid .card-cell{
+      min-height:110px;
+    }
 
-  #winner-modal {
-    backdrop-filter: blur(3px);
-  }
-</style>
+    .reset-glow{ box-shadow:0 0 18px 4px rgba(255,214,10,0.45); animation: glow 1.2s infinite; }
+    @keyframes glow{0%{box-shadow:0 0 6px rgba(255,214,10,0.25)}50%{box-shadow:0 0 24px rgba(255,214,10,0.45)}100%{box-shadow:0 0 6px rgba(255,214,10,0.25)}}
+    footer{ margin-top:18px; font-size:13px; color:#6b7280; text-align:center; }
+    @media (max-width:900px){ .two-col{ grid-template-columns:1fr; } .current-card{ min-height:120px } }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-JCq5QxR0xg2sXr3o8mRk4R6E2G6b1iYJ+6m1wC5Q4Gk7g8tQb8q7W8yF3V0yZ9J6s0m8Kq3s3GZ2d3T4e5y6w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
 
 <header>
-  <h1 class="mex-title">🎉 ¡GANA YA!🎉 </h1>
-  <p class="mex-subtitle">Diviertete y gana con este estilo tradicional mexicano</p>
+  <div class="logo-container">
+    <img src="logo_1_entrada.png" alt="Logo Lotería">
+  </div>
+  
+  <div class="header-content">
+    <h1 class="mex-title">🎉 ¡GANA YA!🎉 </h1>
+    <p class="mex-subtitle">Lotería interactiva — estilo tradicional mexicano</p>
+  </div>
+
+  <button id="toggle-admin-visible" class="btn btn-muted" style="position:absolute;top:50%;right:18px;transform:translateY(-50%);font-size:24px;width:40px;height:40px;padding:0;border-radius:50%;line-height:1;box-shadow:0 4px 10px rgba(0,0,0,0.06);" title="Abrir Administrador">⚙️</button>
 </header>
 
-<main>
+<section id="pot-area" class="mex-frame" style="margin-bottom:12px;text-align:center;">
+    <h2 style="margin:0;color:var(--dorado);">🟩 BOLSA EN JUEGO</h2>
+    <div class="title-accent" style="margin-left:auto;margin-right:auto;"></div>
+    <div id="pot-amount" style="font-family:'Alfa Slab One', serif;font-size:48px;line-height:1;margin-top:8px;">$0.00</div>
+</section>
+
+<main class="grid two-col">
+
+  <section id="left-main" class="mex-frame">
+    <h2 style="text-align:center;margin-bottom:6px;">🧩 CARTAS DE JUGADORES ACTIVOS</h2>
+    <div class="title-accent" style="margin-left:auto;margin-right:auto"></div>
+    <div id="players-area" style="margin-top:12px;
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:12px;">
+      <div class="text-center small-muted" style="padding:18px;grid-column:1/-1;">Aún no hay jugadores / compras en esta modalidad.</div>
+    </div>
+  </section>
+
+  <aside id="right-side" style="display:flex;
+  flex-direction:column; gap:12px;">
+
+    <div class="mex-frame-small" id="control-partida">
+      <h3 style="text-align:center;margin:0;">🎛️ CONTROL DE PARTIDA</h3>
+      <div class="title-accent" style="margin-top:8px;margin-left:auto;margin-right:auto;"></div>
+      <div style="display:flex;
+      gap:8px; flex-wrap:wrap; justify-content:center; margin-top:12px;">
+        <button id="shuffle-btn" class="btn btn-blue">BARAJEAR</button>
+        <button id="draw-btn" class="btn btn-red">TIRAR CARTA</button>
+        <button id="auto-btn" class="btn btn-green">CARTAS AUTOMÁTICO</button>
+        <button id="reset-btn" class="btn btn-blue">REINICIAR</button>
+      </div>
+      <div style="text-align:center;margin-top:8px;" class="small-muted">Cartas restantes: <span id="deck-count">54</span></div>
+    </div>
+
+    <div class="mex-frame-small" id="current-card-container">
+      <h3 style="text-align:center;margin:0;">🎴 CARTA EN JUEGO</h3>
+      <div class="title-accent" style="margin-top:8px;margin-left:auto;margin-right:auto;"></div>
+      <div id="current-card" class="current-card" style="margin-top:12px; min-height:100px;">
+        <div class="small-muted">Esperando barajeo...</div>
+      </div>
+    </div>
+
+    <div class="mex-frame-small">
+      <h3 style="text-align:center;margin:0;">🔄 ÚLTIMAS 3 CARTAS</h3>
+      <div class="title-accent" style="margin-top:8px;margin-left:auto;margin-right:auto;"></div>
+      <div id="last-cards" style="display:flex;
+      gap:8px; justify-content:center; margin-top:12px;">
+        <div class="small-muted">Ninguna carta aún.</div>
+      </div>
+    </div>
+
+    <div class="mex-frame-small">
+      <h3 style="text-align:center;margin:0;">🏆 ÚLTIMOS GANADORES</h3>
+      <div class="title-accent" style="margin-top:8px;margin-left:auto;margin-right:auto;"></div>
+      <div id="last-winners" style="margin-top:10px;
+      text-align:center;" class="small-muted">Aún no hay ganadores.</div>
+    </div>
+
+  </aside>
+
+  <section id="view-admin" class="mex-frame hidden" style="grid-column:1/-1; margin-top:12px;">
+    <h2 style="text-align:center;margin-bottom:6px;">⚙ Administrador</h2>
+    <div class="title-accent" style="margin-left:auto;margin-right:auto"></div>
+
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; margin-top: 18px;">
+
+        <div class="mex-frame-small">
+            <h4 style="margin:0;">💵 Caja / Configuración General</h4>
+            <div class="title-accent" style="margin-top:8px;margin-left:0;"></div>
+
+            <h5 style="margin:8px 0 4px;">Precios y Ganancia</h5>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <div><label class="small-muted">Costo 2×2</label><input id="price4" type="number" value="10" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ddd"></div>
+                <div><label class="small-muted">Ganancia 2×2</label><input id="profit4" type="number" value="2" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ddd"></div>
+                <div><label class="small-muted">Costo 2×3</label><input id="price6" type="number" value="12" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ddd"></div>
+                <div><label class="small-muted">Ganancia 2×3</label><input id="profit6" type="number" value="3" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ddd"></div>
+                <div><label class="small-muted">Costo 3×3</label><input id="price9" type="number" value="15" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ddd"></div>
+                <div><label class="small-muted">Ganancia 3×3</label><input id="profit9" type="number" value="4" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ddd"></div>
+            </div>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+                <button id="save-prices" class="btn btn-green">Guardar Precios</button>
+                <button id="reset-prices" class="btn btn-muted">Reset</button>
+            </div>
+
+            <h5 style="margin:12px 0 4px;">Control de Partidas (Disponibles)</h5>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <div><label class="small-muted">Total 2×2</label><input id="gamesTotal4" type="number" value="50" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ddd"></div>
+                <div><label class="small-muted">Vendidas 2×2</label><div id="gamesSold4" class="small-muted" style="padding:8px;">0 / 50</div></div>
+                <div><label class="small-muted">Total 2×3</label><input id="gamesTotal6" type="number" value="50" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ddd"></div>
+                <div><label class="small-muted">Vendidas 2×3</label><div id="gamesSold6" class="small-muted" style="padding:8px;">0 / 50</div></div>
+                <div><label class="small-muted">Total 3×3</label><input id="gamesTotal9" type="number" value="50" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ddd"></div>
+                <div><label class="small-muted">Vendidas 3×3</label><div id="gamesSold9" class="small-muted" style="padding:8px;">0 / 50</div></div>
+            </div>
+            <button id="save-totals" class="btn btn-green" style="margin-top:8px;">Guardar Totales</button>
+        </div>
+
+        <div class="mex-frame-small">
+            <h4 style="margin:0;">🧍‍♂️ Registrar Jugador</h4>
+            <div class="title-accent" style="margin-top:8px;margin-left:0;"></div>
+            <div style="margin-top:8px; display:grid; gap:8px;">
+                <input id="player-name" placeholder="Nombre del jugador" style="padding:8px;border-radius:6px;border:1px solid #ddd;">
+                <input id="player-account" placeholder="Número de cuenta (Pago)" style="padding:8px;border-radius:6px;border:1px solid #ddd;">
+                <input id="player-cell" placeholder="Celular (Opcional)" style="padding:8px;border-radius:6px;border:1px solid #ddd;">
+                <input id="player-budget" type="number" placeholder="Presupuesto $" value="0" style="padding:8px;border-radius:6px;border:1px solid #ddd;">
+
+                <h5 style="margin:0 0 -4px;">Modalidades (Cant. Cartas a comprar)</h5>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <div style="flex:1;">
+                        <label class="small-muted">2×2 ($<span id="price4-lbl">10</span>)</label>
+                        <input type="number" id="games4-count" value="0" min="0" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ddd;">
+                    </div>
+                    <div style="flex:1;">
+                        <label class="small-muted">2×3 ($<span id="price6-lbl">12</span>)</label>
+                        <input type="number" id="games6-count" value="0" min="0" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ddd;">
+                    </div>
+                    <div style="flex:1;">
+                        <label class="small-muted">3×3 ($<span id="price9-lbl">15</span>)</label>
+                        <input type="number" id="games9-count" value="0" min="0" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ddd;">
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:8px;">
+                    <button id="btn-calc" class="btn btn-blue" style="flex:1;">Calcular Total</button>
+                    <button id="btn-add-player" class="btn btn-green" style="flex:1;">Añadir Compra</button>
+                </div>
+                <div id="calc-info" class="small-muted" style="text-align:center;">Total a pagar: $0.00</div>
+            </div>
+        </div>
+
+        <div class="mex-frame-small" style="grid-column:1/-1;">
+            <h4 style="margin:0;">📋 Administración de Jugadores / Compras</h4>
+            <div class="title-accent" style="margin-top:8px;margin-left:0;"></div>
+            <div style="overflow-x:auto; max-height:400px; border:1px solid #eee; border-radius:8px; margin-top:8px;">
+                <table style="width:100%; min-width:800px; border-collapse:collapse; font-size:13px;">
+                    <thead><tr style="background:#fafafa;"><th>Jugador (modal)</th><th>Modalidad</th><th>Partidas Rest.</th><th>Partidas Total</th><th>Pagado ($)</th><th>Estado</th><th>Acciones</th></tr></thead>
+                    <tbody id="players-table"><tr><td colspan="7" style="text-align:center;color:#888;padding:16px">No hay compras registradas.</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mex-frame-small">
+            <h4 style="margin:0;">📄 Reportes</h4>
+            <div class="title-accent" style="margin-top:8px;margin-left:0;"></div>
+            <div style="display:flex; gap:8px; margin-top:8px; justify-content:center; flex-wrap:wrap;">
+                <button id="export-btn" class="btn btn-blue">📊 Generar PDF</button>
+                <button id="clear-btn" class="btn btn-red">🧹 Reiniciar Día</button>
+            </div>
+        </div>
+    </div>
+  </section>
+
+</main>
+
+<div id="winner-modal" class="hidden" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:9999">
+  <div style="background:white;padding:18px;border-radius:12px;max-width:420px;width:94%;text-align:center;">
+    <img src="logo_1_entrada.png" alt="logo" style="width:80px;height:80px;object-fit:contain;margin:0 auto 8px;">
+    <h2 style="color:var(--rojo);margin-bottom:6px">🎉 ¡FELICIDADES! 🎉</h2>
+    <div id="winner-text" style="font-weight:700;margin-bottom:10px">[Jugador] ha ganado $0.00</div>
+    <button id="btn-close-winner" class="btn btn-blue">Aceptar</button>
+  </div>
+</div>
+
+<div id="player-detail-modal" class="hidden">
+  <div class="modal-content">
+    <h3 style="margin:0;"><span id="modal-player-name"></span> — <span id="modal-player-modality"></span></h3>
+    <div class="title-accent" style="margin-top:8px;margin-left:0;"></div>
+
+    <div style="font-size:14px; margin-top:8px;">
+        <div><strong>Cuenta:</strong> <span id="modal-player-account"></span></div>
+        <div><strong>Celular:</strong> <span id="modal-player-cell"></span></div>
+        <div><strong>Estado:</strong> <span id="modal-player-status"></span></div>
+        <div><strong>Pagado:</strong> $<span id="modal-player-paid"></span></div>
+    </div>
+
+    <h4 style="margin:12px 0 4px;">Cartas seleccionadas:</h4>
+    <div id="modal-player-cards" class="player-full-card-grid">
+        </div>
+    <div style="text-align:center;margin-top:18px;">
+        <button id="btn-close-detail" class="btn btn-blue">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>Sube <strong>logo_1_entrada.png</strong> en la raíz y la carpeta <strong>Cartas_baraja_loteria/</strong> con las 54 imágenes (.jpg) con nombres exactos.</div>
+</footer>
+
+<script>
+/* ===================== Lotería v7.0 — Script completo (Modificado) ===================== */
+
+/* -------------------- CONFIG: ruta fija de cartas -------------------- */
+const CARD_IMAGE_BASE_PATH = 'Cartas_baraja_loteria/';
+const CARD_NAME_MAP = {
+  1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",
+  5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",
+  9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",
+  13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",
+  17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",
+  21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",
+  25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",
+  29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",
+  33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",
+  37:"37 el mundo-min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",
+  41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",
+  45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",
+  49:"49 el pino-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",
+  53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg"
+};
+const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] || `${id}.jpg`);
+
+/* -------------------- Storage keys y defaults -------------------- */
+const KEY_PRICES = 'loteria_prices_v70';
+const KEY_GAME   = 'loteria_game_v70';
+const KEY_PUR    = 'loteria_purchases_v70';
+const KEY_TX     = 'loteria_transactions_v70';
+const KEY_TOTALS = 'loteria_games_totals_v70';
+
+const defaultPrices = ()=>({
+  price4:10, profit4:2, gamesTotal4:50,
+  price6:12, profit6:3, gamesTotal6:50,
+  price9:15, profit9:4, gamesTotal9:50
+});
+const defaultGame = ()=>({
+  modality:9,
+  deck: Array.from({length:54},(_,i)=>i+1),
+  drawnCards:[],
+  currentCardId:0,
+  pendingWinners:[],
+  lastWinners:[]
+});
+/* -------------------- Estado -------------------- */
+let prices = loadPrices();
+let gameState = loadGame();
+let purchases = loadPurchases();
+let transactions = loadTransactions();
+let gamesTotals = loadGamesTotals(); // Nuevo estado para partidas vendidas/totales
+let isAuto=false, autoInterval=null, shuffleAnimating=false;
+
+
+/* -------------------- WebAudio shuffle sound -------------------- */
+const audioCtx = (typeof AudioContext !== 'undefined') ?
+new AudioContext() : null;
+function playShuffleSound(){
+  if (!audioCtx) return;
+  const now = audioCtx.currentTime;
+  const bufferSize = audioCtx.sampleRate * 0.18;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i=0;i<bufferSize;i++){ data[i] = (Math.random()*2-1) * (1 - i/bufferSize); }
+  const src = audioCtx.createBufferSource(); src.buffer = buffer;
+  const band = audioCtx.createBiquadFilter(); band.type='highpass'; band.frequency.value = 1200;
+  const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0.001, now); gain.gain.exponentialRampToValueAtTime(0.45, now+0.01); gain.gain.exponentialRampToValueAtTime(0.001, now+0.22);
+  src.connect(band); band.connect(gain); gain.connect(audioCtx.destination);
+  src.start(now); src.stop(now+0.26);
+}
+
+/* -------------------- Storage helpers -------------------- */
+function loadPrices(){ try{ return JSON.parse(localStorage.getItem(KEY_PRICES)) || defaultPrices(); }catch(e){ return defaultPrices(); } }
+function savePrices(p){ localStorage.setItem(KEY_PRICES, JSON.stringify(p)); prices=p; }
+function loadGame(){ try{ return JSON.parse(localStorage.getItem(KEY_GAME)) || defaultGame(); }catch(e){ return defaultGame(); } }
+function saveGame(g){ localStorage.setItem(KEY_GAME, JSON.stringify(g)); gameState=g; }
+function loadPurchases(){ try{ return JSON.parse(localStorage.getItem(KEY_PUR)) || []; }catch(e){ return []; } }
+function savePurchases(arr){ localStorage.setItem(KEY_PUR, JSON.stringify(arr)); purchases=arr; }
+function loadTransactions(){ try{ return JSON.parse(localStorage.getItem(KEY_TX)) || []; }catch(e){ return []; } }
+function saveTransactions(arr){ localStorage.setItem(KEY_TX, JSON.stringify(arr)); transactions=arr; }
+function loadGamesTotals(){ try{ return JSON.parse(localStorage.getItem(KEY_TOTALS)) || {sold4:0,sold6:0,sold9:0}; }catch(e){ return {sold4:0,sold6:0,sold9:0}; } }
+function saveGamesTotals(t){ localStorage.setItem(KEY_TOTALS, JSON.stringify(t)); gamesTotals=t; }
+
+
+/* -------------------- Utils -------------------- */
+function shuffleArray(a){ const arr=a.slice(); for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
+function escapeHtml(t){ return (t+'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;','\'':'&#39;'}[m])); }
+if (!crypto || !crypto.randomUUID) { crypto = crypto || {}; crypto.randomUUID = ()=> 'id-'+Math.random().toString(36).slice(2,9); }
+
+/* -------------------- Ensure deck -------------------- */
+if (!gameState.deck || !gameState.deck.length) gameState.deck = Array.from({length:54},(_,i)=>i+1);
+
+/* -------------------- RENDER -------------------- */
+function renderAll(){
+  // prices inputs
+  document.getElementById('price4').value = prices.price4;
+  document.getElementById('profit4').value = prices.profit4;
+  document.getElementById('price6').value = prices.price6;
+  document.getElementById('profit6').value = prices.profit6;
+  document.getElementById('price9').value = prices.price9;
+  document.getElementById('profit9').value = prices.profit9;
+
+  // Game prices for player registration labels
+  document.getElementById('price4-lbl').textContent = prices.price4;
+  document.getElementById('price6-lbl').textContent = prices.price6;
+  document.getElementById('price9-lbl').textContent = prices.price9;
+
+  // Games Totals
+  document.getElementById('gamesTotal4').value = prices.gamesTotal4;
+  document.getElementById('gamesTotal6').value = prices.gamesTotal6;
+  document.getElementById('gamesTotal9').value = prices.gamesTotal9;
+
+  // Calculate sold games
+  const sold4 = purchases.filter(p=>p.modality===4).reduce((s,p)=> s + (p.initialGames||0), 0);
+  const sold6 = purchases.filter(p=>p.modality===6).reduce((s,p)=> s + (p.initialGames||0), 0);
+  const sold9 = purchases.filter(p=>p.modality===9).reduce((s,p)=> s + (p.initialGames||0), 0);
+  gamesTotals = {sold4, sold6, sold9};
+  saveGamesTotals(gamesTotals);
+
+  document.getElementById('gamesSold4').textContent = `${sold4} / ${prices.gamesTotal4}`;
+  document.getElementById('gamesSold6').textContent = `${sold6} / ${prices.gamesTotal6}`;
+  document.getElementById('gamesSold9').textContent = `${sold9} / ${prices.gamesTotal9}`;
+
+  // disable sold out options in player register
+  document.getElementById('games4-count').max = prices.gamesTotal4 - sold4;
+  document.getElementById('games6-count').max = prices.gamesTotal6 - sold6;
+  document.getElementById('games9-count').max = prices.gamesTotal9 - sold9;
+
+  document.getElementById('games4-count').disabled = (prices.gamesTotal4 - sold4) <= 0;
+  document.getElementById('games6-count').disabled = (prices.gamesTotal6 - sold6) <= 0;
+  document.getElementById('games9-count').disabled = (prices.gamesTotal9 - sold9) <= 0;
+
+
+  // deck count & pot (BOLSA EN JUEGO)
+  document.getElementById('deck-count').textContent = gameState.deck.length;
+  const sales = purchases.reduce((s,p)=> s + (p.totalPaid||0), 0);
+  const totalHouse = purchases.reduce((s,p)=> s + ((p.modality===4?prices.profit4: p.modality===6?prices.profit6: prices.profit9) * (p.initialGames||0)), 0);
+  const pot = Math.max(0, sales - totalHouse);
+  document.getElementById('pot-amount').textContent = `$${pot.toFixed(2)}`;
+
+  // players area (Compact cards)
+  const modality = gameState.modality || parseInt(document.getElementById('price9')?.value || 9);
+  const area = document.getElementById('players-area');
+  const active = purchases.filter(p=>p.modality===modality && p.gamesLeft>0 && (p.gameStatus==='JUGANDO' || p.gameStatus==='POR PAGAR'));
+  if (!active.length){
+    area.innerHTML = `<div class=""small-muted"" style=""text-align:center;padding:18px;grid-column:1/-1;"">Aún no hay jugadores / compras en esta modalidad.</div>`;
+  } else {
+    area.innerHTML = active.map(purchaseCardHtmlPublic).join('');
+  }
+
+  // current card
+  const currentCardEl = document.getElementById('current-card');
+  if (gameState.currentCardId){
+    currentCardEl.innerHTML = `<div style="background-image:url('${cardImageUrl(gameState.currentCardId)}'); background-size:contain; background-position:center; width:100px; height:100px;"></div><div style="margin-top:8px;font-weight:700">Carta ${gameState.currentCardId}</div>`;
+  } else {
+    currentCardEl.innerHTML = `<div class="small-muted">Esperando barajeo...</div>`;
+  }
+
+  // last 3
+  const last = (gameState.drawnCards||[]).slice(-3).reverse();
+  const lc = document.getElementById('last-cards');
+  lc.innerHTML = last.length ?
+  last.map(cid=>`<div style="width:64px;height:96px;background-image:url('${cardImageUrl(cid)}');background-size:cover;background-position:center;border-radius:6px;box-shadow:0 6px 12px rgba(0,0,0,0.08)"></div>`).join('') : `<div class="small-muted">Ninguna carta aún.</div>`;
+
+  // last winners
+  document.getElementById('last-winners').innerHTML = (gameState.lastWinners||[]).slice(-5).reverse().map(w => `<div style="font-weight:600">${escapeHtml(w.playerName)} — $${w.amount.toFixed(2)} <span class="small-muted">(${new Date(w.timestamp).toLocaleTimeString()})</span></div>`).join('') || 'Aún no hay ganadores.';
+
+  // players table admin
+  renderPlayersTable();
+
+  // persist local
+  savePrices(prices); saveGame(gameState); savePurchases(purchases); saveTransactions(transactions);
+}
+
+function purchaseCardHtmlPublic(p){
+  const cells = (p.card||[]).map(cid => {
+    const passed = (p.markedCards||[]).includes(cid);
+    return `<div class="mini-card-cell ${passed? 'grayed':''}"" style="background-image:url('${cardImageUrl(cid)}')"">
+      ${passed? `<div class="sticker" style="opacity:1;"><img src="logo_1_entrada.png" style="width:60%;height:60%;object-fit:contain"/></div>` : ''}
+    </div>`;
+  }).join('');
+  // Clickable compact card
+  return `<div class="player-card" onclick="showPlayerDetailModal('${p.id}')" title="Ver detalles de ${escapeHtml(p.playerName)}">
+    <div class="player-name-mini">${escapeHtml(p.playerName)}</div>
+    <div class="small-muted">${p.gamesLeft||0} Partidas (${p.modality} cartas)</div>
+    <div class="cards-row">${cells}</div>
+  </div>`;
+}
+
+function renderPlayersTable(){
+  const tbody = document.getElementById('players-table');
+  if (!purchases.length){ tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:#888;padding:16px">No hay compras registradas.</td></tr>`; return;
+  }
+  tbody.innerHTML = purchases.map(p=>{
+    let stateText = 'JUGANDO';
+
+    // Determine the current state based on logic
+    if (p.paymentState === 'pending') {
+        stateText = 'POR PAGAR';
+    } else if (p.paymentState === 'paid' && p.wins > 0) {
+        stateText = 'PAGADO'; // Paid after win
+    } else if (p.gamesLeft === 0) {
+        stateText = 'JUGADO';
+    } else {
+        stateText = 'JUGANDO';
+    }
+
+    const modText = p.modality===4? '2x2' : p.modality===6? '2x3' : '3x3';
+
+    const payBtn = stateText === 'POR PAGAR' ? `<button onclick="markPendingPaid('${p.id}')" class="btn btn-green" style="padding:6px 10px;font-size:12px;margin-right:4px;">Marcar Pagado</button>` : '';
+    const viewBtn = `<button onclick="showPlayerDetailModalAdmin('${p.id}')" class="btn btn-blue" style="padding:6px 10px;font-size:12px;margin-right:4px;">Ver</button>`;
+    const deleteBtn = `<button onclick="deletePurchase('${p.id}')" class="btn btn-red" style="padding:6px 10px;font-size:12px;">Eliminar</button>`;
+
+    return `<tr>
+      <td style="padding:6px;border-bottom:1px solid #f3f3f3;cursor:pointer;" onclick="showPlayerDetailModalAdmin('${p.id}')">${escapeHtml(p.playerName)}</td>
+      <td style="padding:6px;border-bottom:1px solid #f3f3f3">${modText}</td>
+      <td style="padding:6px;border-bottom:1px solid #f3f3f3">${p.gamesLeft||0}</td>
+      <td style="padding:6px;border-bottom:1px solid #f3f3f3">${p.initialGames||0}</td>
+      <td style="padding:6px;border-bottom:1px solid #f3f3f3">$${(p.totalPaid||0).toFixed(2)}</td>
+      <td style="padding:6px;border-bottom:1px solid #f3f3f3">${stateText}</td>
+      <td style="padding:6px;border-bottom:1px solid #f3f3f3;white-space:nowrap;">${payBtn}${viewBtn}${deleteBtn}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* -------------------- SHUFFLE visual + logical -------------------- */
+function shuffleDeckVisual(){
+  if (shuffleAnimating) return;
+  shuffleAnimating=true;
+  disableControls(true);
+  try{ playShuffleSound(); }catch(e){}
+  // animation...
+  const picks = shuffleArray(Array.from({length:54},(_,i)=>i+1)).slice(0,9);
+  const overlay = document.createElement('div'); overlay.style.position='fixed'; overlay.style.inset='0'; overlay.style.zIndex=9998; overlay.style.display='flex'; overlay.style.alignItems='center'; overlay.style.justifyContent='center'; overlay.style.pointerEvents='none';
+  document.body.appendChild(overlay);
+  picks.forEach((cid,i)=>{
+    const d=document.createElement('div'); d.style.width='120px'; d.style.height='160px'; d.style.borderRadius='10px'; d.style.backgroundImage=`url('${cardImageUrl(cid)}')`; d.style.backgroundSize='cover'; d.style.backgroundPosition='center'; d.style.position='absolute'; d.style.transform=`translate(${(Math.random()*400-200)}px, ${(Math.random()*200-100)}px) rotate(${Math.random()*60-30}deg)`; d.style.transition='transform .6s ease, opacity .6s ease'; overlay.appendChild(d);
+    setTimeout(()=>{ d.style.transform = `translate(0px,0px) rotate(0deg)`; }, 80 + i*30);
+    setTimeout(()=>{ d.style.transform = `translate(${(Math.random()*400-200)}px, ${(Math.random()*400-200)}px) rotate(${Math.random()*720-360}deg)`; d.style.opacity='0'; }, 900 + i*40);
+  });
+  setTimeout(()=>{
+    gameState.deck = shuffleArray(Array.from({length:54},(_,i)=>i+1));
+    gameState.drawnCards = [];
+    gameState.currentCardId = 0;
+    saveGame(gameState);
+    overlay.remove();
+    shuffleAnimating=false;
+    disableControls(false);
+    transactions.push({ id: crypto.randomUUID(), type:'shuffle', timestamp: Date.now()});
+    saveTransactions(transactions);
+    renderAll();
+  }, 1500);
+}
+
+function drawCard(){
+  if (isAuto || shuffleAnimating) return;
+  if (!gameState.deck.length){ alert('Mazo vacío. Barajea para continuar.'); return; }
+  const next = gameState.deck.pop();
+  gameState.drawnCards.push(next);
+  gameState.currentCardId = next;
+  transactions.push({ id: crypto.randomUUID(), type:'draw', card: next, timestamp: Date.now()});
+  saveTransactions(transactions);
+  processCard(next);
+  renderAll();
+}
+
+function processCard(cardId){
+  const winners = [];
+  purchases.forEach((p, idx) => {
+    if (!p.isActive || (p.gamesLeft||0) <= 0) return;
+    if (p.modality && p.card && p.card.includes(cardId) && !(p.markedCards||[]).includes(cardId)) {
+      purchases[idx].markedCards = [...(p.markedCards||[]), cardId];
+    }
+    if ((p.markedCards||[]).length === p.modality) winners.push({ idx, id: p.id, name: p.playerName });
+  });
+
+  if (winners.length > 0){
+    stopAutoMode();
+    disableControls(true);
+    const totalPaid = purchases.reduce((s,p)=> s + (p.totalPaid||0), 0);
+    const totalHouse = purchases.reduce((s,p)=> s + ((p.modality===4?prices.profit4: p.modality===6?prices.profit6: prices.profit9) * (p.initialGames||0)), 0);
+    const potAmount = Math.max(0, totalPaid - totalHouse);
+    const winnerRecords = [];
+
+    winners.forEach(w=>{
+      const p = purchases[w.idx];
+      p.gamesLeft = Math.max(0, (p.gamesLeft||0) - 1);
+      p.wins = (p.wins||0) + 1;
+      p.paymentState = 'pending';
+      p.gameStatus = 'POR PAGAR'; // NUEVO ESTADO: Pendiente de pago/payout
+      p.markedCards = []; // Reset marked cards for the next game (if gamesLeft > 0)
+      const rec = { id: crypto.randomUUID(), purchaseId: p.id, playerName: p.playerName, amount: potAmount / winners.length, timestamp: Date.now(), paid:false };
+      gameState.pendingWinners = (gameState.pendingWinners||[]).concat(rec);
+      gameState.lastWinners = (gameState.lastWinners||[]).concat(rec);
+      transactions.push({ id: crypto.randomUUID(), type:'winner', player: p.playerName, amount: rec.amount, timestamp: Date.now()});
+      winnerRecords.push(rec);
+    });
+    saveTransactions(transactions); saveGame(gameState); savePurchases(purchases);
+    showWinnerModal(winnerRecords);
+    highlightReset(true);
+    renderAll();
+  } else {
+    savePurchases(purchases); saveGame(gameState);
+    renderAll();
+  }
+}
+
+/* -------------------- Auto mode -------------------- */
+function startAutoMode(){
+  if (!gameState.deck.length){ alert('Mazo vacío. Barajea.'); return; }
+  isAuto=true;
+  document.getElementById('auto-btn').textContent='DETENER AUTOMÁTICO';
+  document.getElementById('auto-btn').classList.remove('btn-green');
+  document.getElementById('auto-btn').style.background='#d62828'; // Use new red btn color
+  autoInterval = setInterval(()=>{
+    if (!isAuto) return;
+    if (!gameState.deck.length){ stopAutoMode(); return; }
+    const next = gameState.deck.pop();
+    gameState.drawnCards.push(next);
+    gameState.currentCardId = next;
+    transactions.push({ id: crypto.randomUUID(), type:'draw', card: next, timestamp: Date.now()});
+    processCard(next);
+    renderAll();
+  }, 2000);
+}
+function stopAutoMode(){
+  isAuto=false;
+  document.getElementById('auto-btn').textContent='CARTAS AUTOMÁTICO';
+  document.getElementById('auto-btn').classList.add('btn-green');
+  document.getElementById('auto-btn').style.background='';
+  if (autoInterval){ clearInterval(autoInterval); autoInterval=null; }
+}
+function toggleAuto(){ if (isAuto) stopAutoMode(); else startAutoMode(); }
+
+/* -------------------- Controls helpers -------------------- */
+function disableControls(disable){
+  ['shuffle-btn','draw-btn','auto-btn','reset-btn','btn-add-player','btn-calc','save-prices','clear-btn','export-btn','save-totals'].forEach(id=>{
+    const el=document.getElementById(id); if (el) el.disabled = disable;
+  });
+  document.querySelectorAll('#right-side button').forEach(b=>b.style.opacity = disable? '0.5':'1');
+}
+function highlightReset(on){
+  const btn=document.getElementById('reset-btn'); if (!btn) return;
+  if(on) btn.classList.add('reset-glow'); else btn.classList.remove('reset-glow');
+}
+
+/* -------------------- Purchases / Registration -------------------- */
+function addPlayer(){
+  const name = (document.getElementById('player-name').value||'').trim();
+  const account = (document.getElementById('player-account').value||'').trim();
+  const cell = (document.getElementById('player-cell').value||'').trim();
+  const budget = parseFloat(document.getElementById('player-budget').value||0);
+
+  const games4 = parseInt(document.getElementById('games4-count').value||0);
+  const games6 = parseInt(document.getElementById('games6-count').value||0);
+  const games9 = parseInt(document.getElementById('games9-count').value||0);
+
+  const purchasesToMake = [];
+  if(games4>0) purchasesToMake.push({mod:4, games:games4, price:prices.price4, profit:prices.profit4});
+  if(games6>0) purchasesToMake.push({mod:6, games:games6, price:prices.price6, profit:prices.profit6});
+  if(games9>0) purchasesToMake.push({mod:9, games:games9, price:prices.price9, profit:prices.profit9});
+
+  const totalCost = purchasesToMake.reduce((sum,p) => sum + (p.games * p.price), 0);
+
+  document.getElementById('calc-info').textContent=`Total a pagar: $${totalCost.toFixed(2)}`;
+
+  if(!name) return alert('Captura nombre');
+  if(!account) return alert('Captura número de cuenta');
+  if(purchasesToMake.length === 0) return alert('Selecciona al menos 1 partida');
+  if(budget < totalCost) return alert(`El presupuesto de $${budget.toFixed(2)} es insuficiente para el total de $${totalCost.toFixed(2)}.`);
+
+  // Check availability against totals
+  const sold4 = purchases.filter(p=>p.modality===4).reduce((s,p)=> s + (p.initialGames||0), 0);
+  const sold6 = purchases.filter(p=>p.modality===6).reduce((s,p)=> s + (p.initialGames||0), 0);
+  const sold9 = purchases.filter(p=>p.modality===9).reduce((s,p)=> s + (p.initialGames||0), 0);
+
+  if((sold4 + games4) > prices.gamesTotal4) return alert(`Solo quedan ${prices.gamesTotal4 - sold4} partidas 2x2.`);
+  if((sold6 + games6) > prices.gamesTotal6) return alert(`Solo quedan ${prices.gamesTotal6 - sold6} partidas 2x3.`);
+  if((sold9 + games9) > prices.gamesTotal9) return alert(`Solo quedan ${prices.gamesTotal9 - sold9} partidas 3x3.`);
+
+
+  // create a separate purchase per single game
+  purchasesToMake.forEach(part=>{
+    const games = part.games;
+    for (let i=0;i<games;i++){
+      const purchase = {
+        id: crypto.randomUUID(),
+        playerId: crypto.randomUUID(),
+        playerName: name,
+        playerAccount: account,
+        playerCell: cell,
+        modality: part.mod,
+        initialGames: 1,
+        gamesLeft: 1,
+        totalPaid: part.price,
+        wins:0,
+        paymentState:'paid',
+        gameStatus: 'JUGANDO',
+        isActive:true,
+        card: [],
+        markedCards: [],
+        selectionToken: crypto.randomUUID(),
+        selectionUsed: false,
+        createdAt: Date.now()
+      };
+      purchases.push(purchase);
+      transactions.push({ id: crypto.randomUUID(), type:'purchase', purchaseId: purchase.id, playerName: name, modality: part.mod, games:1, price: part.price, timestamp: Date.now()});
+    }
+  });
+
+  savePurchases(purchases);
+  saveTransactions(transactions);
+
+  // Reset form
+  document.getElementById('player-name').value = '';
+  document.getElementById('player-account').value = '';
+  document.getElementById('player-cell').value = '';
+  document.getElementById('player-budget').value = '0';
+  document.getElementById('games4-count').value = '0';
+  document.getElementById('games6-count').value = '0';
+  document.getElementById('games9-count').value = '0';
+
+  // Copy link of the *first* generated purchase for convenience
+  const firstPurchase = purchases.find(p => p.playerName === name && p.selectionUsed === false);
+  if (firstPurchase) {
+      copySelectionLink(firstPurchase.selectionToken);
+  } else {
+      alert('Jugador/Compra añadida. No hay más enlaces de selección disponibles.');
+  }
+  renderAll();
+}
+
+document.getElementById('btn-calc').addEventListener('click', ()=>{
+  const budget = parseFloat(document.getElementById('player-budget').value||0);
+  const games4 = parseInt(document.getElementById('games4-count').value||0);
+  const games6 = parseInt(document.getElementById('games6-count').value||0);
+  const games9 = parseInt(document.getElementById('games9-count').value||0);
+
+  const cost4 = games4 * prices.price4;
+  const cost6 = games6 * prices.price6;
+  const cost9 = games9 * prices.price9;
+  const totalCost = cost4 + cost6 + cost9;
+
+  document.getElementById('calc-info').textContent=`Total a pagar: $${totalCost.toFixed(2)}. ${budget >= totalCost ? 'Presupuesto Suficiente.' : 'Presupuesto Insuficiente!'}`;
+});
+
+function copySelectionLink(token){
+  // FIX: Use window.location.origin for an absolute, remote-friendly URL
+  const url = `${window.location.origin}${location.pathname}?select=${token}`;
+  navigator.clipboard.writeText(url).then(()=> alert('Enlace copiado al portapapeles:\n' + url)).catch(()=> { prompt('Copia manualmente:', url); });
+}
+
+function markPendingPaid(purchaseId){
+  const p=purchases.find(x=>x.id===purchaseId);
+  if(p){
+    p.paymentState='paid';
+    p.gameStatus='PAGADO'; // NUEVO ESTADO: Pago del premio completado
+    savePurchases(purchases);
+    renderAll();
+  }
+}
+function deletePurchase(purchaseId){
+  if(!confirm('Eliminar esta compra?')) return;
+  purchases = purchases.filter(p=>p.id!==purchaseId);
+  transactions.push({ id: crypto.randomUUID(), type:'delete_purchase', purchaseId, timestamp: Date.now()});
+  saveTransactions(transactions); savePurchases(purchases); renderAll();
+}
+
+/* -------------------- Player Detail Modal -------------------- */
+
+// Function to show player details (for game view and admin view)
+function showPlayerDetailModal(purchaseId){
+    const p = purchases.find(x=>x.id===purchaseId);
+    if(!p) return alert('Compra no encontrada');
+
+    // Logic for State
+    let stateText = '';
+    if (p.paymentState === 'pending') {
+        stateText = 'POR PAGAR';
+    } else if (p.paymentState === 'paid' && p.wins > 0) {
+        stateText = 'PAGADO';
+    } else if (p.gamesLeft === 0) {
+        stateText = 'JUGADO';
+    } else {
+        stateText = 'JUGANDO';
+    }
+
+    document.getElementById('modal-player-name').textContent = escapeHtml(p.playerName);
+    document.getElementById('modal-player-modality').textContent = `Modalidad ${p.modality} cartas`;
+    document.getElementById('modal-player-account').textContent = escapeHtml(p.playerAccount||'N/A');
+    document.getElementById('modal-player-cell').textContent = escapeHtml(p.playerCell||'N/A');
+    document.getElementById('modal-player-status').textContent = stateText;
+    document.getElementById('modal-player-paid').textContent = (p.totalPaid||0).toFixed(2);
+
+    const cardsHtml = (p.card||[]).map(cid=> {
+        const passed = (p.markedCards||[]).includes(cid);
+        return `<div class="card-cell ${passed? 'grayed':''}"" style="background-image:url('${cardImageUrl(cid)}'); min-height:110px;">
+            ${passed? `<div class="sticker" style="opacity:1;"><img src="logo_1_entrada.png" style="width:46%;height:46%;object-fit:contain"/></div>` : ''}
+        </div>`;
+    }).join('');
+
+    document.getElementById('modal-player-cards').innerHTML = cardsHtml;
+
+    document.getElementById('player-detail-modal').classList.remove('hidden');
+}
+
+// Admin detail modal uses the same view but is called from the table
+function showPlayerDetailModalAdmin(purchaseId){
+    showPlayerDetailModal(purchaseId);
+}
+document.getElementById('btn-close-detail').addEventListener('click', ()=>{
+    document.getElementById('player-detail-modal').classList.add('hidden');
+});
+
+
+/* -------------------- Selection links flow (one-time use) -------------------- */
+function handleSelectionLinkOnLoad(){
+  const params = new URLSearchParams(location.search);
+  const token = params.get('select');
+  if (!token) return;
+  const p = purchases.find(x=> x.selectionToken === token);
+  if (!p){
+    document.body.innerHTML = `<main style="max-width:720px;margin:40px auto;padding:18px"><div class="mex-frame" style="text-align:center;"><h2>Enlace inválido</h2><p>El enlace no es válido o ya fue usado.</p></div></main>`;
+    return;
+  }
+  if (p.selectionUsed){
+    document.body.innerHTML = `<main style="max-width:720px;margin:40px auto;padding:18px"><div class="mex-frame" style="text-align:center;"><h2>Ya estás en juego</h2><p>Este enlace ya fue usado para seleccionar cartas.</p></div></main>`;
+    return;
+  }
+
+  // available pool (avoid duplicates)
+  const used = new Set(purchases.filter(x=>x.modality===p.modality && x.card.length>0).flatMap(x=>x.card).filter(cid=>cid));
+  let pool = Array.from({length:54},(_,i)=>i+1).filter(id=> !used.has(id));
+  if (pool.length < p.modality) pool = shuffleArray(Array.from({length:54},(_,i)=>i+1));
+  pool = shuffleArray(pool).slice(0, 18); // Show max 18 options
+
+  const isSmallScreen = window.innerWidth < 600;
+
+  document.body.innerHTML = `<main style="max-width:720px;margin:${isSmallScreen?'18px':'40px'} auto;padding:18px">
+    <div class="mex-frame" style="text-align:center;">
+        <h2 style="margin:0;color:var(--rojo);">Selección de Cartas</h2>
+        <div class="title-accent" style="margin:8px auto 12px;"></div>
+        <p style="font-weight:600;margin-bottom:4px;">${escapeHtml(p.playerName)} — Modalidad: ${p.modality} cartas</p>
+        <p class="small-muted" style="margin-top:0;">Selecciona <strong id="select-count">0 / ${p.modality}</strong> cartas:</p>
+
+        <div id="select-grid" class="select-grid" style="margin:12px 0;"></div>
+
+        <div style="display:flex;gap:12px;margin-top:18px;">
+            <button id="cancel-selection" class="btn btn-red" style="flex:1;">Cancelar</button>
+            <button id="confirm-selection" class="btn btn-green" style="flex:1;">Confirmar Selección</button>
+        </div>
+    </div>
+  </main>`;
+
+  const grid = document.getElementById('select-grid');
+  const selected = new Set();
+
+  pool.forEach(cid=>{
+    const d=document.createElement('div');
+    d.classList.add('select-thumb');
+    d.style.backgroundImage = `url('${cardImageUrl(cid)}')`;
+    d.dataset.id = cid;
+    d.onclick = ()=>{
+      const idn=parseInt(d.dataset.id);
+      if (selected.has(idn)){
+        selected.delete(idn);
+        d.classList.remove('selected');
+      } else {
+        if (selected.size >= p.modality) {
+          alert(`Sólo puedes seleccionar ${p.modality} cartas.`);
+          return;
+        }
+        selected.add(idn);
+        d.classList.add('selected');
+      }
+      document.getElementById('select-count').textContent = `${selected.size} / ${p.modality}`;
+    };
+    grid.appendChild(d);
+  });
+
+  document.getElementById('confirm-selection').onclick = ()=>{
+    if (selected.size !== p.modality){
+      alert(`Debes seleccionar ${p.modality} cartas.`);
+      return;
+    }
+    p.card = Array.from(selected);
+    p.selectionUsed = true;
+    p.selectionToken = null;
+    savePurchases(purchases);
+    transactions.push({ id: crypto.randomUUID(), type:'select_cards', purchaseId: p.id, player:p.playerName, cards: p.card, timestamp: Date.now() });
+    saveTransactions(transactions);
+
+    document.body.innerHTML = `<main style="max-width:720px;margin:40px auto;padding:18px"><div class="mex-frame" style="text-align:center;"><h2>¡Listo!</h2><p>Ya estás en juego — tus cartas se seleccionaron correctamente.</p><p class="small-muted">Cierra esta ventana y espera el inicio del juego.</p></div></main>`;
+  };
+  document.getElementById('cancel-selection').onclick = ()=> { location.href = location.pathname; };
+}
+
+/* -------------------- Winner modal & confetti -------------------- */
+function showWinnerModal(winnersList){
+  const modal = document.getElementById('winner-modal');
+  const totalAmount = winnersList.reduce((s,w)=> s + (w.amount||0),0);
+  document.getElementById('winner-text').textContent = `${winnersList.map(w=>w.playerName).join(', ')} ha ganado $${totalAmount.toFixed(2)}`;
+  modal.classList.remove('hidden');
+
+  // confetti simple
+  const container = document.createElement('div'); container.id = 'confetti-local'; container.style.position='fixed'; container.style.inset='0'; container.style.zIndex=9999; container.style.pointerEvents='none'; document.body.appendChild(container);
+  const colors = ['#b42222','#0f8a3c','#caa43f','#ff6b6b','#ffd86b','#7ad3a2'];
+  for (let i=0;i<80;i++){
+    const d=document.createElement('div'); d.style.position='absolute'; d.style.left=Math.random()*100+'%'; d.style.top='100%'; d.style.background=colors[Math.floor(Math.random()*colors.length)]; d.style.width=(6+Math.random()*10)+'px'; d.style.height=d.style.width; d.style.borderRadius='2px'; d.style.opacity='0.95'; d.style.transform='translateY(0)'; d.style.transition='transform 2s cubic-bezier(.2,.7,.2,1), opacity 2s'; container.appendChild(d);
+    setTimeout(()=>{ d.style.transform=`translateY(-${200+Math.random()*400}px) rotate(${Math.random()*720}deg)`; d.style.opacity='0'; }, 40 + Math.random()*400);
+  }
+  setTimeout(()=>{ const c=document.getElementById('confetti-local'); if(c) c.remove(); }, 2200);
+}
+
+document.getElementById('btn-close-winner').addEventListener('click', ()=>{
+  document.getElementById('winner-modal').classList.add('hidden');
+  renderAll();
+  disableControls(false);
+  highlightReset(false);
+});
+
+/* -------------------- PDF export (Reporte) -------------------- */
+async function exportPdfReport(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // New filename format: Reporte_Loteria_YYYY-MM-DD.pdf
+  const date = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const filename = `Reporte_Loteria_${date}.pdf`;
+
+  doc.setFontSize(22);
+  doc.text('Reporte Lotería GANA YA!', 10, 20);
+  doc.setFontSize(12);
+  doc.text(`Fecha: ${new Date().toLocaleString()}`, 10, 30);
+
+  let y = 40;
+  const potAmount = document.getElementById('pot-amount').textContent;
+  doc.text(`Bolsa en Juego: ${potAmount}`, 10, y);
+  y += 10;
+
+  // Assuming autoTable plugin is NOT available, using basic text
+  doc.text('--- Compras y Estado de Jugadores ---', 10, y);
+  y += 6;
+
+  purchases.forEach(p => {
+    let stateText = '';
+    if (p.paymentState === 'pending') {
+        stateText = 'POR PAGAR';
+    } else if (p.paymentState === 'paid' && p.wins > 0) {
+        stateText = 'PAGADO';
+    } else if (p.gamesLeft === 0) {
+        stateText = 'JUGADO';
+    } else {
+        stateText = 'JUGANDO';
+    }
+
+    // Simple table row simulation
+    if (y > 280) { // New page if near bottom
+        doc.addPage();
+        y = 10;
+    }
+    doc.setFontSize(10);
+    doc.text(`Jugador: ${p.playerName} (${p.modality} cartas)`, 10, y);
+    doc.text(` | Partidas: ${p.gamesLeft}/${p.initialGames}`, 70, y);
+    doc.text(` | Pagado: $${p.totalPaid.toFixed(2)}`, 110, y);
+    doc.text(` | Estado: ${stateText}`, 150, y);
+    y += 5;
+  });
+
+  doc.save(filename);
+  alert(`Reporte ${filename} generado. Si desea tablas estilizadas, asegúrese de incluir 'jspdf-autotable' en el <head>.`);
+}
+
+function clearRecordsForNewDay(){
+  if(!confirm('¡ADVERTENCIA! ¿Reiniciar el día? Se eliminarán TODAS las compras, transacciones y enlaces de selección, y el mazo se barajeará. Se mantendrán solo los precios y totales de partidas.')) return;
+  purchases = [];
+  transactions = [];
+  gameState = defaultGame();
+  saveTransactions(transactions);
+  saveGame(gameState);
+  savePurchases(purchases);
+  alert('Registros borrados. Nuevo día listo.');
+  renderAll();
+}
+
+/* -------------------- Event listeners -------------------- */
+document.getElementById('shuffle-btn').addEventListener('click', shuffleDeckVisual);
+document.getElementById('draw-btn').addEventListener('click', drawCard);
+document.getElementById('auto-btn').addEventListener('click', toggleAuto);
+document.getElementById('reset-btn').addEventListener('click', ()=>{
+  if(confirm('Reiniciar mazo y estado del juego?')){
+    gameState = defaultGame();
+    saveGame(gameState);
+    renderAll();
+  }
+});
+document.getElementById('btn-add-player').addEventListener('click', addPlayer);
+document.getElementById('save-prices').addEventListener('click', ()=>{
+  prices.price4 = parseFloat(document.getElementById('price4').value||0);
+  prices.profit4 = parseFloat(document.getElementById('profit4').value||0);
+  prices.price6 = parseFloat(document.getElementById('price6').value||0);
+  prices.profit6 = parseFloat(document.getElementById('profit6').value||0);
+  prices.price9 = parseFloat(document.getElementById('price9').value||0);
+  prices.profit9 = parseFloat(document.getElementById('profit9').value||0);
+  savePrices(prices);
+  alert('Precios y ganancias guardadas');
+  renderAll();
+});
+document.getElementById('save-totals').addEventListener('click', ()=>{
+  prices.gamesTotal4 = parseInt(document.getElementById('gamesTotal4').value||0);
+  prices.gamesTotal6 = parseInt(document.getElementById('gamesTotal6').value||0);
+  prices.gamesTotal9 = parseInt(document.getElementById('gamesTotal9').value||0);
+  savePrices(prices);
+  alert('Totales de partidas guardados.');
+  renderAll();
+});
+document.getElementById('reset-prices').addEventListener('click', ()=>{
+  if(!confirm('Reestablecer precios por defecto?')) return;
+  prices = defaultPrices();
+  savePrices(prices);
+  renderAll();
+});
+document.getElementById('export-btn').addEventListener('click', exportPdfReport);
+document.getElementById('clear-btn').addEventListener('click', clearRecordsForNewDay);
+document.getElementById('toggle-admin-visible').addEventListener('click', ()=>{
+  const v=document.getElementById('view-admin');
+  v.classList.toggle('hidden');
+});
+
+/* Keyboard: space draws only in main view and if not auto */
+document.addEventListener('keydown',(e)=>{
+  if(e.code==='Space'){
+    e.preventDefault();
+    if(!isAuto && !shuffleAnimating && document.getElementById('view-admin').classList.contains('hidden')) drawCard();
+  }
+});
+
+/* storage sync */
+window.addEventListener('storage',(e)=>{
+  if(e.key===KEY_PRICES) prices = loadPrices();
+  if(e.key===KEY_GAME) gameState = loadGame();
+  if(e.key===KEY_PUR) purchases = loadPurchases();
+  if(e.key===KEY_TX) transactions = loadTransactions();
+  renderAll();
+});
+
+/* handle selection link on load (if present) */
+(function init(){
+  prices = loadPrices(); gameState = loadGame(); purchases = loadPurchases(); transactions = loadTransactions();
+  // If page opened for selection token, handle it and exit (that function replaces body)
+  handleSelectionLinkOnLoad();
+  renderAll();
+})();
+
+</script>
+</body>
+</html>

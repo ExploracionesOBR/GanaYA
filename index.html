@@ -1,535 +1,192 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>GANA YA! — Lotería (v6)</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --rojo:#b42222; --verde:#0f8a3c; --dorado:#caa43f; --crema:#f6f1e6; --sombra: 0 10px 24px rgba(0,0,0,0.08);
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lotería Layout</title>
+<style>
+  /* Reset y tipografía básica */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f2f2f2;
+    color: #333;
+    padding: 20px;
+  }
+
+  /* Grid principal */
+  .container {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* 2/3 jugadores, 1/3 aside */
+    gap: 20px;
+    min-height: 90vh;
+  }
+
+  /* Cards de jugadores */
+  .players-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
+
+  .player-card {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .player-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  }
+
+  .player-card.active {
+    border: 3px solid #4CAF50;
+    background-color: #e6ffe6;
+  }
+
+  /* Aside de control */
+  aside {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .control-card, .latest-card, .winner-card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Títulos */
+  h2 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #555;
+  }
+
+  /* Responsivo */
+  @media (max-width: 900px) {
+    .container {
+      grid-template-columns: 1fr; /* una sola columna en móviles */
     }
-    body{ font-family:Inter,system-ui,-apple-system; background:var(--crema); color:#1f2937; margin:0; -webkit-font-smoothing:antialiased;}
-    .brand-title{ font-family: "Alfa Slab One", serif; color:var(--rojo); letter-spacing:1px; }
-    .tab-btn{ border-radius:999px; padding:.45rem .85rem; font-weight:700; box-shadow: 0 6px 18px rgba(0,0,0,.06); background:transparent; border:none; cursor:pointer; }
-    .tab-active{ background: linear-gradient(90deg,#fef2f2,#fff); border: 3px solid var(--rojo); color: var(--rojo); }
-    .mex-frame{ background:#fff; border-radius:12px; padding:14px; box-shadow: var(--sombra); position:relative; overflow:visible; }
-    .mex-border{ border:4px solid var(--rojo); border-radius:10px; padding:10px; box-shadow: 0 6px 18px rgba(0,0,0,0.04); background:#fff; }
-    .title-accent{ display:inline-block; height:8px; width:72px; background: linear-gradient(90deg,var(--dorado),#e6c05b); border-radius:6px; margin-top:6px; }
-    .card-cell{ border-radius:8px; overflow:hidden; background-size:cover; background-position:center; min-height:50px; position:relative; box-shadow: 0 4px 8px rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; }
-    .card-img-small{ width:64px; height:64px; border-radius:6px; object-fit:cover; display:block; }
-    .card-grid-gap{ gap:6px; }
-    .sticker{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:20; pointer-events:none; opacity:0; transform:scale(.6); animation: stickerPop .6s ease forwards; }
-    @keyframes stickerPop{ 0%{ transform: scale(.4); opacity:0;}60%{transform:scale(1.2);opacity:1;}100%{transform:scale(1);opacity:1;} }
-    .grayed{ filter:grayscale(100%) contrast(.9); opacity:.5; transition:filter .35s, opacity .35s; }
-    .current-card{ border-radius:14px; box-shadow: 0 12px 30px rgba(0,0,0,0.08); min-height:170px; display:flex; align-items:center; justify-content:center; background: linear-gradient(180deg,#fff,#fff); }
-    .confetti{ position: fixed; width: 10px; height: 10px; top:100%; animation: confetti 2s ease-out forwards; z-index:120; border-radius:2px; }
-    @keyframes confetti{ 0%{ transform: translateY(0) rotate(0); opacity:1 } 100%{ transform: translateY(-420px) rotate(720deg); opacity:0 } }
-    .shuffle-overlay{ position: fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:60; pointer-events:none; background: rgba(0,0,0,0.15); }
-    .shuffle-card{ width:120px; height:160px; border-radius:10px; background-size:cover; background-position:center; box-shadow:0 10px 30px rgba(0,0,0,0.25); transform-origin:center; }
-    .reset-glow{ box-shadow:0 0 18px 4px rgba(202,164,63,0.45); animation: glow 1.2s infinite; }
-    @keyframes glow{ 0%{box-shadow:0 0 6px rgba(202,164,63,0.25);}50%{box-shadow:0 0 24px rgba(202,164,63,0.45);}100%{box-shadow:0 0 6px rgba(202,164,63,0.25);} }
-    .btn{ padding:.55rem .9rem; border-radius:.6rem; font-weight:700; cursor:pointer; }
-    .btn-red{ background:var(--rojo); color:white; }
-    .btn-blue{ background:#1565d8; color:white; }
-    .btn-green{ background:var(--verde); color:white; }
-    .small{ font-size:.85rem; }
-    .row-disabled{ opacity:.45; filter:grayscale(.2); }
-    .animate-create{ transform-origin:center; animation: create-pop .45s ease forwards; }
-    @keyframes create-pop{ 0%{ transform: scale(.6); opacity:0 } 60%{ transform: scale(1.05); opacity:1 } 100%{ transform: scale(1); } }
-    @media (max-width:1024px){ .current-card{ min-height:140px } .card-img-small{ width:52px;height:52px } }
-    .small-muted{ font-size:.85rem; color:#6b7280; }
-  </style>
+    aside {
+      order: -1; /* coloca aside arriba si es móvil */
+    }
+  }
+
+  /* Botones */
+  button {
+    padding: 8px 12px;
+    margin: 5px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+</style>
 </head>
-<body class="min-h-screen">
-  <!-- HEADER -->
-  <header class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center gap-6 justify-between">
-    <div class="flex items-center gap-4">
-      <img id="logo-top" src="logo_1_entrada.png" alt="Logo" class="w-16 h-16 rounded-full shadow-lg cursor-pointer" onerror="this.onerror=null;this.src='https://placehold.co/80x80/b42222/ffffff?text=LOGO'">
-      <div>
-        <h1 class="brand-title text-4xl md:text-5xl">GANA YA!</h1>
-        <div class="text-xs text-gray-600 mt-1">Lotería interactiva — estilo tradicional mexicano</div>
-      </div>
-    </div>
-    <div class="flex items-center gap-4">
-      <div class="flex items-center gap-2">
-        <button id="tab-game" class="tab-btn tab-active">🃏 En Juego</button>
-        <button id="tab-admin" class="tab-btn">⚙</button>
-      </div>
-      <div class="bg-green-700 text-white p-3 rounded-xl shadow-lg flex flex-col items-center min-w-[120px]">
-        <span class="text-xs font-semibold uppercase">BOLSA EN JUEGO</span>
-        <span id="pot-amount" class="text-xl md:text-2xl font-extrabold">$0.00</span>
-      </div>
-    </div>
-  </header>
+<body>
 
-  <!-- MAIN -->
-  <main class="max-w-7xl mx-auto px-4 pb-12">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      <!-- EN JUEGO VIEW -->
-      <section id="view-en-game" class="lg:col-span-8 flex flex-col gap-6">
-        <div class="mex-frame">
-          <h2 class="text-2xl font-extrabold text-gray-800">CARTAS DE JUGADORES ACTIVOS</h2>
-          <div class="title-accent"></div>
-          <div id="players-area" class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div class="text-center text-gray-500 p-8 col-span-full">Aún no hay jugadores / compras en esta modalidad.</div>
-          </div>
-        </div>
-
-        <div class="mex-frame">
-          <h3 class="text-xl font-extrabold text-gray-800">CARTA EN JUEGO</h3>
-          <div class="title-accent"></div>
-          <div id="current-card" class="mt-4 current-card text-center">
-            <div class="text-gray-400">Esperando barajeo...</div>
-          </div>
-        </div>
-
-        <div class="mex-frame">
-          <h3 class="text-lg font-extrabold text-gray-800">ÚLTIMAS 3 CARTAS</h3>
-          <div class="title-accent"></div>
-          <div id="last-cards" class="mt-4 flex gap-2 flex-wrap"><div class="text-gray-400">Ninguna carta aún.</div></div>
-        </div>
-
-        <div class="mex-frame">
-          <h3 class="text-lg font-extrabold text-gray-800">ÚLTIMOS GANADORES</h3>
-          <div class="title-accent"></div>
-          <div id="last-winners" class="mt-4 text-center text-gray-600 small-muted">Aún no hay ganadores.</div>
-        </div>
-      </section>
-
-      <!-- ADMIN VIEW -->
-      <aside id="view-admin" class="lg:col-span-4 hidden flex flex-col gap-6">
-        <div class="mex-frame">
-          <h3 class="text-lg font-extrabold text-gray-800">CONTROL DE PARTIDA</h3>
-          <div class="title-accent"></div>
-          <div class="mt-4 flex flex-col gap-3">
-            <label class="text-sm font-semibold text-gray-600">Modalidad actual</label>
-            <select id="modality-select" class="w-full border rounded-lg p-2">
-              <option value="4">4 imágenes (2x2)</option>
-              <option value="6">6 imágenes (2x3)</option>
-              <option value="9" selected>9 imágenes (3x3)</option>
-            </select>
-            <div class="flex gap-2 mt-3">
-              <button id="shuffle-btn" class="btn btn-blue flex-1">BARAJEAR</button>
-              <button id="draw-btn" class="btn btn-red flex-1">TIRAR CARTA</button>
-            </div>
-            <div class="flex gap-2">
-              <button id="auto-btn" class="btn btn-green flex-1">CARTAS AUTOMÁTICO</button>
-              <button id="reset-btn" class="btn btn-blue flex-1">REINICIAR</button>
-            </div>
-            <div class="text-sm mt-2 text-gray-600">Cartas restantes: <span id="deck-count" class="font-bold">54</span></div>
-          </div>
-        </div>
-
-        <div class="mex-frame">
-          <h3 class="text-lg font-extrabold text-gray-800">CAJA / CONFIGURACIÓN</h3>
-          <div class="title-accent"></div>
-          <div class="grid grid-cols-2 gap-3 mt-3">
-            <div><label class="text-sm text-gray-700 font-semibold">Costo carta 2×2</label><input id="price4" type="number" class="w-full border rounded-lg p-2" value="10"></div>
-            <div><label class="text-sm text-gray-700 font-semibold">Costo carta 2×3</label><input id="price6" type="number" class="w-full border rounded-lg p-2" value="12"></div>
-            <div><label class="text-sm text-gray-700 font-semibold">Costo carta 3×3</label><input id="price9" type="number" class="w-full border rounded-lg p-2" value="15"></div>
-            <div><label class="text-sm text-gray-700 font-semibold">Ganancia casa por carta</label><input id="houseProfit" type="number" class="w-full border rounded-lg p-2" value="2"></div>
-          </div>
-        </div>
-
-        <div class="mex-frame">
-          <h3 class="text-lg font-extrabold text-gray-800">REGISTRAR JUGADOR (CAJA)</h3>
-          <div class="title-accent"></div>
-          <div class="mt-3 flex flex-col gap-3">
-            <div><label class="text-sm font-semibold text-gray-600">Nombre del jugador</label><input id="player-name" type="text" class="w-full border rounded-lg p-2" placeholder="Ej. Juan Pérez"></div>
-            <div><label class="text-sm font-semibold text-gray-600">Presupuesto ($)</label><input id="player-budget" type="number" class="w-full border rounded-lg p-2" value="0"></div>
-            <div><label class="text-sm font-semibold text-gray-600">Modalidades</label>
-              <div class="flex gap-3 mt-1"><label><input type="checkbox" id="mod4" class="mr-1"> 2×2</label><label><input type="checkbox" id="mod6" class="mr-1"> 2×3</label><label><input type="checkbox" id="mod9" class="mr-1"> 3×3</label></div>
-            </div>
-            <button id="btn-add-player" class="btn btn-green mt-2">AÑADIR JUGADOR</button>
-            <div id="calc-info" class="text-sm text-gray-600"></div>
-          </div>
-        </div>
-
-        <div class="mex-frame">
-          <h3 class="text-lg font-extrabold text-gray-800">REPORTES / TRANSACCIONES</h3>
-          <div class="title-accent"></div>
-          <div class="mt-3 space-y-2">
-            <button id="export-btn" class="btn btn-blue w-full">Exportar reporte (JSON)</button>
-            <button id="clear-btn" class="btn" style="background:#fee9d6;border-radius:.6rem;width:100%">Borrar registros / Nuevo día</button>
-            <div class="text-xs text-gray-500 mt-2">Guarda el JSON antes de borrar.</div>
-          </div>
-        </div>
-      </aside>
-    </div>
-
-    <!-- Tabla admin -->
-    <section id="admin-purchases-section" class="mt-8 mex-frame hidden">
-      <h3 class="text-xl font-extrabold text-gray-800">ADMINISTRACIÓN DE JUGADORES</h3>
-      <div class="title-accent"></div>
-      <div class="overflow-x-auto mt-4">
-        <table class="w-full text-sm border-collapse">
-          <thead><tr class="bg-gray-100 text-gray-700"><th class="p-2 border">Jugador</th><th class="p-2 border">Modalidad</th><th class="p-2 border">Partidas</th><th class="p-2 border">Pagado</th><th class="p-2 border">Ganadas</th><th class="p-2 border">Pago</th><th class="p-2 border">Acciones</th></tr></thead>
-          <tbody id="players-table" class="text-center"><tr><td colspan="7" class="p-4 text-gray-500">No hay compras registradas.</td></tr></tbody>
-        </table>
-      </div>
-    </section>
-  </main>
-
-  <!-- SHUFFLE OVERLAY -->
-  <div id="shuffle-overlay" class="shuffle-overlay hidden"></div>
-
-  <!-- WINNER MODAL -->
-  <div id="winner-modal" class="fixed inset-0 bg-black/60 hidden z-50 flex items-center justify-center">
-    <div class="bg-white rounded-2xl p-8 text-center shadow-xl max-w-md w-full animate-create">
-      <img src="logo_1_entrada.png" class="w-20 h-20 mx-auto mb-4" alt="logo">
-      <h2 class="text-2xl font-extrabold text-red-700 mb-2">🎉 FELICIDADES 🎉</h2>
-      <p id="winner-text" class="text-lg font-semibold text-gray-700">[Jugador] ha ganado $0.00</p>
-      <button id="btn-close-winner" class="btn btn-blue mt-5">Aceptar</button>
-    </div>
+<div class="container">
+  <!-- Izquierda: Cards de jugadores -->
+  <div class="players-grid" id="playersGrid">
+    <div class="player-card" data-id="1">Jugador 1</div>
+    <div class="player-card" data-id="2">Jugador 2</div>
+    <div class="player-card" data-id="3">Jugador 3</div>
+    <div class="player-card" data-id="4">Jugador 4</div>
+    <div class="player-card" data-id="5">Jugador 5</div>
+    <div class="player-card" data-id="6">Jugador 6</div>
   </div>
 
-  <footer class="max-w-7xl mx-auto px-4 py-6 text-sm text-gray-600">
-    <p>Sube <strong>logo_1_entrada.png</strong> en la raíz y la carpeta <strong>Cartas_baraja_loteria/</strong> con las 54 imágenes (.jpg) con nombres exactos.</p>
-  </footer>
+  <!-- Derecha: Aside de control -->
+  <aside>
+    <div class="control-card">
+      <h2>Control ADMIN</h2>
+      <button onclick="nextCard()">Siguiente carta</button>
+      <button onclick="declareWinner()">Declarar ganador</button>
+    </div>
 
-  <script>
-  /*******************************
-   * Lotería GANA YA! — Script v6
-   *******************************/
-  // Card name map (exact file names you provided)
-  const CARD_IMAGE_BASE_PATH = 'Cartas_baraja_loteria/';
-  const CARD_NAME_MAP = {
-    1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",
-    5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",
-    9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",
-    13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",
-    17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",
-    21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",
-    25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",
-    29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",
-    33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",
-    37:"37 el mundo-min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",
-    41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",
-    45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",
-    49:"49 el pino-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",
-    53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg"
-  };
+    <div class="latest-card">
+      <h2>Carta en juego</h2>
+      <p id="currentCard">-</p>
+      <h2>Últimas cartas</h2>
+      <p id="lastCards">-</p>
+    </div>
 
-  // storage keys
-  const KEY_PRICES = 'loteria_prices_v6';
-  const KEY_GAME = 'loteria_game_v6';
-  const KEY_PURCHASES = 'loteria_purchases_v6';
-  const KEY_TRANSACTIONS = 'loteria_transactions_v6';
+    <div class="winner-card">
+      <h2>Últimos ganadores</h2>
+      <ul id="winnersList">
+      </ul>
+    </div>
+  </aside>
+</div>
 
-  // defaults
-  const defaultPrices = ()=>({ price4:10, price6:12, price9:15, houseProfit:2 });
-  const defaultGame = ()=>({ modality:9, deck:Array.from({length:54},(_,i)=>i+1), drawnCards:[], currentCardId:0, pendingWinners:[], lastWinners:[] });
+<script>
+  const playersGrid = document.getElementById('playersGrid');
+  const currentCardEl = document.getElementById('currentCard');
+  const lastCardsEl = document.getElementById('lastCards');
+  const winnersListEl = document.getElementById('winnersList');
 
-  // state
-  let prices = loadPrices();
-  let gameState = loadGame();
-  let purchases = loadPurchases();
-  let transactions = loadTransactions();
-  let isAuto=false, autoInterval=null, shuffleAnimating=false;
-  let lastWinnerRecords=[];
+  let cards = Array.from({length: 20}, (_, i) => i + 1); // cartas 1-20
+  let lastCards = [];
+  let currentCard = null;
+  let winners = [];
 
-  // AUDIO: generate shuffle sound with Web Audio API (no external files)
-  const audioCtx = (typeof AudioContext !== 'undefined') ? new AudioContext() : null;
-  function playShuffleSound(){
-    if (!audioCtx) return;
-    const now = audioCtx.currentTime;
-    // create short noise burst filtered to sound like cards
-    const bufferSize = audioCtx.sampleRate * 0.25;
-    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i=0;i<bufferSize;i++){ data[i] = (Math.random()*2-1) * (1 - i/bufferSize); }
-    const src = audioCtx.createBufferSource(); src.buffer = buffer;
-    const band = audioCtx.createBiquadFilter(); band.type='highpass'; band.frequency.value = 1200;
-    const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0.001, now); gain.gain.exponentialRampToValueAtTime(0.5, now+0.01); gain.gain.exponentialRampToValueAtTime(0.001, now+0.25);
-    src.connect(band); band.connect(gain); gain.connect(audioCtx.destination);
-    src.start(now); src.stop(now+0.3);
+  function nextCard() {
+    if(cards.length === 0){
+      alert('No hay más cartas.');
+      return;
+    }
+    // Saca una carta aleatoria
+    const idx = Math.floor(Math.random() * cards.length);
+    currentCard = cards.splice(idx, 1)[0];
+    currentCardEl.textContent = currentCard;
+
+    // Actualiza últimas cartas
+    lastCards.unshift(currentCard);
+    if(lastCards.length > 5) lastCards.pop();
+    lastCardsEl.textContent = lastCards.join(', ');
+
+    // Limpiar highlights
+    document.querySelectorAll('.player-card').forEach(c => c.classList.remove('active'));
   }
 
-  // helpers for storage
-  function loadPrices(){ try{ return JSON.parse(localStorage.getItem(KEY_PRICES)) || defaultPrices(); } catch(e){ return defaultPrices(); } }
-  function savePrices(p){ localStorage.setItem(KEY_PRICES, JSON.stringify(p)); }
-  function loadGame(){ try{ return JSON.parse(localStorage.getItem(KEY_GAME)) || defaultGame(); } catch(e){ return defaultGame(); } }
-  function saveGame(g){ localStorage.setItem(KEY_GAME, JSON.stringify(g)); }
-  function loadPurchases(){ try{ return JSON.parse(localStorage.getItem(KEY_PURCHASES)) || []; } catch(e){ return []; } }
-  function savePurchases(arr){ localStorage.setItem(KEY_PURCHASES, JSON.stringify(arr)); }
-  function loadTransactions(){ try{ return JSON.parse(localStorage.getItem(KEY_TRANSACTIONS)) || []; } catch(e){ return []; } }
-  function saveTransactions(arr){ localStorage.setItem(KEY_TRANSACTIONS, JSON.stringify(arr)); }
-
-  // util card URL
-  const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] || `${id}.jpg`);
-
-  // ensure deck
-  if (!gameState.deck || !gameState.deck.length) gameState.deck = Array.from({length:54},(_,i)=>i+1);
-
-  // RENDER
-  function renderAll(){
-    // header values
-    document.getElementById('price4').value = prices.price4;
-    document.getElementById('price6').value = prices.price6;
-    document.getElementById('price9').value = prices.price9;
-    document.getElementById('houseProfit').value = prices.houseProfit;
-    document.getElementById('modality-select').value = gameState.modality || 9;
-    document.getElementById('deck-count').textContent = gameState.deck.length;
-    // pot
-    const sales = purchases.reduce((s,p)=> s + (p.totalPaid||0), 0);
-    const totalCards = purchases.reduce((s,p)=> s + (p.initialGames||0), 0);
-    const pot = Math.max(0, sales - (prices.houseProfit * totalCards));
-    document.getElementById('pot-amount').textContent = `$${pot.toFixed(2)}`;
-
-    // players area (public)
-    const modality = parseInt(document.getElementById('modality-select').value || gameState.modality || 9);
-    gameState.modality = modality;
-    const playersArea = document.getElementById('players-area');
-    const active = purchases.filter(p=>p.modality===modality);
-    if (!active.length){
-      playersArea.innerHTML = `<div class="text-center text-gray-500 p-8 col-span-full">Aún no hay jugadores / compras en esta modalidad.</div>`;
-    } else {
-      playersArea.innerHTML = active.map(purchaseCardHtmlPublic).join('');
+  function declareWinner() {
+    if(currentCard === null){
+      alert('Primero saca una carta.');
+      return;
     }
 
-    // current card
-    const currentCardEl = document.getElementById('current-card');
-    if (gameState.currentCardId){
-      currentCardEl.innerHTML = `<div style="background-image:url('${cardImageUrl(gameState.currentCardId)}'); background-size:contain; background-position:center; width:160px; height:160px; margin:0 auto;"></div><div class="text-sm font-semibold mt-2 text-gray-600">Carta ${gameState.currentCardId}</div>`;
-    } else {
-      currentCardEl.innerHTML = `<div class="text-gray-400">Esperando barajeo...</div>`;
-    }
+    // Elegir ganador aleatorio
+    const players = Array.from(playersGrid.children);
+    const winnerCard = players[Math.floor(Math.random() * players.length)];
+    winnerCard.classList.add('active');
+    winners.unshift(winnerCard.textContent);
 
-    // last 3 cards
-    const last = (gameState.drawnCards||[]).slice(-3).reverse();
-    const lc = document.getElementById('last-cards');
-    lc.innerHTML = last.length ? last.map(cid=>`<div class="w-14 h-18 bg-cover bg-center rounded shadow-md border" style="background-image:url('${cardImageUrl(cid)}')"></div>`).join('') : `<div class="text-gray-400">Ninguna carta aún.</div>`;
+    // Limitar últimos 5 ganadores
+    if(winners.length > 5) winners.pop();
 
-    // last winners
-    const lw = document.getElementById('last-winners');
-    lw.innerHTML = (gameState.lastWinners||[]).slice(-5).reverse().map(w => `<div class="text-sm font-semibold">${escapeHtml(w.playerName)} — $${w.amount.toFixed(2)} <span class="text-xs text-gray-500">(${new Date(w.timestamp).toLocaleString()})</span></div>`).join('') || 'Aún no hay ganadores.';
-
-    // admin table
-    renderPlayersTable();
-
-    // admin purchases section toggle visibility depending on admin tab
-    document.getElementById('admin-purchases-section').classList.toggle('hidden', document.getElementById('view-admin').classList.contains('hidden'));
-
-    // persist
-    savePrices(prices); saveGame(gameState); savePurchases(purchases); saveTransactions(transactions);
+    // Actualizar lista
+    winnersListEl.innerHTML = winners.map(w => `<li>${w}</li>`).join('');
   }
+</script>
 
-  // Generate public card HTML (minimal info)
-  function purchaseCardHtmlPublic(p){
-    const cols = p.modality===4?2: p.modality===6?3:3;
-    const cells = (p.card||[]).map(cid => {
-      const passed = (p.markedCards||[]).includes(cid);
-      return `<div class="card-cell ${passed? 'grayed':''}" style="aspect-ratio:1/1; width:64px; height:64px; background-image:url('${cardImageUrl(cid)}')">
-        ${passed? `<div class="sticker"><img src="logo_1_entrada.png" style="width:46%;height:46%;object-fit:contain"/></div>` : ''}
-      </div>`;
-    }).join('');
-    return `<div class="${p.gamesLeft<=0? 'row-disabled':''} mex-border p-3 animate-create">
-      <div class="flex items-center justify-between mb-2">
-        <div><div class="text-lg font-extrabold">${escapeHtml(p.playerName)}</div></div>
-      </div>
-      <div class="grid ${cols===2? 'grid-cols-2':'grid-cols-3'} card-grid-gap">${cells}</div>
-    </div>`;
-  }
-
-  function renderPlayersTable(){
-    const tbody = document.getElementById('players-table');
-    if (!purchases.length){ tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-gray-500">No hay compras registradas.</td></tr>`; return; }
-    tbody.innerHTML = purchases.map(p=>{
-      const state = p.paymentState==='pending'? `<span class="text-xs px-2 py-1 bg-yellow-100 rounded">Pendiente</span>` : `<span class="text-xs px-2 py-1 bg-green-100 rounded">Pagado</span>`;
-      const modText = p.modality===4? '2x2' : p.modality===6? '2x3' : '3x3';
-      return `<tr class="${p.gamesLeft<=0? 'row-disabled':''}">
-        <td class="p-2 font-semibold">${escapeHtml(p.playerName)}</td>
-        <td class="p-2">${modText}</td>
-        <td class="p-2">${p.gamesLeft}</td>
-        <td class="p-2">$${(p.totalPaid||0).toFixed(2)}</td>
-        <td class="p-2">${p.wins||0}</td>
-        <td class="p-2">${state}</td>
-        <td class="p-2 space-x-2">
-          <button class="px-2 py-1 bg-green-500 text-white rounded text-xs" onclick="addGamesPrompt('${p.id}')">+ Partidas</button>
-          <button class="px-2 py-1 bg-yellow-500 text-white rounded text-xs" onclick="markPendingPaid('${p.id}')">Marcar Pagado</button>
-          <button class="px-2 py-1 bg-gray-300 text-black rounded text-xs" onclick="viewCard('${p.id}')">Ver carta</button>
-          <button class="px-2 py-1 bg-red-600 text-white rounded text-xs" onclick="deletePurchase('${p.id}')">Eliminar</button>
-        </td>
-      </tr>`;
-    }).join('');
-  }
-
-  // SHUFFLE visual (real cards) and logical shuffle
-  function shuffleDeckVisual(){
-    if (shuffleAnimating) return;
-    shuffleAnimating = true;
-    disableControls(true);
-    // play sound
-    try{ playShuffleSound(); }catch(e){ console.warn(e); }
-    const overlay = document.getElementById('shuffle-overlay');
-    overlay.innerHTML=''; overlay.classList.remove('hidden');
-    const picks = shuffleArray(Array.from({length:54},(_,i)=>i+1)).slice(0,12);
-    picks.forEach((cid,i)=>{
-      const div = document.createElement('div'); div.className='shuffle-card';
-      div.style.backgroundImage = `url('${cardImageUrl(cid)}')`;
-      const angle = (Math.random()*60-30);
-      div.style.transform = `translate(${(Math.random()*400-200)}px, ${(Math.random()*200-100)}px) rotate(${angle}deg) scale(${0.9+Math.random()*0.4})`;
-      overlay.appendChild(div);
-      setTimeout(()=>{ div.style.transition = 'transform .45s ease, opacity .5s ease'; div.style.transform = `translate(0px,0px) rotate(${Math.random()*360-180}deg) scale(1)`; }, 80 + i*40);
-      setTimeout(()=>{ div.style.transform = `translate(${(Math.random()*300-150)}px, ${(Math.random()*300-150)}px) rotate(${Math.random()*720-360}deg) scale(.6)`; div.style.opacity='0'; }, 900 + i*30);
-    });
-    setTimeout(()=>{
-      gameState.deck = shuffleArray(Array.from({length:54},(_,i)=>i+1));
-      gameState.drawnCards = [];
-      gameState.currentCardId = 0;
-      saveGame(gameState);
-      overlay.classList.add('hidden'); overlay.innerHTML=''; shuffleAnimating=false;
-      disableControls(false);
-      transactions.push({ id: crypto.randomUUID(), type:'shuffle', timestamp: Date.now()});
-      saveTransactions(transactions);
-      renderAll();
-    }, 1500);
-  }
-
-  function drawCard(){
-    if (isAuto || shuffleAnimating) return;
-    if (!gameState.deck.length){ alert('Mazo vacío. Barajea para continuar.'); return; }
-    const next = gameState.deck.pop();
-    gameState.drawnCards.push(next);
-    gameState.currentCardId = next;
-    transactions.push({ id: crypto.randomUUID(), type:'draw', card: next, timestamp: Date.now()});
-    saveTransactions(transactions);
-    processCard(next);
-    renderAll();
-  }
-
-  function processCard(cardId){
-    const winners = [];
-    purchases.forEach((p, idx) => {
-      if (!p.isActive || (p.gamesLeft||0) <= 0) return;
-      if (p.modality && p.card && p.card.includes(cardId) && !(p.markedCards||[]).includes(cardId)) {
-        purchases[idx].markedCards = [...(p.markedCards||[]), cardId];
-      }
-      if ((p.markedCards||[]).length === p.modality) winners.push({ idx, id: p.id, name: p.playerName });
-    });
-
-    // if any winners -> stop and show modal
-    if (winners.length > 0){
-      stopAutoMode();
-      disableControls(true);
-      // pot calculation
-      const totalPaid = purchases.reduce((s,p)=> s + (p.totalPaid||0), 0);
-      const totalCardsSold = purchases.reduce((s,p)=> s + (p.initialGames||0), 0);
-      const potAmount = Math.max(0, totalPaid - (prices.houseProfit * totalCardsSold));
-      const winnerRecords = [];
-      winners.forEach(w=>{
-        const p = purchases[w.idx];
-        p.gamesLeft = Math.max(0, (p.gamesLeft||0) - 1);
-        p.wins = (p.wins||0) + 1;
-        p.paymentState = 'pending';
-        p.markedCards = [];
-        const rec = { id: crypto.randomUUID(), purchaseId: p.id, playerName: p.playerName, amount: potAmount / winners.length, timestamp: Date.now(), paid:false };
-        gameState.pendingWinners = (gameState.pendingWinners||[]).concat(rec);
-        gameState.lastWinners = (gameState.lastWinners||[]).concat(rec);
-        transactions.push({ id: crypto.randomUUID(), type:'winner', player: p.playerName, amount: rec.amount, timestamp: Date.now()});
-        winnerRecords.push(rec);
-      });
-      saveTransactions(transactions); saveGame(gameState); savePurchases(purchases);
-      showWinnerModal(winnerRecords);
-      highlightReset(true);
-      renderAll();
-    } else {
-      savePurchases(purchases); saveGame(gameState);
-      renderAll();
-    }
-  }
-
-  function cleanAction(){
-    const mod = parseInt(document.getElementById('modality-select').value || gameState.modality || 9);
-    if (!confirm(`¿Limpiar cartas pasadas y restar 1 partida a compras de modalidad ${mod}?`)) return;
-    gameState.drawnCards = []; gameState.currentCardId = 0;
-    purchases = purchases.map(p=>{ if (p.modality===mod){ p.gamesLeft = Math.max(0,(p.gamesLeft||0)-1); p.isActive = p.gamesLeft>0; } return p; });
-    transactions.push({ id: crypto.randomUUID(), type:'clean', modality: mod, timestamp: Date.now()});
-    saveTransactions(transactions); savePurchases(purchases); renderAll();
-  }
-
-  function startAutoMode(){
-    if (!gameState.deck.length){ alert('Mazo vacío. Barajea.'); return; }
-    isAuto = true; document.getElementById('auto-btn').textContent = 'DETENER AUTOMÁTICO'; document.getElementById('auto-btn').style.background = 'var(--verde)';
-    autoInterval = setInterval(()=>{ if (!isAuto) return; if (!gameState.deck.length){ stopAutoMode(); return; } const next = gameState.deck.pop(); gameState.drawnCards.push(next); gameState.currentCardId = next; transactions.push({ id: crypto.randomUUID(), type:'draw', card: next, timestamp: Date.now()}); processCard(next); renderAll(); }, 2000);
-  }
-  function stopAutoMode(){ isAuto=false; document.getElementById('auto-btn').textContent = 'CARTAS AUTOMÁTICO'; document.getElementById('auto-btn').style.background = '#fee9d6'; if (autoInterval){ clearInterval(autoInterval); autoInterval=null; } }
-  function toggleAuto(){ if (isAuto) stopAutoMode(); else startAutoMode(); }
-
-  function disableControls(disable){
-    ['shuffle-btn','draw-btn','auto-btn','reset-btn','btn-add-player','btn-shuffle'].forEach(id=>{ const el=document.getElementById(id); if(el) el.disabled = disable; });
-    // style disable (opacity)
-    document.querySelectorAll('#view-admin button').forEach(b=>b.style.opacity = disable? '0.5':'1');
-  }
-
-  function highlightReset(on){
-    const btn = document.getElementById('reset-btn');
-    if (!btn) return;
-    if (on) btn.classList.add('reset-glow'); else btn.classList.remove('reset-glow');
-  }
-
-  // PURCHASES / REGISTRATION
-  function calculatePartitions(budget, mods){
-    const share = Math.floor((budget / mods.length) * 100) / 100;
-    return mods.map(m => { const price = m===4? prices.price4 : m===6? prices.price6 : prices.price9; const games = Math.floor(share / price); return { modality:m, price, share, games }; });
-  }
-
-  function addPlayer(){
-    const name = (document.getElementById('player-name').value || '').trim();
-    const budget = parseFloat(document.getElementById('player-budget').value || 0);
-    const mods = []; if (document.getElementById('mod4').checked) mods.push(4); if (document.getElementById('mod6').checked) mods.push(6); if (document.getElementById('mod9').checked) mods.push(9);
-    document.getElementById('calc-info').textContent = '';
-    if (!name) return alert('Captura nombre'); if (!budget || budget<=0) return alert('Captura presupuesto'); if (!mods.length) return alert('Selecciona modalidaes');
-    const parts = calculatePartitions(budget, mods);
-    const zero = parts.find(p=>p.games<1);
-    if (zero) { document.getElementById('calc-info').textContent = `La modalidad ${zero.modality} no alcanza 1 partida con la porción (${zero.share}$).`; return; }
-    const playerId = crypto.randomUUID(); const created = [];
-    parts.forEach(part=>{
-      const games = part.games; const totalPaid = games * part.price;
-      const purchase = { id: crypto.randomUUID(), playerId, playerName: name, modality: part.modality, initialGames: games, gamesLeft: games, totalPaid, wins:0, paymentState:'paid', isActive: games>0, card: generateCardForPurchase(part.modality), markedCards: [] };
-      purchases.push(purchase);
-      transactions.push({ id: crypto.randomUUID(), type:'purchase', player: name, modality: part.modality, games, amount: totalPaid, timestamp: Date.now()});
-      created.push(purchase);
-    });
-    saveTransactions(transactions); savePurchases(purchases);
-    // animation mini confetti
-    miniConfetti();
-    document.getElementById('player-name').value=''; document.getElementById('player-budget').value=''; ['mod4','mod6','mod9'].forEach(id=>document.getElementById(id).checked=false);
-    renderAll();
-  }
-
-  function generateCardForPurchase(modality){
-    const used = new Set(); purchases.forEach(p => (p.card||[]).forEach(cid => used.add(cid)));
-    let pool = Array.from({length:54},(_,i)=>i+1).filter(id=>!used.has(id));
-    if (pool.length < modality) pool = Array.from({length:54},(_,i)=>i+1);
-    pool = shuffleArray(pool);
-    return pool.slice(0, modality);
-  }
-
-  function addGamesPrompt(purchaseId){
-    const val = prompt('¿Cuántas partidas agregar?','1'); if (!val) return; const add = parseInt(val); if (isNaN(add)||add<=0) return alert('Número inválido');
-    const p = purchases.find(x=>x.id===purchaseId); if (!p) return alert('Compra no encontrada');
-    const price = p.modality===4?prices.price4: p.modality===6?prices.price6: prices.price9;
-    p.gamesLeft = (p.gamesLeft||0) + add; p.initialGames = (p.initialGames||0) + add; p.totalPaid = (p.totalPaid||0) + (add*price); p.isActive = p.gamesLeft>0;
-    transactions.push({ id: crypto.randomUUID(), type:'add_games', player: p.playerName, purchaseId: p.id, added: add, amount: add*price, timestamp: Date.now()});
-    saveTransactions(transactions); savePurchases(purchases); renderAll();
-  }
-
-  function markPendingPaid(purchaseId){
-    const p = purchases.find(x=>x.id===purchaseId); if (!p) return; p.paymentState = 'paid'; savePurchases(purchases); renderAll();
-  }
-
-  function deletePurchase(purchaseId){
-    if (!confirm('Eliminar esta compra?')) return;
-    purchases = purchases.filter(p=>p.id!==purchaseId);
-    transactions.push({ id: crypto.randomUUID(), type:'delete_purchase', purchaseId, timestamp: Date.now()});
-    saveTransactions(transactions); savePurchases(purchases); renderAll();
-  }
-
-  function viewCard(purchaseId){
-    const p = purchases.find(x=>x.id===purchaseId); if (!p) return alert('Compra no encontrada');
-    const list = (p.card||[]).map(cid=>`<div style="background-image:url('${cardImageUrl(cid)}');background-size:cover;background-position:center;width:80px;height:80px;border-radius:8px;display:inline-block;margin:4px;"></div>`).join('');
-    const w = window.open('','_blank','width=420,height=420');
-    w.document.write(`<title>Cartas - ${escapeHtml(p.playerName)}</title><body style="font-family:Inter;padding:12px"><
+</body>
+</html>

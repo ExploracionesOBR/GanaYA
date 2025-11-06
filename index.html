@@ -1115,11 +1115,18 @@ window.addEventListener('storage',(e)=>{
 });
 
 /* handle selection link on load (if present) */
+/* handle selection link on load (if present) */
 (function init(){
   prices = loadPrices(); gameState = loadGame(); purchases = loadPurchases(); transactions = loadTransactions();
-  gamesTotals = loadGamesTotals(); // Asegurar que gamesTotals también se carga/reinicia
-
-  // If page opened for selection token, handle it and exit (that function replaces body)
+  
+  // *** SOLUCIÓN FINAL: CIERRE FORZADO DEL MODAL PEGADO ***
+  const modal = document.getElementById('player-detail-modal');
+  if (modal) {
+    modal.style.display = 'none'; // Anula cualquier 'display: block' que lo haya abierto
+    modal.classList.remove('active'); // Anula cualquier clase CSS que lo haya activado
+  }
+  // *** FIN CIERRE FORZADO ***
+  
   handleSelectionLinkOnLoad();
   renderAll();
 })();

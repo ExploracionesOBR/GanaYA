@@ -1115,26 +1115,24 @@ window.addEventListener('storage',(e)=>{
 });
 
 /* handle selection link on load (if present) */
-/* handle selection link on load (if present) */
-/* handle selection link on load (if present) */
 (function init(){
   prices = loadPrices(); gameState = loadGame(); purchases = loadPurchases(); transactions = loadTransactions();
 
-  // *** NUEVO CÓDIGO AÑADIDO: Forzar el reinicio si el estado es corrupto/finalizado ***
-  // Si no hay cartas en el mazo (mazo corrupto) O si el estado es de juego terminado, reiniciamos.
-  if (gameState.deck.length === 0 || gameState.state === 'FINISHED') {
-    gameState = defaultGameState(); // Carga el estado inicial (READY)
-    saveGame(gameState); // Guarda el estado limpio
+  // *** CÓDIGO CRÍTICO DE REINICIO AÑADIDO (Mantener) ***
+  // Si el estado es de juego terminado, lo forzamos a READY (listo para jugar).
+  if (gameState.state === 'FINISHED') {
+    gameState = defaultGameState(); // Carga el estado inicial
+    saveGame(gameState); // Guarda el estado limpio en Local Storage
   }
-  // *** FIN CÓDIGO REINICIO ***
+  // *** FIN CÓDIGO CRÍTICO ***
   
-  // *** SOLUCIÓN ANTERIOR: CIERRE FORZADO DEL MODAL PEGADO ***
+  // *** CÓDIGO PARA OCULTAR MODAL PEGADO (Mantener) ***
   const modal = document.getElementById('player-detail-modal');
   if (modal) {
-    modal.style.display = 'none';
-    modal.classList.remove('active');
+    modal.style.display = 'none'; 
+    modal.classList.remove('active'); 
   }
-  // *** FIN CIERRE FORZADO ***
+  // *** FIN CÓDIGO OCULTAR MODAL ***
 
   handleSelectionLinkOnLoad();
   renderAll();

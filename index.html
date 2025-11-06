@@ -1,8 +1,67 @@
-<header class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center gap-6 justify-between">
-    <div class="flex items-center gap-4">
-      <img id="logo-top" src="logo_1_entrada.png" alt="Logo" class="w-16 h-16 rounded-full shadow-lg cursor-pointer" onerror="this.onerror=null;this.src='https://placehold.co/80x80/b42222/ffffff?text=LOGO'">
-      <div>
-        <h1 class="brand-title text-4xl md:text-5xl">GANA YA!</h1>
-        <div class="text-xs text-gray-600 mt-1">Lotería interactiva — estilo tradicional mexicano</div>
-      </div>
-    </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GANA YA! — Lotería (v5)</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --rojo:#b42222;
+      --verde:#0f8a3c;
+      --dorado:#caa43f;
+      --crema:#f6f1e6;
+      --sombra: 0 10px 24px rgba(0,0,0,0.08);
+      --accent:#c94a3d;
+    }
+    body{ font-family:Inter,system-ui,-apple-system; background:var(--crema); color:#1f2937; -webkit-font-smoothing:antialiased; }
+    .brand-title{ font-family: 'Alfa Slab One', serif; color:var(--rojo); letter-spacing:1px; }
+    .tab-btn{ border-radius:999px; padding:.45rem .85rem; font-weight:700; box-shadow: 0 6px 18px rgba(0,0,0,.06); }
+    .tab-active{ background: linear-gradient(90deg,#fef2f2,#fff); border: 3px solid var(--rojo); color: var(--rojo); }
+    .mex-frame{ background:#fff; border-radius:12px; padding:14px; box-shadow: var(--sombra); position:relative; overflow:visible; }
+    .mex-border{ border:4px solid var(--rojo); border-radius:10px; padding:10px; box-shadow: 0 6px 18px rgba(0,0,0,0.04); background:#fff; }
+    .title-accent { display:inline-block; height:8px; width:72px; background: linear-gradient(90deg, var(--dorado), #e6c05b); border-radius:6px; margin-top:6px; }
+    .card-cell { border-radius:8px; overflow:hidden; background-size:cover; background-position:center; min-height:50px; position:relative; box-shadow: 0 4px 8px rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; }
+    /* tamaño pequeño para imágenes de jugador */
+    .card-img-small { width:64px; height:64px; border-radius:6px; object-fit:cover; display:block; }
+    .card-grid-gap { gap:6px; }
+    /* sticker "ya pasó" */
+    .sticker {
+      position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:20; pointer-events:none;
+      opacity:0; transform:scale(.6);
+      animation: stickerPop .6s ease forwards;
+    }
+    @keyframes stickerPop {
+      0% { transform: scale(.4); opacity:0; }
+      60% { transform: scale(1.2); opacity:1; }
+      100% { transform: scale(1); opacity:1; }
+    }
+    .grayed { filter: grayscale(100%) contrast(.9); opacity:.5; transition:filter .35s, opacity .35s; }
+    .current-card { border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,0.08); min-height:170px; display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg,#fff,#fff); }
+    .confetti{ position: fixed; width: 10px; height: 10px; top:100%; animation: confetti 2s ease-out forwards; z-index:120; border-radius:2px; }
+    @keyframes confetti{ 0%{ transform: translateY(0) rotate(0); opacity:1 } 100%{ transform: translateY(-420px) rotate(720deg); opacity:0 } }
+    /* barajear center animation container */
+    .shuffle-overlay { position: fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:60; pointer-events:none; background:rgba(0,0,0,0.15); }
+    .shuffle-card { width:120px; height:160px; border-radius:10px; background-size:cover; background-position:center; box-shadow:0 10px 30px rgba(0,0,0,0.25); transform-origin:center; }
+    /* reset highlight */
+    .reset-glow { box-shadow:0 0 18px 4px rgba(202,164,63,0.45); animation: glow 1.2s infinite; }
+    @keyframes glow { 0%{ box-shadow:0 0 6px rgba(202,164,63,0.25);} 50%{ box-shadow:0 0 24px rgba(202,164,63,0.45);} 100%{ box-shadow:0 0 6px rgba(202,164,63,0.25);} }
+
+    .btn{ padding:.55rem .9rem; border-radius:.6rem; font-weight:700; }
+    .btn-red{ background:var(--rojo); color:white; }
+    .btn-blue{ background:#1565d8; color:white; }
+    .btn-green{ background:var(--verde); color:white; }
+    .small{ font-size:.85rem; }
+    .row-disabled { opacity: .45; filter: grayscale(.2); }
+    .animate-create { transform-origin:center; animation: create-pop .45s ease forwards; }
+    @keyframes create-pop { 0%{ transform: scale(.6); opacity:0 } 60%{ transform: scale(1.05); opacity:1 } 100%{ transform: scale(1); } }
+
+    /* responsive tweaks */
+    @media (max-width:1024px){ .current-card{ min-height:140px } .card-img-small{ width:52px;height:52px } }
+  </style>
+</head>
+<body class="min-h-screen">

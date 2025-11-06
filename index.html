@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>GANA YA! — Lotería (v6.2)</title>
+  <title>¡GANA YA!</title>
 
   <!-- Fuentes y estilos -->
   <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --rojo:#b42222; --verde:#0f8a3c; --dorado:#caa43f; --crema:#f6f1e6; --sombra: 0 10px 24px rgba(0,0,0,0.08);
+      --rojo:#b42222; --verde:#0f8a3c; --dorado:#caa43f; --verde:#09521F; --sombra: 1 10px 24px rgba(0,0,0,0.08);
     }
     *{box-sizing:border-box}
     body{ font-family:Inter,system-ui,-apple-system; background:var(--crema); color:#1f2937; margin:0; -webkit-font-smoothing:antialiased; padding:18px; }
@@ -48,7 +48,7 @@
 <body>
 
 <header>
-  <div><span class="mex-title">🎉 GANA YA!</span></div>
+  <div><span class="mex-title">🎉 ¡GANA YA! 🎉</span></div>
   <div class="mex-sub">Lotería interactiva — estilo tradicional mexicano</div>
 </header>
 
@@ -167,6 +167,16 @@
   </section>
 
 </main>
+
+<!-- MODALES -->
+<div id="winner-modal" class="hidden" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:9999">
+  <div style="background:white;padding:18px;border-radius:12px;max-width:420px;width:94%;text-align:center;">
+    <img src="logo_1_entrada.png" alt="logo" style="width:80px;height:80px;object-fit:contain;margin:0 auto 8px;">
+    <h2 style="color:var(--rojo);margin-bottom:6px">🎉 ¡FELICIDADES! 🎉</h2>
+    <div id="winner-text" style="font-weight:700;margin-bottom:10px">[Jugador] ha ganado $0.00</div>
+    <button id="btn-close-winner" class="btn btn-blue">Aceptar</button>
+  </div>
+</div>
 
 <footer>
   <div>Sube <strong>logo_1_entrada.png</strong> en la raíz y la carpeta <strong>Cartas_baraja_loteria/</strong> con las 54 imágenes (.jpg) con nombres exactos.</div>
@@ -637,7 +647,7 @@ document.getElementById('save-prices').addEventListener('click', ()=>{ prices.pr
 document.getElementById('reset-prices').addEventListener('click', ()=>{ if(!confirm('Reestablecer precios por defecto?')) return; prices = defaultPrices(); savePrices(prices); renderAll(); });
 document.getElementById('export-btn').addEventListener('click', exportPdfReport);
 document.getElementById('clear-btn').addEventListener('click', clearRecordsForNewDay);
-document.getElementById('toggle-admin').addEventListener('click', ()=>{ const v=document.getElementById('view-admin'); v.classList.toggle('hidden'); });
+document.getElementById('toggle-admin').addEventListener('click', ()=>{ const v=document.getElementById('view-adm  in'); v.classList.toggle('hidden'); });
 
 /* Keyboard: space draws only in admin mode and if not auto */
 document.addEventListener('keydown',(e)=>{ if(e.code==='Space'){ e.preventDefault(); if(!isAuto && !shuffleAnimating && document.getElementById('view-admin').classList.contains('hidden')) return; if(!isAuto && !shuffleAnimating) drawCard(); } });
@@ -656,3 +666,4 @@ window.addEventListener('storage',(e)=>{ if(e.key===KEY_PRICES) prices = loadPri
 </script>
 </body>
 </html>
+

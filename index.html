@@ -1115,16 +1115,47 @@ window.addEventListener('storage',(e)=>{
 });
 
 /* handle selection link on load (if present) */
+// --- Inicio del Bloque de Código a Reemplazar ---
+
+/* Event Listeners de la Interfaz (Asumiendo que están al final del script) */
+document.getElementById('shuffle-btn').addEventListener('click', shuffleAndReset);
+document.getElementById('draw-btn').addEventListener('click', drawCard);
+document.getElementById('start-auto-btn').addEventListener('click', ()=> { toggleAutoDraw(true); });
+document.getElementById('stop-auto-btn').addEventListener('click', ()=> { toggleAutoDraw(false); });
+document.getElementById('confirm-price-change').addEventListener('click', savePricesFromForm);
+document.getElementById('save-profits').addEventListener('click', ()=> { saveProfits(); window.showAlert('Ganancias guardadas con éxito.', 'info'); });
+document.getElementById('reset-prices').addEventListener('click', ()=>{
+  if(!confirm('Reestablecer precios por defecto?')) return;
+  prices = defaultPrices();
+  savePrices(prices);
+  renderAll();
+});
+document.getElementById('export-btn').addEventListener('click', exportPdfReport);
+document.getElementById('clear-btn').addEventListener('click', clearRecordsForNewDay);
+document.getElementById('toggle-admin-visible').addEventListener('click', ()=> {
+  const v=document.getElementById('view-admin');
+  v.classList.toggle('hidden');
+});
+
+/* Keyboard: space draws only in main view and if not auto */
+document.addEventListener('keydown',(e)=>{
+  if(e.code==='Space'){
+    e.preventDefault();
+    // Solo dibuja si NO es auto, NO está animando y la vista de admin está oculta (vista de juego).
+    if(!isAuto && !shuffleAnimating && document.getElementById('view-admin').classList.contains('hidden')) {
+        drawCard();
+    }
+  }
+});
+
 /* storage sync */
-/* storage sync */
-// Sincronización del estado entre pestañas (VITAL para mantener la persistencia).
+// Sincronización de datos entre pestañas (VITAL para mantener la persistencia).
 window.addEventListener('storage',(e)=>{
   if(e.key===KEY_PRICES) prices = loadPrices();
   if(e.key===KEY_GAME) gameState = loadGame();
   if(e.key===KEY_PUR) purchases = loadPurchases();
   if(e.key===KEY_TX) transactions = loadTransactions();
-  // Asegúrate de que esta línea esté presente si usas la variable gamesTotals
-  if(e.key===KEY_TOTALS) gamesTotals = loadGamesTotals(); 
+  // Puedes añadir la carga de KEY_TOTALS si usas esa variable.
   renderAll();
 });
 
@@ -1132,26 +1163,31 @@ window.addEventListener('storage',(e)=>{
 (function init(){
   // 1. Cargar el estado guardado (Los datos persisten, ¡NADA SE BORRA AQUÍ!)
   prices = loadPrices(); gameState = loadGame(); purchases = loadPurchases(); transactions = loadTransactions();
-  // Asegúrate de que esta línea esté presente si usas la variable gamesTotals
-  gamesTotals = loadGamesTotals(); 
-
-  // *** CORRECCIÓN FINAL: CIERRE FORZADO DEL MODAL PEGADO (SIN PERDER DATOS) ***
-  // Esta función se ejecuta con un pequeño retraso (100ms) para garantizar que anule
-  // cualquier código o estilo que esté abriendo el modal (#player-detail-modal) al inicio.
+  
+  // *** CORRECCIÓN CRÍTICA FINAL: CIERRE FORZADO DE TODAS LAS VENTANAS PEGADAS ***
+  // Usamos un retraso de 250ms. Esto garantiza que cualquier CSS o JS que abra
+  // los modales se ejecute primero, y luego forzamos su cierre, resolviendo el problema visual.
   setTimeout(() => {
-    const modal = document.getElementById('player-detail-modal');
-    // Si el modal existe, lo forzamos a cerrar visualmente.
-    if (modal) {
-      modal.style.display = 'none'; 
-      modal.classList.remove('active'); 
-      console.log('Ventana pegada cerrada por corrección de inicio. Persistencia de datos OK.');
+    // A. Cierre forzado del modal de detalles del jugador (el que está debajo)
+    const playerModal = document.getElementById('player-detail-modal');
+    if (playerModal) {
+      playerModal.style.display = 'none'; 
+      playerModal.classList.remove('active');
     }
-  }, 100); 
+
+    // B. Cierre forzado de la ventana de confirmación general/alerta (la que está encima)
+    const confirmationModal = document.getElementById('confirmationModal'); 
+    if (confirmationModal) {
+      confirmationModal.style.display = 'none';
+      confirmationModal.classList.remove('active');
+    }
+    console.log('Corrección visual aplicada: Modales de inicio forzados a cerrar.');
+  }, 250); 
   // *** FIN CORRECCIÓN ***
 
   // Si la página se abrió para selección, manejar y salir.
   handleSelectionLinkOnLoad();
-  
+
   // Renderizar la interfaz con el estado cargado.
   renderAll();
 })();

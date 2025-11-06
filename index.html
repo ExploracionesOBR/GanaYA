@@ -1116,7 +1116,17 @@ window.addEventListener('storage',(e)=>{
 
 /* handle selection link on load (if present) */
 (function init(){
+  // LIMPIEZA FORZADA: Eliminar datos guardados que puedan estar corruptos
+  localStorage.removeItem(KEY_PRICES);
+  localStorage.removeItem(KEY_GAME);
+  localStorage.removeItem(KEY_PUR);
+  localStorage.removeItem(KEY_TX);
+  localStorage.removeItem(KEY_TOTALS);
+  // FIN LIMPIEZA FORZADA
+
   prices = loadPrices(); gameState = loadGame(); purchases = loadPurchases(); transactions = loadTransactions();
+  gamesTotals = loadGamesTotals(); // Asegurar que gamesTotals también se carga/reinicia
+
   // If page opened for selection token, handle it and exit (that function replaces body)
   handleSelectionLinkOnLoad();
   renderAll();

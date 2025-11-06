@@ -1116,45 +1116,43 @@ window.addEventListener('storage',(e)=>{
 
 /* handle selection link on load (if present) */
 /* storage sync */
-// Esto asegura que si el juego se abre en otra pestaña, se sincronice el estado.
+/* storage sync */
+// Sincronización del estado entre pestañas (VITAL para mantener la persistencia).
 window.addEventListener('storage',(e)=>{
   if(e.key===KEY_PRICES) prices = loadPrices();
   if(e.key===KEY_GAME) gameState = loadGame();
   if(e.key===KEY_PUR) purchases = loadPurchases();
   if(e.key===KEY_TX) transactions = loadTransactions();
-  // Asumiendo que también sincronizas los totales de juego (si existe la variable KEY_TOTALS)
+  // Asegúrate de que esta línea esté presente si usas la variable gamesTotals
   if(e.key===KEY_TOTALS) gamesTotals = loadGamesTotals(); 
   renderAll();
 });
 
 /* handle selection link on load (if present) */
 (function init(){
-  // 1. Cargar el estado guardado
+  // 1. Cargar el estado guardado (Los datos persisten, ¡NADA SE BORRA AQUÍ!)
   prices = loadPrices(); gameState = loadGame(); purchases = loadPurchases(); transactions = loadTransactions();
   // Asegúrate de que esta línea esté presente si usas la variable gamesTotals
   gamesTotals = loadGamesTotals(); 
 
-  // *** CORRECCIÓN CRÍTICA DE ESTADO (SOLUCIÓN A "PEGADO EN GANADOR") ***
-  // Si el juego cargó en estado 'FINISHED' O con el mazo vacío (estado corrupto), lo forzamos a 'READY' y lo guardamos limpio.
-  if (gameState.state === 'FINISHED' || gameState.deck.length === 0) {
-    gameState = defaultGameState(); // Carga el estado inicial (limpio y con mazo completo).
-    saveGame(gameState); // Guarda el estado limpio en Local Storage.
-  }
-  // *** FIN CORRECCIÓN ESTADO ***
-  
-  // *** CORRECCIÓN CRÍTICA DE MODAL (SOLUCIÓN A VENTANA PEGADA) ***
-  // Si el modal de detalles del jugador (#player-detail-modal) se abre al inicio (porque está pegado), lo forzamos a cerrar.
-  const modal = document.getElementById('player-detail-modal');
-  if (modal) {
-    modal.style.display = 'none'; 
-    modal.classList.remove('active'); 
-  }
-  // *** FIN CORRECCIÓN MODAL ***
+  // *** CORRECCIÓN FINAL: CIERRE FORZADO DEL MODAL PEGADO (SIN PERDER DATOS) ***
+  // Esta función se ejecuta con un pequeño retraso (100ms) para garantizar que anule
+  // cualquier código o estilo que esté abriendo el modal (#player-detail-modal) al inicio.
+  setTimeout(() => {
+    const modal = document.getElementById('player-detail-modal');
+    // Si el modal existe, lo forzamos a cerrar visualmente.
+    if (modal) {
+      modal.style.display = 'none'; 
+      modal.classList.remove('active'); 
+      console.log('Ventana pegada cerrada por corrección de inicio. Persistencia de datos OK.');
+    }
+  }, 100); 
+  // *** FIN CORRECCIÓN ***
 
   // Si la página se abrió para selección, manejar y salir.
   handleSelectionLinkOnLoad();
   
-  // Renderizar la interfaz con el estado ya limpio.
+  // Renderizar la interfaz con el estado cargado.
   renderAll();
 })();
 

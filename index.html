@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎴 GANA YA! - Lotería Interactiva Mexicana (v7.3)</title>
+<title>🎴 GANA YA! - Lotería Interactiva Mexicana (v7.4)</title>
 <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -55,7 +55,7 @@ body{
 
 /* card thumb */
 .card-thumb{ width:70px; height:100px; border-radius:8px; background-size:cover; background-position:center; position:relative; }
-.card-thumb.passed{ filter:grayscale(1) brightness(.65); opacity:0.85; }
+.card-thumb.passed{ filter:grayscale(1) brightness(.65); opacity:0.85 }
 .sticker{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
 .sticker img{ width:36px; height:36px; opacity:0.95; transform:translateY(-4px); }
 
@@ -75,7 +75,7 @@ body{
 .admin-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }
 @media(max-width:1100px){ .admin-grid{ grid-template-columns:1fr } }
 .input, input[type="number"], select, textarea{ width:100%; padding:8px; border-radius:6px; border:1px solid #ddd; }
-.table-wrap{ overflow:auto; max-height:300px; border:1px solid #eee; border-radius:8px; padding:8px; background:#fff; }
+.table-wrap{ overflow:auto; max-height:300px; border:1px solid #eee; border-radius:8px; padding:8px; background:#fff; font-size:13px; }
 
 /* badges */
 .badge{ display:inline-block; padding:6px 10px; border-radius:999px; color:white; font-weight:700; font-size:12px; }
@@ -95,6 +95,12 @@ body{
 /* animation for shuffle preview */
 .shuffle-preview{ position:relative; height:160px; display:flex; align-items:center; justify-content:center; gap:12px; overflow:visible; }
 .shuffle-preview .fly{ width:84px;height:120px;background-size:cover;border-radius:8px; position:absolute; transition:transform .45s ease, opacity .45s ease; transform-origin:center; }
+
+/* table in modal */
+.detail-table{ width:100%; border-collapse:collapse; }
+.detail-table th, .detail-table td{ padding:8px; border-bottom:1px solid #f3f3f3; font-size:13px; text-align:left; }
+.detail-table th{ background:#fafafa; font-weight:700; }
+.detail-actions button{ margin-right:6px; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
@@ -142,14 +148,13 @@ body{
 
     <aside>
       <div class="mex-frame-small" id="box-bolsa-control">
-        <!-- Bolsa está arriba en la fila; aquí queda solo control y modalidades -->
         <h3 style="text-align:center;margin:0">CONTROL DE PARTIDA</h3>
         <div class="small-muted" style="text-align:center; margin-top:6px">Barajea, tira cartas o activa automático — selecciona modalidad</div>
 
         <div style="display:flex; gap:8px; margin-top:10px; justify-content:center; flex-wrap:wrap">
           <button id="mode-4" class="btn btn-blue">4 CARTAS</button>
           <button id="mode-6" class="btn btn-blue">6 CARTAS</button>
-          <button id="mode-9" class="btn btn-blue">9 CARTAS</button>
+          <button id="mode-8" class="btn btn-blue">8 CARTAS</button>
         </div>
 
         <div class="controls-row" style="margin-top:10px">
@@ -191,17 +196,20 @@ body{
         <h3>Modalidades - Precio & Ganancia</h3>
         <div style="display:grid; gap:8px; margin-top:8px">
           <div style="display:flex; gap:8px;">
-            <div style="flex:1; padding:8px; border-radius:8px; border:2px solid #eee; background:#fff">
+            <div style="flex:1; padding:10px; border-radius:8px; border:2px solid #eee; background:#fff">
               <div style="font-weight:800">4 Cartas</div>
               <div style="display:flex; gap:6px; margin-top:6px"><input id="price4" class="input" type="number" value="10" min="1"><input id="profit4" class="input" type="number" value="2" min="0"></div>
+              <div class="small-muted" style="margin-top:6px">Precio • Ganancia</div>
             </div>
-            <div style="flex:1; padding:8px; border-radius:8px; border:2px solid #eee; background:#fff">
+            <div style="flex:1; padding:10px; border-radius:8px; border:2px solid #eee; background:#fff">
               <div style="font-weight:800">6 Cartas</div>
               <div style="display:flex; gap:6px; margin-top:6px"><input id="price6" class="input" type="number" value="12" min="1"><input id="profit6" class="input" type="number" value="3" min="0"></div>
+              <div class="small-muted" style="margin-top:6px">Precio • Ganancia</div>
             </div>
-            <div style="flex:1; padding:8px; border-radius:8px; border:2px solid #eee; background:#fff">
-              <div style="font-weight:800">9 Cartas</div>
-              <div style="display:flex; gap:6px; margin-top:6px"><input id="price9" class="input" type="number" value="15" min="1"><input id="profit9" class="input" type="number" value="4" min="0"></div>
+            <div style="flex:1; padding:10px; border-radius:8px; border:2px solid #eee; background:#fff">
+              <div style="font-weight:800">8 Cartas</div>
+              <div style="display:flex; gap:6px; margin-top:6px"><input id="price8" class="input" type="number" value="15" min="1"><input id="profit8" class="input" type="number" value="4" min="0"></div>
+              <div class="small-muted" style="margin-top:6px">Precio • Ganancia</div>
             </div>
           </div>
 
@@ -223,7 +231,7 @@ body{
           <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; align-items:center">
             <div><label>4 cartas - Cantidad</label><input id="qty4" type="number" min="0" value="0" class="input"></div>
             <div><label>6 cartas - Cantidad</label><input id="qty6" type="number" min="0" value="0" class="input"></div>
-            <div><label>9 cartas - Cantidad</label><input id="qty9" type="number" min="0" value="0" class="input"></div>
+            <div><label>8 cartas - Cantidad</label><input id="qty8" type="number" min="0" value="0" class="input"></div>
           </div>
 
           <div style="display:flex; gap:8px; margin-top:6px">
@@ -237,12 +245,12 @@ body{
       <div style="grid-column:span 3" class="mex-frame-small">
         <h3>Administración de Jugadores / Compras (agrupado por Celular + Modalidad)</h3>
         <div class="table-wrap" style="margin-top:8px">
-          <table style="width:100%; border-collapse:collapse; font-size:13px;">
+          <table style="width:100%; border-collapse:collapse;">
             <thead style="background:#fafafa; position:sticky; top:0">
-              <tr><th style="text-align:left;padding:8px">Jugador (Celular)</th><th style="padding:8px">Modalidad</th><th style="padding:8px">Partidas</th><th style="padding:8px">Pagado</th><th style="padding:8px">Estado</th><th style="padding:8px">Acciones</th></tr>
+              <tr><th style="text-align:left;padding:8px">Jugador (Celular)</th><th style="padding:8px">Modalidad</th><th style="padding:8px">Partidas</th><th style="padding:8px">Pagado</th><th style="padding:8px">Acciones</th></tr>
             </thead>
             <tbody id="players-table">
-              <tr><td colspan="6" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td></tr>
+              <tr><td colspan="5" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td></tr>
             </tbody>
           </table>
         </div>
@@ -264,7 +272,7 @@ body{
 
 </div>
 
-<!-- MODAL: Jugador detalle (agregado para agrupacion) -->
+<!-- MODAL: Group / Jugador detalle -->
 <div id="modal-player" class="hidden" aria-hidden="true">
   <div class="modal-back" id="modal-back">
     <div class="modal" role="dialog" aria-modal="true">
@@ -278,13 +286,15 @@ body{
   </div>
 </div>
 
-<!-- WINNER modal -->
+<!-- WINNER modal con confeti -->
 <div id="modal-winner" class="hidden" aria-hidden="true">
-  <div class="modal-back">
-    <div class="modal" role="dialog">
-      <h3 style="color:var(--rojo)">🎉 ¡FELICIDADES!</h3>
-      <div id="modal-winner-body"></div>
-      <div style="display:flex; gap:8px; justify-content:center; margin-top:12px">
+  <div class="modal-back" id="winner-backdrop">
+    <div class="modal" role="dialog" style="position:relative; padding-top:32px; overflow:hidden;">
+      <button id="winner-close" style="position:absolute; top:8px; right:10px; border:none; background:transparent; font-size:20px; cursor:pointer;">❌</button>
+      <h3 style="color:#d00000; text-align:center; font-size:2rem; margin-bottom:10px;">🎉 ¡FELICIDADES!</h3>
+      <div id="modal-winner-body" style="margin-top:8px; text-align:center; font-weight:600; color:#333;"></div>
+      <canvas id="confetti-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
+      <div style="display:flex; gap:8px; justify-content:center; margin-top:12px; position:relative; z-index:2;">
         <button id="winner-ok" class="btn btn-blue">Aceptar</button>
       </div>
     </div>
@@ -296,7 +306,10 @@ body{
 </footer>
 
 <script>
-/* index.html v7.3 - script */
+/* index.html v7.4 - Script completo */
+/* ---------------------------
+   Config / Constantes
+   --------------------------- */
 const CARD_IMAGE_BASE_PATH = 'Cartas_baraja_loteria/';
 const CARD_NAME_MAP = {
   1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",
@@ -316,16 +329,19 @@ const CARD_NAME_MAP = {
 };
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] || `${id}.jpg`);
 
-const KEY_PRICES = 'loteria_v73_prices';
-const KEY_GAME = 'loteria_v73_game';
-const KEY_PUR = 'loteria_v73_purchases';
-const KEY_TX = 'loteria_v73_tx';
-const KEY_WIN = 'loteria_v73_winners';
-const KEY_PASADAS = 'loteria_v73_pasadas';
+const KEY_PRICES = 'loteria_v74_prices';
+const KEY_GAME = 'loteria_v74_game';
+const KEY_PUR = 'loteria_v74_purchases';
+const KEY_TX = 'loteria_v74_tx';
+const KEY_WIN = 'loteria_v74_winners';
+const KEY_PASADAS = 'loteria_v74_pasadas';
 
-const defaultPrices = ()=>({ price4:10, profit4:2, price6:12, profit6:3, price9:15, profit9:4 });
+const defaultPrices = ()=>({ price4:10, profit4:2, price6:12, profit6:3, price8:15, profit8:4 });
 const defaultGame = ()=>({ deck: Array.from({length:54},(_,i)=>i+1), drawn:[], current:0, pendingWinners:[] });
 
+/* ---------------------------
+   Estado en memoria (localStorage)
+   --------------------------- */
 let prices = load(KEY_PRICES) || defaultPrices();
 let game = load(KEY_GAME) || defaultGame();
 let purchases = load(KEY_PUR) || [];
@@ -334,37 +350,40 @@ let winners = load(KEY_WIN) || [];
 let cartasPasadas = load(KEY_PASADAS) || [];
 
 let isAuto=false, autoInterval=null, animShuffling=false, currentMode = 4;
+
+/* audio */
 const audioCtx = (typeof AudioContext !== 'undefined') ? new AudioContext() : null;
 function playShuffle(){ if(!audioCtx) return; const now=audioCtx.currentTime; const buffer=audioCtx.createBuffer(1, audioCtx.sampleRate*0.18, audioCtx.sampleRate); const d=buffer.getChannelData(0); for(let i=0;i<d.length;i++){ d[i]=(Math.random()*2-1)*(1 - i/d.length); } const src=audioCtx.createBufferSource(); src.buffer=buffer; const g=audioCtx.createGain(); g.gain.setValueAtTime(0.001,now); g.gain.exponentialRampToValueAtTime(0.5,now+0.01); g.gain.exponentialRampToValueAtTime(0.001,now+0.22); src.connect(g); g.connect(audioCtx.destination); src.start(now); src.stop(now+0.26); }
 
+/* ---------------------------
+   Utilidades
+   --------------------------- */
 function save(key,val){ localStorage.setItem(key, JSON.stringify(val)); }
 function load(key){ try{ const v = localStorage.getItem(key); return v? JSON.parse(v): null }catch(e){ return null } }
 function saveAll(){ save(KEY_PRICES, prices); save(KEY_GAME, game); save(KEY_PUR, purchases); save(KEY_TX, transactions); save(KEY_WIN, winners); save(KEY_PASADAS, cartasPasadas); }
-
 function uuid(){ return 'id-'+Math.random().toString(36).slice(2,10); }
-function shuffleArray(arr){ const a = arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a; }
+function shuffleArray(a){ const arr=a.slice(); for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]] } return arr; }
 function formatMoney(n){ return '$' + Number(n||0).toFixed(2); }
-function nowISO(){ return new Date().toISOString(); }
-if(!game.deck || !game.deck.length) game.deck = Array.from({length:54},(_,i)=>i+1);
+function escapeHtml(t){ return String(t||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-/* render */
+/* ---------------------------
+   Render / UI
+   --------------------------- */
 function renderAll(){
   // bolsa
   const totalSales = purchases.reduce((s,p)=> s + (p.totalPaid||0), 0);
-  const totalHouse = purchases.reduce((s,p)=> s + ((p.modality===4?prices.profit4: p.modality===6?prices.profit6: prices.profit9) * (p.initialGames||0)), 0);
+  const totalHouse = purchases.reduce((s,p)=> s + ((p.modality===4?prices.profit4: p.modality===6?prices.profit6: prices.profit8) * (p.initialGames||0)), 0);
   const pot = Math.max(0, totalSales - totalHouse);
   document.getElementById('bolsa-amount').textContent = formatMoney(pot);
 
   // deck count
   document.getElementById('deck-count').textContent = game.deck.length;
 
-  // players - show only active players but display all cards with passed in gray/sticker
+  // players area filtered by modality
   const area = document.getElementById('players-area');
   const active = purchases.filter(p=> p.gamesLeft > 0 && p.state !== 'PAGADO' && p.modality === currentMode);
   if(!active.length){ area.innerHTML = '<div class="small-muted" style="padding:18px;text-align:center">Aún no hay jugadores.</div>'; }
-  else {
-    area.innerHTML = active.map(p=> renderPlayerColumn(p)).join('');
-  }
+  else { area.innerHTML = active.map(p=> renderPlayerColumn(p)).join(''); }
 
   // current card shown as image only
   const cur = game.current;
@@ -392,26 +411,44 @@ function renderAll(){
   saveAll();
 }
 
-/* player column with cards - greyscale passed and sticker */
+/* render player column layout: 4 -> 2x2, 6 -> 2x3, 8 -> 4x2 */
 function renderPlayerColumn(p){
-  const cardHtml = (p.card||[]).map(cid => {
+  let displayCount = p.modality;
+  let cols = 2;
+  if(p.modality === 4){ cols = 2; displayCount = 4; }
+  else if(p.modality === 6){ cols = 3; displayCount = 6; }
+  else if(p.modality === 8){ cols = 4; displayCount = 8; } // 4x2
+
+  const cardList = (p.card || []).slice(0, displayCount);
+
+  const gridStyle = `display:grid; grid-template-columns:repeat(${cols}, 1fr); gap:8px; justify-items:center;`;
+
+  let cardHtml = cardList.map(cid => {
     const passed = (cartasPasadas || []).includes(cid);
     const sticker = passed ? `<div class="sticker"><img src="logo_1_entrada.png" alt="st" /></div>` : '';
     return `<div class="card-thumb ${passed? 'passed':''}" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
   }).join('');
-  return `<div class="player-card" onclick="showPlayerModal('${p.id}')">
+
+  let missing = displayCount - cardList.length;
+  while(missing > 0){
+    cardHtml += `<div style="width:70px;height:100px;border-radius:8px;background:#fafafa;border:1px dashed #eee"></div>`; missing--;
+  }
+
+  return `<div class="player-card" onclick="openGroupModalFromPurchase('${p.id}')">
     <div class="player-header"><div style="width:36px;height:36px;border-radius:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-weight:800">${p.modality}</div></div>
     <div class="player-name">${escapeHtml(p.playerName)}</div>
-    <div class="player-cards">${cardHtml}</div>
+    <div class="player-cards" style="${gridStyle}">${cardHtml}</div>
   </div>`;
 }
 
-/* group purchases for admin by cell+modality */
+/* ---------------------------
+   Admin grouping
+   --------------------------- */
 function groupedPurchases(){
   const map = {};
   purchases.forEach(p=>{
     const key = `${p.cell||'no'}::${p.modality}`;
-    if(!map[key]) map[key] = { playerName: p.playerName, cell: p.cell, modality:p.modality, totalPaid:0, games:0, stateCounts:{}, items:[] };
+    if(!map[key]) map[key] = { playerName: p.playerName, cell: p.cell, modality:p.modality, totalPaid:0, games:0, items:[] , stateCounts:{} };
     map[key].totalPaid += (p.totalPaid||0);
     map[key].games += (p.gamesLeft||0);
     map[key].items.push(p);
@@ -421,68 +458,101 @@ function groupedPurchases(){
   return Object.keys(map).map(k=> ({ key:k, ...map[k] }) );
 }
 
-function stateBadgeHtml(states){
-  // determine primary state order POR PAGAR, JUGANDO, JUGADO, PAGADO
-  const order = ['POR PAGAR','JUGANDO','JUGADO','PAGADO'];
-  for(const s of order) if(states[s]) {
-    const cls = s==='POR PAGAR'? 'badge-porpagar' : s==='JUGANDO'? 'badge-jugando' : s==='JUGADO'? 'badge-jugado' : 'badge-pagado';
-    return `<span class="badge ${cls}">${s}</span>`;
-  }
-  return `<span class="badge badge-jugando">JUGANDO</span>`;
-}
-
 function renderPlayersTable(){
   const tbody = document.getElementById('players-table');
   const groups = groupedPurchases();
-  if(!groups.length){ tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td></tr>'; return; }
+  if(!groups.length){ tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td></tr>'; return; }
 
-  // order groups: those with POR PAGAR first
-  groups.sort((a,b)=>{
-    const s = (g)=> (g.stateCounts && g.stateCounts['POR PAGAR'])? 0 : (g.stateCounts && g.stateCounts['JUGANDO'])? 1 : (g.stateCounts && g.stateCounts['JUGADO'])? 2 : 3;
-    return s(a) - s(b);
-  });
+  // order priority
+  const orderRank = g => (g.stateCounts && g.stateCounts['POR PAGAR'])? 0 : (g.stateCounts && g.stateCounts['JUGANDO'])? 1 : (g.stateCounts && g.stateCounts['JUGADO'])? 2 : 3;
+  groups.sort((a,b)=> orderRank(a)-orderRank(b));
 
   tbody.innerHTML = groups.map(g=>{
-    const modText = g.modality===4? '4' : g.modality===6? '6' : '9';
+    const modText = g.modality===4? '4' : g.modality===6? '6' : '8';
+    // actions: Ver detalles
     return `<tr>
       <td style="padding:8px; border-bottom:1px solid #f3f3f3">${escapeHtml(g.playerName)}<div class="small-muted">${escapeHtml(g.cell||'—')}</div></td>
       <td style="padding:8px; border-bottom:1px solid #f3f3f3; text-align:center">${modText}</td>
       <td style="padding:8px; border-bottom:1px solid #f3f3f3; text-align:center">${g.games}</td>
       <td style="padding:8px; border-bottom:1px solid #f3f3f3; text-align:center">${formatMoney(g.totalPaid)}</td>
-      <td style="padding:8px; border-bottom:1px solid #f3f3f3; text-align:center">${stateBadgeHtml(g.stateCounts)}</td>
       <td style="padding:8px; border-bottom:1px solid #f3f3f3; text-align:center"><button class="btn btn-blue" onclick="openGroupModal('${g.key}'); event.stopPropagation()">Ver</button></td>
     </tr>`;
   }).join('');
 }
 
-/* open modal with group details */
+/* open modal with group details (table of purchases) */
 function openGroupModal(key){
   const g = groupedPurchases().find(x=> x.key === key);
   if(!g) return alert('No encontrado');
   const modal = document.getElementById('modal-player'); document.getElementById('modal-player-name').textContent = `${g.playerName} • ${g.cell || ''}`;
   const body = document.getElementById('modal-body');
+
+  // build table rows
+  const rows = g.items.map(it => {
+    const dt = new Date(it.createdAt).toLocaleString();
+    return `<tr>
+      <td style="width:160px">${dt}</td>
+      <td style="text-align:center">${it.initialGames||1}</td>
+      <td style="text-align:center">${formatMoney(it.totalPaid)}</td>
+      <td style="text-align:center">${it.state}</td>
+      <td class="detail-actions" style="text-align:center">
+        <button class="btn btn-blue" onclick="viewCards('${it.id}'); event.stopPropagation()">Ver Carta</button>
+        <button class="btn btn-muted" onclick="copySelectionLinkForPurchaseById('${it.id}'); event.stopPropagation()">Copiar enlace</button>
+        <button class="btn btn-green" onclick="markPaidById('${it.id}'); event.stopPropagation()">Marcar Pagado</button>
+      </td>
+    </tr>`; });
+
   body.innerHTML = `<div style="display:grid; gap:8px">
     <div><strong>Modalidad:</strong> ${g.modality} cartas</div>
     <div><strong>Partidas totales disponibles:</strong> ${g.games}</div>
     <div><strong>Total pagado:</strong> ${formatMoney(g.totalPaid)}</div>
     <div style="margin-top:8px"><strong>Detalle de compras:</strong></div>
-    <div style="max-height:260px; overflow:auto; border:1px solid #eee; padding:8px; border-radius:6px">${g.items.map(it=> `<div style="padding:6px;border-bottom:1px solid #fafafa"><div><strong>${escapeHtml(it.playerName)}</strong> • ${escapeHtml(it.cell||'')}</div><div class="small-muted">Fecha: ${new Date(it.createdAt).toLocaleString()} • Estado: ${it.state} • Pagado: ${formatMoney(it.totalPaid)}</div></div>`).join('')}</div>
-    <div style="display:flex; gap:8px; margin-top:8px"><button class="btn btn-green" onclick="markGroupPaid('${g.key}')">Marcar todo Pagado</button><button class="btn btn-red" onclick="deleteGroup('${g.key}')">Eliminar grupo</button></div>
+    <div style="max-height:320px; overflow:auto; border:1px solid #eee; padding:8px; border-radius:6px">
+      <table class="detail-table"><thead><tr><th>Fecha</th><th>Partidas</th><th>Pagado</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>${rows.join('')}</tbody></table>
+    </div>
+    <div style="display:flex; gap:8px; margin-top:8px">
+      <button class="btn btn-red" id="btn-delete-group">Eliminar grupo</button>
+      <div style="margin-left:auto" class="small-muted">Nota: No se puede eliminar si contiene pagos o premios.</div>
+    </div>
   </div>`;
+
+  // disable delete button if any item has POR PAGAR or PAGADO
+  const cannotDelete = g.items.some(it => it.state === 'POR PAGAR' || it.state === 'PAGADO');
+  const btnDel = document.getElementById('btn-delete-group');
+  if(cannotDelete){ btnDel.disabled = true; btnDel.title = 'Contiene partidas pagadas/por pagar — no se puede eliminar'; btnDel.classList.add('btn-muted'); }
+  else { btnDel.disabled = false; btnDel.title='Eliminar grupo'; btnDel.classList.remove('btn-muted'); btnDel.onclick = ()=>{ if(!confirm('Eliminar todas las compras del grupo?')) return; deleteGroup(key); document.getElementById('modal-player').classList.add('hidden'); document.getElementById('modal-player').style.display='none'; }; }
+
   modal.classList.remove('hidden'); modal.style.display='block';
   document.getElementById('modal-close').onclick = ()=>{ modal.classList.add('hidden'); modal.style.display='none'; };
-  document.getElementById('modal-mark-paid').onclick = ()=>{ markGroupPaid(g.key); modal.classList.add('hidden'); modal.style.display='none'; };
 }
 
-function markGroupPaid(key){
-  const g = groupedPurchases().find(x=> x.key === key);
-  if(!g) return;
-  g.items.forEach(it => { const p = purchases.find(x=> x.id===it.id); if(p) p.state='PAGADO'; });
-  transactions.push({id:uuid(),type:'mark_group_paid',key,ts:Date.now()});
+/* helper to open modal for the purchase's group when clicking a player's column */
+function openGroupModalFromPurchase(pid){
+  const p = purchases.find(x=> x.id === pid); if(!p) return;
+  const key = `${p.cell||'no'}::${p.modality}`; openGroupModal(key);
+}
+
+/* view cards for a single purchase in small modal alert */
+function viewCards(pid){
+  const it = purchases.find(x=> x.id===pid); if(!it) return alert('No encontrado');
+  const cards = (it.card || []).map(cid => `<div style="width:80px;height:110px;background-image:url('${cardImageUrl(cid)}');background-size:cover;border-radius:6px;display:inline-block;margin-right:6px"></div>`).join('');
+  const winInfo = `Estado: ${it.state} • Pagado: ${formatMoney(it.totalPaid)}`;
+  // small modal like simple alert
+  const w = window.open('', '_blank', 'width=420,height=520'); w.document.write(`<body style="font-family:Inter,Arial;margin:12px"><h3>${escapeHtml(it.playerName)}</h3><div>${winInfo}</div><div style="margin-top:12px">${cards}</div><div style="margin-top:12px"><button onclick="window.close()">Cerrar</button></div></body>`);
+}
+
+/* ---------------------------
+   Mark paid / delete purchase / group deletion
+   --------------------------- */
+function markPaidById(pid){
+  const p = purchases.find(x=> x.id===pid); if(!p) return alert('No encontrado');
+  if(p.state === 'PAGADO') return alert('Ya está marcado como PAGADO');
+  p.state = 'PAGADO';
+  transactions.push({id: uuid(), type:'mark_paid', purchaseId: pid, ts: Date.now()});
   saveAll(); renderAll();
 }
+
 function deleteGroup(key){
-  if(!confirm('Eliminar todas las compras del grupo?')) return;
   const g = groupedPurchases().find(x=> x.key === key);
   if(!g) return;
   const ids = g.items.map(i=> i.id);
@@ -491,29 +561,25 @@ function deleteGroup(key){
   saveAll(); renderAll();
 }
 
-/* shuffle animation that uses only pending cards (non-passed) */
+/* ---------------------------
+   Barajeo (solo cartas pendientes)
+   --------------------------- */
 function shuffleVisual(){
   if(animShuffling) return;
   animShuffling = true; disableAll(true);
   try{ playShuffle(); }catch(e){}
-  // build pool: cards not in cartasPasadas
   const pool = (Array.from({length:54},(_,i)=>i+1)).filter(id => !cartasPasadas.includes(id));
-  // preview animation
   const preview = document.getElementById('shuffle-preview'); preview.innerHTML = ''; preview.style.display='flex';
   const sample = shuffleArray(pool).slice(0,8);
   sample.forEach((cid,i)=>{
     const el = document.createElement('div'); el.className='fly'; el.style.backgroundImage=`url('${cardImageUrl(cid)}')`; el.style.left=`50%`; el.style.top=`50%`;
     el.style.transform = `translate(-50%,-50%) scale(${1 - i*0.05}) rotate(${(Math.random()*40)-20}deg)`; preview.appendChild(el);
   });
-  // animate: move them slightly and fade
   const flies = preview.querySelectorAll('.fly');
   flies.forEach((f,idx)=>{ setTimeout(()=>{ f.style.transform = `translate(${(Math.random()*240-120)}px, ${(Math.random()*80-40)}px) rotate(${(Math.random()*720)-360}deg) scale(0.8)`; f.style.opacity='0.85'; }, idx*80); });
   setTimeout(()=>{
-    // perform actual internal shuffle of pending deck
-    // we keep game.deck but ensure it contains only pending (not passed) plus others
     const pending = game.deck.filter(id => !cartasPasadas.includes(id));
     const shuffled = shuffleArray(pending);
-    // keep already drawn removed, rebuild game.deck: put shuffled pending first, then past (so deck length same)
     const past = game.deck.filter(id => cartasPasadas.includes(id));
     game.deck = shuffled.concat(past);
     transactions.push({id:uuid(),type:'shuffle_pending',ts:Date.now()});
@@ -521,17 +587,17 @@ function shuffleVisual(){
   }, 1200);
 }
 
-/* draw - pop from deck (top = end) but only pending expected first */
+/* ---------------------------
+   Tirar carta
+   --------------------------- */
 function drawOne(){
   if(isAuto || animShuffling) return;
   if(!game.deck.length){ alert('Mazo vacío. Barajea para continuar.'); return; }
-  // find next that is not passed; if none, just pop
   let idx = -1;
   for(let i=game.deck.length-1;i>=0;i--){ if(!cartasPasadas.includes(game.deck[i])) { idx = i; break; } }
   let next;
   if(idx >= 0){ next = game.deck.splice(idx,1)[0]; } else { next = game.deck.pop(); }
   game.drawn.push(next); game.current = next;
-  // register as passed
   cartasPasadas.push(next);
   transactions.push({id:uuid(),type:'draw',card:next,ts:Date.now()});
   saveAll();
@@ -539,7 +605,9 @@ function drawOne(){
   renderAll();
 }
 
-/* process card: mark players' marked cards and detect winners */
+/* ---------------------------
+   Procesar carta: marcar y detectar ganadores
+   --------------------------- */
 function processCard(cardId){
   const winnersFound = [];
   purchases.forEach((p,idx)=>{
@@ -547,7 +615,6 @@ function processCard(cardId){
     if(p.card && p.card.includes(cardId) && !(p.markedCards||[]).includes(cardId)){
       purchases[idx].markedCards = [...(p.markedCards||[]), cardId];
     }
-    // if completed (all card ids present in marked)
     if((p.markedCards||[]).length === p.modality){
       winnersFound.push({idx, id:p.id});
     }
@@ -556,7 +623,7 @@ function processCard(cardId){
   if(winnersFound.length){
     stopAuto(); disableAll(true);
     const totalSales = purchases.reduce((s,p)=> s + (p.totalPaid||0), 0);
-    const totalHouse = purchases.reduce((s,p)=> s + ((p.modality===4?prices.profit4: p.modality===6?prices.profit6: prices.profit9) * (p.initialGames||0)), 0);
+    const totalHouse = purchases.reduce((s,p)=> s + ((p.modality===4?prices.profit4: p.modality===6?prices.profit6: prices.profit8) * (p.initialGames||0)), 0);
     const pot = Math.max(0, totalSales - totalHouse);
     const share = pot / winnersFound.length;
     const recs = [];
@@ -581,12 +648,13 @@ function processCard(cardId){
   }
 }
 
-/* auto */
+/* ---------------------------
+   Automático
+   --------------------------- */
 function startAuto(){
   if(!game.deck.length){ alert('Mazo vacío. Barajea'); return; }
   isAuto = true; document.getElementById('btn-auto').textContent = 'DETENER AUTOMÁTICO';
-  autoInterval = setInterval(()=>{ if(!isAuto) return; // draw next pending
-    // find next pending
+  autoInterval = setInterval(()=>{ if(!isAuto) return;
     let foundIdx=-1;
     for(let i=game.deck.length-1;i>=0;i--){ if(!cartasPasadas.includes(game.deck[i])) { foundIdx=i; break; } }
     if(foundIdx<0){ stopAuto(); return; }
@@ -600,28 +668,17 @@ function startAuto(){
 function stopAuto(){ isAuto=false; document.getElementById('btn-auto').textContent='CARTAS AUTOMÁTICO'; if(autoInterval){ clearInterval(autoInterval); autoInterval=null; } }
 function toggleAuto(){ if(isAuto) stopAuto(); else startAuto(); }
 
-/* disable controls */
+/* ---------------------------
+   Disable controls
+   --------------------------- */
 function disableAll(d){ ['btn-shuffle','btn-draw','btn-auto','btn-reset','btn-register','btn-calc','save-prices','btn-export','btn-clear'].forEach(id=>{ const el=document.getElementById(id); if(el) el.disabled = !!d; }); }
 
-/* registration and generation */
-function calculateFromQtys(q4,q6,q9){
-  const results=[]; if(q4>0) results.push({modality:4, qty: q4, price: prices.price4, profit: prices.profit4}); if(q6>0) results.push({modality:6, qty: q6, price: prices.price6, profit: prices.profit6}); if(q9>0) results.push({modality:9, qty: q9, price: prices.price9, profit: prices.profit9}); return results;
-}
-
-/* auto-adjust visibility of modalities by budget */
-function adjustModalitiesByBudget(budget){
-  const p4 = prices.price4, p6 = prices.price6, p9 = prices.price9;
-  const can4 = budget >= p4;
-  const can6 = budget >= p6;
-  const can9 = budget >= p9;
-  document.getElementById('qty4').parentElement.style.display = can4 ? 'block' : 'none';
-  document.getElementById('qty6').parentElement.style.display = can6 ? 'block' : 'none';
-  document.getElementById('qty9').parentElement.style.display = can9 ? 'block' : 'none';
-}
-
-/* generate card avoiding duplicates */
+/* ---------------------------
+   Generación de cartas evitando duplicados pendientes
+   --------------------------- */
 function generateCardForPurchase(modality){
   const used = new Set(); purchases.forEach(p=> (p.card||[]).forEach(cid=> used.add(cid)));
+  // prefer cards not already passed and not used
   let pool = Array.from({length:54},(_,i)=>i+1).filter(id=> !used.has(id) && !cartasPasadas.includes(id));
   if(pool.length < modality) pool = Array.from({length:54},(_,i)=>i+1).filter(id => !cartasPasadas.includes(id));
   if(pool.length < modality) pool = Array.from({length:54},(_,i)=>i+1);
@@ -629,28 +686,67 @@ function generateCardForPurchase(modality){
   return pool.slice(0, modality);
 }
 
-/* register player - create separate purchase per unit but grouped later */
+/* ---------------------------
+   Registrar jugador (crea compras individuales por unidad)
+   --------------------------- */
+function calculateFromQtys(q4,q6,q8){
+  const results=[]; if(q4>0) results.push({modality:4, qty: q4, price: prices.price4, profit: prices.profit4}); if(q6>0) results.push({modality:6, qty: q6, price: prices.price6, profit: prices.profit6}); if(q8>0) results.push({modality:8, qty: q8, price: prices.price8, profit: prices.profit8}); return results;
+}
+
+function adjustModalitiesByBudget(budget){
+  const p4 = prices.price4, p6 = prices.price6, p8 = prices.price8;
+  const can4 = budget >= p4;
+  const can6 = budget >= p6;
+  const can8 = budget >= p8;
+  document.getElementById('qty4').parentElement.style.display = can4 ? 'block' : 'none';
+  document.getElementById('qty6').parentElement.style.display = can6 ? 'block' : 'none';
+  document.getElementById('qty8').parentElement.style.display = can8 ? 'block' : 'none';
+}
+
 function registerPlayer(){
   const name = (document.getElementById('input-name').value||'').trim();
   const cell = (document.getElementById('input-cell').value||'').trim();
   const account = (document.getElementById('input-account').value||'').trim();
   const budget = parseFloat(document.getElementById('input-budget').value||0);
-  const q4 = parseInt(document.getElementById('qty4').value||0); const q6 = parseInt(document.getElementById('qty6').value||0); const q9 = parseInt(document.getElementById('qty9').value||0);
+  const q4 = parseInt(document.getElementById('qty4').value||0); const q6 = parseInt(document.getElementById('qty6').value||0); const q8 = parseInt(document.getElementById('qty8').value||0);
   if(!name) return alert('Captura el nombre'); if(!cell) return alert('Captura el celular (requerido para agrupar)');
-  if(q4+q6+q9 <= 0) return alert('Selecciona al menos una partida (cantidad)');
-  const needed = (q4*prices.price4) + (q6*prices.price6) + (q9*prices.price9);
+  if(q4+q6+q8 <= 0) return alert('Selecciona al menos una partida (cantidad)');
+  const needed = (q4*prices.price4) + (q6*prices.price6) + (q8*prices.price8);
   if(budget < needed) return alert(`El presupuesto no alcanza. Se requiere ${formatMoney(needed)}.`);
 
-  const parts = calculateFromQtys(q4,q6,q9);
+  const parts = calculateFromQtys(q4,q6,q8);
   parts.forEach(part=>{ for(let i=0;i<part.qty;i++){ const mod = part.modality; const p = { id: uuid(), playerName: name, cell: cell, account: account, modality: mod, initialGames: 1, gamesLeft: 1, totalPaid: part.price, wins: 0, state: 'JUGANDO', card: [], markedCards: [], selectionToken: uuid(), selectionUsed: false, createdAt: Date.now() }; p.card = generateCardForPurchase(mod); purchases.push(p); transactions.push({id:uuid(),type:'purchase',player:name,modality:mod,amount:part.price,purchaseId:p.id,ts:Date.now()}); } });
+
   saveAll();
   document.getElementById('input-name').value=''; document.getElementById('input-cell').value=''; document.getElementById('input-account').value=''; document.getElementById('input-budget').value='0';
-  document.getElementById('qty4').value='0'; document.getElementById('qty6').value='0'; document.getElementById('qty9').value='0';
+  document.getElementById('qty4').value='0'; document.getElementById('qty6').value='0'; document.getElementById('qty8').value='0';
   alert('Jugador(s) registrado(s). Revisa Administración.');
   renderAll();
 }
 
-/* selection link flow preserved */
+/* ---------------------------
+   Selection link (offline-friendly)
+   --------------------------- */
+function copySelectionLinkForPurchaseById(pid){
+  const p = purchases.find(x=> x.id===pid);
+  if(!p) return alert('Compra no encontrada');
+  if(!p.selectionToken){ p.selectionToken = uuid(); saveAll(); }
+  let base;
+  try{
+    if(location.protocol === 'file:'){
+      base = location.pathname.split('/').pop();
+      base = `${base}`;
+    } else {
+      base = `${location.origin}${location.pathname}`;
+    }
+  } catch(e){ base = `${location.pathname}`; }
+  const url = `${base}${base.includes('?') ? '&' : '?'}select=${p.selectionToken}`;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(()=> { alert('Enlace de selección copiado al portapapeles:\n' + url + '\n\nPégalo en el navegador del jugador (funciona offline si abren el archivo local).'); }).catch(()=> { prompt('Copia el enlace de selección (manual):', url); });
+  } else { prompt('Copia el enlace de selección (manual):', url); }
+}
+
+/* selection view when opening link */
 function handleSelectionOnLoad(){
   const params = new URLSearchParams(location.search); const token = params.get('select'); if(!token) return;
   const p = purchases.find(x=> x.selectionToken === token);
@@ -678,66 +774,62 @@ function handleSelectionOnLoad(){
   document.getElementById('cancel-select').onclick = ()=>{ location.href = location.pathname; };
 }
 
-/* winner modal */
+/* ---------------------------
+   Winner modal & confetti (manual close or ESC)
+   --------------------------- */
+let confettiInterval;
+function startConfetti(){
+  const canvas = document.getElementById('confetti-canvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width = canvas.offsetWidth;
+  const h = canvas.height = canvas.offsetHeight;
+  const colors = ['#e63946','#ffd60a','#2a9d8f','#ff9e00','#8ac926','#ff595e'];
+  let confetti = Array.from({length:150},()=>({
+    x:Math.random()*w,
+    y:Math.random()*-h,
+    r:Math.random()*6+3,
+    d:Math.random()*Math.PI*2,
+    c:colors[Math.floor(Math.random()*colors.length)],
+    s:Math.random()*2+2
+  }));
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    confetti.forEach(f=>{
+      ctx.beginPath();
+      ctx.arc(f.x,f.y,f.r,0,Math.PI*2);
+      ctx.fillStyle=f.c;
+      ctx.fill();
+      f.y+=f.s;
+      f.x+=Math.sin(f.d);
+      if(f.y>h){f.y=-10;f.x=Math.random()*w;}
+    });
+  }
+  if(confettiInterval) clearInterval(confettiInterval);
+  confettiInterval=setInterval(draw,20);
+}
+function stopConfetti(){ clearInterval(confettiInterval); const canvas=document.getElementById('confetti-canvas'); if(canvas){ canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);} }
+
 function showWinner(records){
-  const modal = document.getElementById('modal-winner'); const body = document.getElementById('modal-winner-body');
+  const modal = document.getElementById('modal-winner'); 
+  const body = document.getElementById('modal-winner-body');
   const total = records.reduce((s,r)=> s + (r.amount||0), 0);
-  body.innerHTML = `<div style="font-weight:700; text-align:center">${records.map(r=>escapeHtml(r.playerName)).join(', ')} han ganado ${formatMoney(total)}</div>`;
-  modal.classList.remove('hidden'); modal.style.display='block';
-  setTimeout(()=>{ modal.classList.add('hidden'); modal.style.display='none'; }, 2200);
+  body.innerHTML = `<div style="font-weight:700;text-align:center">${records.map(r=>escapeHtml(r.playerName)).join(', ')} ha ganado<br><span style="font-size:1.4rem;color:#008000;">${formatMoney(total)}</span></div>`;
+  modal.classList.remove('hidden'); modal.style.display = 'block'; startConfetti();
 }
-document.getElementById('winner-ok').addEventListener('click', ()=>{ document.getElementById('modal-winner').classList.add('hidden'); renderAll(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape'){ const modal = document.getElementById('modal-winner'); if(modal && !modal.classList.contains('hidden')){ modal.classList.add('hidden'); modal.style.display='none'; stopConfetti(); } } });
+document.getElementById('winner-ok').addEventListener('click', ()=>{ const modal = document.getElementById('modal-winner'); modal.classList.add('hidden'); modal.style.display='none'; stopConfetti(); renderAll(); });
+document.getElementById('winner-close').addEventListener('click', ()=>{ const modal = document.getElementById('modal-winner'); modal.classList.add('hidden'); modal.style.display='none'; stopConfetti(); });
 
-/* admin group view utilities exposed earlier */
-function showPlayerModal(id){
-  const p = purchases.find(x=> x.id === id); if(!p) return alert('Jugador no encontrado');
-  const modal = document.getElementById('modal-player'); document.getElementById('modal-player-name').textContent = `${p.playerName} • ${p.cell || ''}`; const body=document.getElementById('modal-body');
-  body.innerHTML = `<div style="display:grid; gap:8px">
-    <div><strong>Nombre:</strong> ${escapeHtml(p.playerName)}</div>
-    <div><strong>Celular:</strong> ${escapeHtml(p.cell||'-')}</div>
-    <div><strong>Cuenta:</strong> ${escapeHtml(p.account||'-')}</div>
-    <div><strong>Partidas:</strong> ${p.gamesLeft} (ganadas: ${p.wins||0})</div>
-    <div><strong>Total pagado:</strong> ${formatMoney(p.totalPaid)}</div>
-    <div><strong>Estado:</strong> ${p.state}</div>
-    <div><strong>Cartas:</strong> <div style="display:flex;gap:6px;margin-top:6px">${(p.card||[]).map(cid=>`<div style="width:72px;height:100px;background-image:url('${cardImageUrl(cid)}');background-size:cover;border-radius:6px"></div>`).join('')}</div></div>
-    <div style="display:flex; gap:8px; margin-top:8px">
-      <button class="btn btn-blue" onclick="copySelectionLinkForPurchaseById('${p.id}')">Copiar enlace</button>
-      <button class="btn btn-green" onclick="markPaidById('${p.id}')">Marcar Pagado</button>
-      <button class="btn btn-red" onclick="deletePurchaseById('${p.id}')">Eliminar</button>
-    </div>
-  </div>`;
-  modal.classList.remove('hidden'); modal.style.display='block';
-  document.getElementById('modal-close').onclick = ()=>{ modal.classList.add('hidden'); modal.style.display='none'; };
-  document.getElementById('modal-mark-paid').onclick = ()=>{ markPaidById(p.id); modal.classList.add('hidden'); modal.style.display='none'; };
-}
-
-function copySelectionLinkForPurchaseById(pid){
-  const p = purchases.find(x=> x.id===pid); if(!p) return alert('Compra no encontrada');
-  const url = `${location.origin}${location.pathname}?select=${p.selectionToken || ''}`;
-  navigator.clipboard.writeText(url).then(()=> alert('Enlace copiado:\n'+url)).catch(()=> prompt('Copia manualmente:', url));
-}
-
-function markPaidById(pid){
-  const p = purchases.find(x=> x.id===pid); if(!p) return alert('No encontrado');
-  p.state = 'PAGADO';
-  transactions.push({id: uuid(), type:'mark_paid', purchaseId: pid, ts: Date.now()});
-  saveAll(); renderAll();
-}
-
-function deletePurchaseById(pid){
-  if(!confirm('Eliminar esta compra?')) return;
-  purchases = purchases.filter(x=> x.id !== pid);
-  transactions.push({id: uuid(), type:'delete', purchaseId: pid, ts: Date.now()});
-  saveAll(); renderAll();
-}
-
-/* PDF */
+/* ---------------------------
+   PDF export
+   --------------------------- */
 async function exportPdf(){
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit:'pt', format:'a4' }); const now=new Date(); const dateStr=now.toISOString().slice(0,10);
   doc.setFontSize(18); doc.text('REPORTE LOTERÍA — GANA YA!', 40, 50); doc.setFontSize(11); doc.text(`Fecha: ${now.toLocaleString()}`, 40, 72);
   const totalSales = purchases.reduce((s,p)=> s + (p.totalPaid||0), 0);
-  const totalHouse = purchases.reduce((s,p)=> s + ((p.modality===4?prices.profit4: p.modality===6?prices.profit6: prices.profit9) * (p.initialGames||0)), 0);
+  const totalHouse = purchases.reduce((s,p)=> s + ((p.modality===4?prices.profit4: p.modality===6?prices.profit6: prices.profit8) * (p.initialGames||0)), 0);
   const pot = Math.max(0, totalSales - totalHouse);
   doc.text(`Total ventas: ${formatMoney(totalSales)}`, 40, 100); doc.text(`Ganancia casa (estimada): ${formatMoney(totalHouse)}`, 40, 116); doc.text(`Bolsa en juego: ${formatMoney(pot)}`, 40, 132);
   doc.setFontSize(12); doc.text('Compras agrupadas:', 40, 160); doc.setFontSize(9);
@@ -752,21 +844,31 @@ async function exportPdf(){
   const fname = `REPORTE_LOTERIA_${dateStr}.pdf`; doc.save(fname);
 }
 
-/* clear */
-function clearDay(){
-  if(!confirm('Borrar todas las compras, transacciones y reiniciar juego?')) return;
-  purchases = []; transactions.push({id:uuid(), type:'clear', ts:Date.now()}); game = defaultGame(); winners = []; cartasPasadas = []; saveAll(); renderAll(); alert('Día reiniciado');
+/* ---------------------------
+   Reiniciar día / iniciar juego nuevo (resetGame)
+   --------------------------- */
+function resetGame(){
+  if(!confirm('Iniciar un juego nuevo: se reiniciará el mazo y se limpiarán las marcas de cartas pasadas. Las compras y jugadores permanecerán. ¿Continuar?')) return;
+  stopAuto();
+  game.deck = Array.from({length:54}, (_,i)=>i+1);
+  game.drawn = [];
+  game.current = 0;
+  cartasPasadas = [];
+  purchases.forEach(p => { p.markedCards = []; });
+  game.pendingWinners = [];
+  saveAll();
+  renderAll();
+  alert('Juego reiniciado. Mazo nuevo listo.');
 }
 
-/* helpers */
-function escapeHtml(t){ return String(t||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-
-/* init */
+/* ---------------------------
+   Init & handlers
+   --------------------------- */
 function init(){
   prices = load(KEY_PRICES) || defaultPrices();
   document.getElementById('price4').value = prices.price4; document.getElementById('profit4').value = prices.profit4;
   document.getElementById('price6').value = prices.price6; document.getElementById('profit6').value = prices.profit6;
-  document.getElementById('price9').value = prices.price9; document.getElementById('profit9').value = prices.profit9;
+  document.getElementById('price8').value = prices.price8; document.getElementById('profit8').value = prices.profit8;
 
   handleSelectionOnLoad();
   renderAll();
@@ -774,30 +876,34 @@ function init(){
   document.getElementById('btn-shuffle').addEventListener('click', ()=>{ shuffleVisual(); });
   document.getElementById('btn-draw').addEventListener('click', ()=>{ drawOne(); });
   document.getElementById('btn-auto').addEventListener('click', ()=>{ toggleAuto(); });
-  document.getElementById('btn-reset').addEventListener('click', ()=>{ if(confirm('Reiniciar mazo y juego?')){ game = defaultGame(); cartasPasadas = []; saveAll(); renderAll(); }});
+  // reassign reset to our resetGame
+  const br = document.getElementById('btn-reset'); if(br){ br.removeEventListener && br.removeEventListener('click', ()=>{}); br.addEventListener('click', resetGame); }
+
   document.getElementById('btn-register').addEventListener('click', registerPlayer);
   document.getElementById('btn-calc').addEventListener('click', ()=>{ const b = parseFloat(document.getElementById('input-budget').value||0); adjustModalitiesByBudget(b); });
-  document.getElementById('save-prices').addEventListener('click', ()=>{ prices.price4 = Math.max(1, Number(document.getElementById('price4').value||1)); prices.profit4 = Math.max(0, Number(document.getElementById('profit4').value||0)); prices.price6 = Math.max(1, Number(document.getElementById('price6').value||1)); prices.profit6 = Math.max(0, Number(document.getElementById('profit6').value||0)); prices.price9 = Math.max(1, Number(document.getElementById('price9').value||1)); prices.profit9 = Math.max(0, Number(document.getElementById('profit9').value||0)); save(KEY_PRICES, prices); renderAll(); alert('Precios guardados'); });
+  document.getElementById('save-prices').addEventListener('click', ()=>{ prices.price4 = Math.max(1, Number(document.getElementById('price4').value||1)); prices.profit4 = Math.max(0, Number(document.getElementById('profit4').value||0)); prices.price6 = Math.max(1, Number(document.getElementById('price6').value||1)); prices.profit6 = Math.max(0, Number(document.getElementById('profit6').value||0)); prices.price8 = Math.max(1, Number(document.getElementById('price8').value||1)); prices.profit8 = Math.max(0, Number(document.getElementById('profit8').value||0)); save(KEY_PRICES, prices); renderAll(); alert('Precios guardados'); });
   document.getElementById('reset-prices').addEventListener('click', ()=>{ if(!confirm('Restablecer precios por defecto?')) return; prices = defaultPrices(); save(KEY_PRICES, prices); init(); });
   document.getElementById('btn-export').addEventListener('click', exportPdf);
-  document.getElementById('btn-clear').addEventListener('click', clearDay);
+  document.getElementById('btn-clear').addEventListener('click', ()=>{ if(!confirm('Borrar todo y reiniciar día?')) return; purchases=[]; transactions.push({id:uuid(), type:'clear', ts:Date.now()}); game = defaultGame(); winners=[]; cartasPasadas = []; saveAll(); renderAll(); alert('Día reiniciado'); });
 
   document.getElementById('btn-view-play').addEventListener('click', ()=>{ document.getElementById('view-play').classList.remove('hidden'); document.getElementById('view-admin').classList.add('hidden'); document.getElementById('btn-view-play').classList.add('on'); document.getElementById('btn-view-admin').classList.remove('on'); });
   document.getElementById('btn-view-admin').addEventListener('click', ()=>{ document.getElementById('view-admin').classList.remove('hidden'); document.getElementById('view-play').classList.add('hidden'); document.getElementById('btn-view-admin').classList.add('on'); document.getElementById('btn-view-play').classList.remove('on'); });
 
   document.getElementById('mode-4').addEventListener('click', ()=>{ currentMode=4; renderAll(); });
   document.getElementById('mode-6').addEventListener('click', ()=>{ currentMode=6; renderAll(); });
-  document.getElementById('mode-9').addEventListener('click', ()=>{ currentMode=9; renderAll(); });
+  document.getElementById('mode-8').addEventListener('click', ()=>{ currentMode=8; renderAll(); });
 
   document.addEventListener('keydown',(e)=>{ if(e.code==='Space'){ e.preventDefault(); if(!isAuto) drawOne(); } });
 }
 init();
 
-/* expose */
-window.showPlayerModal = showPlayerModal;
+/* ---------------------------
+   Exports (global) - needed by inline html buttons
+   --------------------------- */
+window.showPlayerModal = openGroupModalFromPurchase;
 window.copySelectionLinkForPurchaseById = copySelectionLinkForPurchaseById;
 window.markPaidById = markPaidById;
-window.deletePurchaseById = deletePurchaseById;
+window.deletePurchaseById = deleteGroup;
 window.renderAll = renderAll;
 
 /* save on unload */

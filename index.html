@@ -2,12 +2,13 @@
 <html lang="es">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=2" />
-<title>🎴!GANA YA!🎴</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>🎴 GANA YA! - Lotería Interactiva Mexicana (v8.6)</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23ff6bcb'/><text x='50%' y='55%' font-size='18' font-family='Arial' fill='white' text-anchor='middle' font-weight='700'>G</text></svg>">
 <style>
 :root{
   --rojo:#b42222; --verde:#0f8a3c; --azul:#1565d8; --naranja:#f77f00; --crema:#fff8ec;
-  --sombra:0 10px 45px rgba(0,0,0,0.12);
+  --sombra:0 10px 28px rgba(0,0,0,0.12);
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -15,22 +16,21 @@ body{
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
   margin:0; padding:18px; background:var(--crema); color:#222;
   background-image: radial-gradient(#ffd60a 1px, transparent 1px), radial-gradient(#e63946 1px, transparent 1px);
-  background-position: 0 0, 50px 50px; background-size: 50px 50px;
+  background-position: 0 0, 25px 25px; background-size: 50px 50px;
 }
 
-/* logo above winners (delimiter) */
+/* fixed logo above winners (delimiter) */
 .header-fixed-logo{ position:fixed; left:18px; top:120px; width:112px; height:112px; z-index:1600; border-radius:12px; background:#fff; display:flex; align-items:center; justify-content:center; padding:8px; box-shadow:var(--sombra); }
 .header-wrap{ max-width:1280px; margin:16px auto 0; display:flex; align-items:center; justify-content:center; gap:8px; padding-top:6px; }
 .mex-title{ font-family: "Arial Black", Gadget, sans-serif; font-size:34px; color:var(--rojo); margin:0; }
 .mex-sub{ color:#008000; font-size:13px; text-align:center; margin-top:6px; }
 
-/* papel picado colors rotation */
-@keyframes papelPicado { 0%{ color:#e63946 }25%{ color:#ffd60a }50%{ color:#2a9d8f }75%{ color:#ff6bcb }100%{ color:#e63946 } }
-.mex-title.animated { animation: papelPicado 3s linear infinite; }
+/* fiesta mexicana colors rotation */
+@keyframes fiesta { 0%{ color:#e63946 }15%{ color:#ffd60a }30%{ color:#2a9d8f }45%{ color:#6d9df5 }60%{ color:#ff6bcb }75%{ color:#ff9e00 }100%{ color:#e63946 } }
+.mex-title.animated { animation: fiesta 3.2s linear infinite; }
 
 /* layout */
 .container{ max-width:1280px; margin:180px auto 24px; display:grid; gap:12px; }
-.top-row{ display:flex; align-items:flex-start; gap:12px; justify-content:space-between; align-items:center; }
 .view-toggle{ display:flex; gap:8px; margin-left:auto; }
 .view-toggle button{ padding:8px 12px; border-radius:10px; border:none; cursor:pointer; font-weight:800; }
 .view-toggle .on{ box-shadow:0 6px 14px rgba(0,0,0,0.08); transform:translateY(-1px); }
@@ -70,7 +70,7 @@ body{
 .btn-blue{ background:var(--azul) } .btn-red{ background:var(--rojo)} .btn-green{ background:var(--verde)} .btn-muted{ background:#f3f4f6; color:#111 }
 
 /* bolsa floats above control but doesn't push it down */
-.bolsa-floating{ position:relative; margin-top: -34px; z-index:30; box-shadow:0 10px 30px rgba(0,0,0,0.08); border-radius:10px; padding:10px 12px; background:linear-gradient(90deg,#e6ffed,#e8fdf0); border:3px solid var(--verde); display:flex; align-items:center; gap:12px; }
+.bolsa-floating{ position:relative; margin-top:-34px; z-index:30; box-shadow:0 10px 30px rgba(0,0,0,0.08); border-radius:10px; padding:10px 12px; background:linear-gradient(90deg,#fff7f0,#fff); border:3px solid var(--verde); display:flex; align-items:center; gap:12px; }
 
 /* current card */
 .current-card{ min-height:200px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#fff; box-shadow:var(--sombra); border:3px solid #eee; padding:12px; }
@@ -94,7 +94,10 @@ body{
 .select-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:8px; }
 
 /* shuffle overlay */
-.shuffle-overlay{ position:fixed; inset:0; z-index:2200; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.98); pointer-events:none; }
+.shuffle-overlay{ position:fixed; inset:0; z-index:2200; display:none; align-items:center; justify-content:center; background:rgba(255,255,255,0.98); pointer-events:none; }
+.shuffle-overlay.visible{ display:flex; pointer-events:auto; }
+
+/* shuffle card */
 .shuffle-card{ width:220px; height:320px; background-size:cover; border-radius:12px; box-shadow:0 20px 40px rgba(0,0,0,.25); position:absolute; transform-origin:center; transition:transform .45s ease, opacity .45s ease; }
 
 /* confetti canvas */
@@ -109,7 +112,7 @@ body{
 @keyframes fadeZoomIn { 0% {opacity:0; transform: scale(.88) translateY(8px);} 100%{opacity:1; transform: none;} }
 .card-thumb { animation: fadeZoomIn .45s ease both; }
 
-/* small pulse for bolsa amount */
+/* bolsa pulse */
 @keyframes pulse { 0%{ transform:scale(1)} 50%{ transform:scale(1.03)} 100%{ transform:scale(1)} }
 .bolsa-amount { animation: pulse 2s ease-in-out infinite; font-weight:900; color:var(--rojo); margin-left:auto; }
 </style>
@@ -117,15 +120,15 @@ body{
 <body>
 
 <!-- fixed logo -->
-<div class="header-fixed-logo">
+<div class="header-fixed-logo" aria-hidden="true">
   <img src="logo_1_entrada.png" alt="logo" style="width:100%;height:100%;object-fit:contain;border-radius:8px">
 </div>
 
 <!-- header -->
 <div class="header-wrap" role="banner">
-  <div style="text-align:center; margin-top:5px;">
-    <h1 class="mex-title animated" style="margin-bottom:20px">🎉 ¡GANA YA! 🎉</h1>
-    <div class="mex-sub">Gana en la loteria - estilo tradicional mexicana</div>
+  <div style="text-align:center; margin-top:10px;">
+    <h1 class="mex-title animated" style="margin-bottom:6px">🎉 GANA YA!</h1>
+    <div class="mex-sub">Lotería interactiva — estilo tradicional mexicano</div>
   </div>
   <div class="view-toggle" aria-hidden="false">
     <button id="btn-view-play" class="on" style="background:#1565d8;color:#fff;">EN JUEGO</button>
@@ -155,7 +158,7 @@ body{
     <!-- controls right: bolsa floats above control but doesn't push down -->
     <aside class="controls-panel" id="controls-panel">
       <div class="bolsa-floating" id="bolsa-floating" aria-hidden="false">
-        <div style="display:flex;align-items:center;gap:20px"><span>💰</span><div style="font-weight:800">Juego</div></div>
+        <div style="display:flex;align-items:center;gap:10px"><span>💰</span><div style="font-weight:800">Bolsa en Juego</div></div>
         <div class="bolsa-amount" id="bolsa-amount">$0.00</div>
       </div>
 
@@ -287,7 +290,7 @@ body{
 
 </div>
 
-<!-- Modals -->
+<!-- Modals and overlays -->
 <div id="modal-player" class="hidden" aria-hidden="true">
   <div class="modal-back">
     <div class="modal" role="dialog" aria-modal="true">
@@ -329,33 +332,18 @@ body{
   </div>
 </div>
 
-<div id="shuffle-overlay" class="shuffle-overlay hidden" aria-hidden="true"></div>
+<div id="shuffle-overlay" class="shuffle-overlay" aria-hidden="true"></div>
 <canvas id="confetti-canvas" style="display:none"></canvas>
 
 <footer style="text-align:center; margin-top:12px" class="small-muted">Coloca <strong>logo_1_entrada.png</strong> en la raíz y la carpeta <strong>Cartas_baraja_loteria/</strong> con las 54 imágenes.</footer>
 
 <script>
-/* index_v8.5 - core logic (compressed but functional) */
+/* index_v8.6 - rebuilt with fixed initialization */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
-const CARD_NAME_MAP = {
- 1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",
- 5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",
- 9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",
- 13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",
- 17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",
- 21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",
- 25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",
- 29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",
- 33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",
- 37:"37 el mundo-min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",
- 41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",
- 45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",
- 49:"49 el pino-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",
- 53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg"
-};
+const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",49:"49 el pino-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] || `${id}.jpg`);
 
-const Kp='ganya_v85_prices', Kg='ganya_v85_game', Kpu='ganya_v85_purchases', Ktx='ganya_v85_tx', Kw='ganya_v85_winners', Kpas='ganya_v85_pas', Kmod='ganya_v85_mod';
+const Kp='ganya_v86_prices', Kg='ganya_v86_game', Kpu='ganya_v86_purchases', Ktx='ganya_v86_tx', Kw='ganya_v86_winners', Kpas='ganya_v86_pas', Kmod='ganya_v86_mod';
 
 const defaultsPrices=()=>({price4:10,profit4:2,price6:12,profit6:3,price8:15,profit8:4});
 const defaultsGame=()=>({deck:Array.from({length:54},(_,i)=>i+1),drawn:[],current:0,pending:[]});
@@ -380,7 +368,6 @@ function shuffle(a){ const arr=a.slice(); for(let i=arr.length-1;i>0;i--){ const
 function formatMoney(n){ return '$'+Number(n||0).toFixed(2); }
 function cardName(id){ return CARD_NAME_MAP[id] ? CARD_NAME_MAP[id].replace(/^\d+\s*/,'').replace(/-min\.jpg$/,'') : ('Carta '+id); }
 
-/* audio small embedded - short noise */
 function playShuffleSound(){ if(!audioCtx) return; const now=audioCtx.currentTime; const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*0.22,audioCtx.sampleRate); const d=buf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length); const s=audioCtx.createBufferSource(); s.buffer=buf; const g=audioCtx.createGain(); g.gain.setValueAtTime(0.001,now); g.gain.exponentialRampToValueAtTime(0.6,now+0.02); g.gain.exponentialRampToValueAtTime(0.001,now+0.2); s.connect(g); g.connect(audioCtx.destination); s.start(now); s.stop(now+0.22); }
 function playWinnerSound(){ if(!audioCtx) return; const now=audioCtx.currentTime; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sine'; o.frequency.setValueAtTime(880,now); o.connect(g); g.connect(audioCtx.destination); g.gain.setValueAtTime(0.001,now); g.gain.linearRampToValueAtTime(0.4,now+0.02); o.start(now); o.frequency.exponentialRampToValueAtTime(1100,now+0.18); setTimeout(()=>o.stop(),420); }
 
@@ -468,14 +455,14 @@ function showSelectionModalForPurchase(p){
 }
 function closeSelectionModal(){ const m=document.getElementById('modal-selection'); m.classList.add('hidden'); m.style.display='none'; m.setAttribute('aria-hidden','true'); }
 
-/* SHUFFLE overlay fixed (returns to board) */
+/* SHUFFLE overlay fixed */
 function shufflePendingToFullScreen(){
   if(animShuffling) return;
   animShuffling=true; disableControls(true);
   playShuffleSound();
   const pending = game.deck.filter(id=> !cartasPasadas.includes(id));
   if(!pending.length){ alert('No hay cartas pendientes para barajar.'); animShuffling=false; disableControls(false); return; }
-  const overlay=document.getElementById('shuffle-overlay'); overlay.classList.remove('hidden'); overlay.style.display='flex'; overlay.style.pointerEvents='auto'; overlay.innerHTML='';
+  const overlay=document.getElementById('shuffle-overlay'); overlay.classList.add('visible'); overlay.setAttribute('aria-hidden','false'); overlay.innerHTML='';
   const center=document.createElement('div'); center.style.position='relative'; center.style.width='520px'; center.style.height='360px'; overlay.appendChild(center);
   const sample = shuffle(pending).slice(0,8);
   const cards = sample.map((cid,i)=>{ const el=document.createElement('div'); el.className='shuffle-card'; el.style.backgroundImage=`url('${cardImageUrl(cid)}')`; el.style.left='50%'; el.style.top='50%'; el.style.transform=`translate(-50%,-50%) rotate(${(Math.random()*40)-20}deg) scale(${1 - Math.abs(i-3.5)*0.04})`; center.appendChild(el); return el; });
@@ -486,7 +473,7 @@ function shufflePendingToFullScreen(){
     setTimeout(()=>{ cards.forEach((c,ii)=>{ c.style.transform=`translate(${(ii-3.5)*28}px,-100px) rotate(${(Math.random()*20)-10}deg) scale(${1 - Math.abs(ii-3.5)*0.03})`; c.style.opacity='1'; }); }, 550);
     round++;
     if(round>=runs){
-      setTimeout(()=>{ overlay.classList.add('hidden'); overlay.style.display='none'; overlay.innerHTML=''; animShuffling=false; disableControls(false); shufflePending(); renderAll(); }, 900);
+      setTimeout(()=>{ overlay.classList.remove('visible'); overlay.setAttribute('aria-hidden','true'); overlay.innerHTML=''; animShuffling=false; disableControls(false); shufflePending(); renderAll(); }, 900);
     } else {
       setTimeout(animate, 900);
     }
@@ -546,10 +533,8 @@ function resetGame(){ if(!confirm('Iniciar un juego nuevo: se reiniciará el maz
 /* export (simple) */
 function exportPdf(){ let out=`REPORTE LOTERÍA — ${new Date().toLocaleString()}\n\nCompras agrupadas:\n`; groupedPurchases().forEach(g=>{ out += `${g.playerName} ${g.cell} • modal:${g.modality} • partidas:${g.games} • pagado:${formatMoney(g.totalPaid)}\n`; }); out += `\nGanadores:\n`; winners.forEach(w=> out += `${new Date(w.timestamp).toLocaleString()} • ${w.playerName} • ${formatMoney(w.amount)} • ${w.paid? 'PAGADO':'PENDIENTE'}\n`); const w=window.open('','_blank'); w.document.write(`<pre style="font-family:monospace;white-space:pre-wrap">${escapeHtml(out)}</pre>`); }
 
-/* handlers binding later */
+/* handlers binding */
 document.addEventListener('DOMContentLoaded', ()=>{
-
-  // wire buttons
   document.getElementById('btn-shuffle').addEventListener('click', ()=>{ shufflePendingToFullScreen(); });
   document.getElementById('btn-draw').addEventListener('click', ()=>{ drawOne(); });
   document.getElementById('btn-auto').addEventListener('click', ()=>{ toggleAuto(); });
@@ -572,11 +557,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('winner-ok').addEventListener('click', ()=>{ const m=document.getElementById('modal-winner'); m.classList.add('hidden'); m.style.display='none'; stopConfettiFullScreen(); renderAll(); });
   document.getElementById('winner-close').addEventListener('click', ()=>{ const m=document.getElementById('modal-winner'); m.classList.add('hidden'); m.style.display='none'; stopConfettiFullScreen(); renderAll(); });
 
-  document.getElementById('selection-confirm').addEventListener('click', ()=>{ /* handled in modal generation */ });
   document.getElementById('selection-cancel').addEventListener('click', ()=>{ closeSelectionModal(); history.replaceState({},'',location.pathname); });
 
-  // keyboard space draw
   document.addEventListener('keydown', (e)=>{ if(e.code==='Space'){ e.preventDefault(); if(!isAuto) drawOne(); } });
+
+  // Ensure initial view is EN JUEGO visible
+  document.getElementById('view-admin').classList.add('hidden');
+  document.getElementById('main-grid').style.display = '';
+  document.getElementById('btn-view-play').classList.add('on');
+  document.getElementById('btn-view-admin').classList.remove('on');
 
   handleSelectionOnLoad();
   renderAll();
@@ -593,14 +582,13 @@ function showWinner(recs){ const modal=document.getElementById('modal-winner'); 
 /* helper utilities */
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-/* remaining small functions exposed for inline use */
+/* expose some functions */
 window.copySelectionLinkForPurchaseById = copySelectionLinkForPurchaseById;
 window.markPaidById = markPaidById;
 window.copyCLABE = copyCLABE;
 window.openWhatsAppPayment = openWhatsAppPayment;
 window.viewCards = viewCards;
 window.openGroupModalFromPurchase = function(pid){ const p=purchases.find(x=>x.id===pid); if(!p) return; const key=`${p.cell||'no'}::${p.modality}`; openGroupModal(key); };
-
 </script>
 </body>
 </html>

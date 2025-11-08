@@ -2,333 +2,322 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>🎯 GANA YA! — Juego y Administración</title>
+<title>GANA YA! - Juego de Cartas</title>
 <style>
-  body{font-family:Arial,sans-serif;background:#fff6f0;color:#333;margin:0;padding:0;}
-  .logo-box{display:flex;align-items:center;gap:12px;padding:12px;background:#fff2e6;}
-  .logo-box img{width:80px;height:80px;object-fit:contain;}
-  h1{margin:0;font-size:24px;color:#b45309;}
-  #main-grid{display:grid;grid-template-columns:1fr 2fr;gap:12px;padding:12px;}
-  .player-card{border:1px solid #eee;border-radius:8px;padding:6px;cursor:pointer;transition:0.3s;}
-  .player-card:hover{box-shadow:0 0 12px rgba(255,165,0,0.6);}
-  .player-name{font-weight:700;margin-bottom:6px;text-align:center;}
-  .player-cards{display:grid;gap:8px;justify-items:center;}
-  .card-thumb{width:74px;height:106px;background-size:cover;border-radius:8px;position:relative;}
-  .card-thumb.passed{opacity:0.4;}
-  .sticker{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
-  .badge{padding:2px 6px;border-radius:6px;font-size:12px;font-weight:700;}
-  .badge-pagado{background:#16a34a;color:#fff;}
-  .badge-porpagar{background:#f59e0b;color:#fff;}
-  #shuffle-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.3);display:none;justify-content:center;align-items:center;z-index:9999;}
-  .shuffle-card{width:120px;height:180px;background-size:cover;background-position:center;position:absolute;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
-  #confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;display:none;z-index:99999;}
-  .modal{background:#fff;border-radius:8px;padding:12px;max-width:600px;margin:auto;transform:scale(0.8);transition:0.25s;}
-  .modal.show{transform:scale(1);}
-  .hidden{display:none;}
-  .winner-item{padding:8px;border-radius:8px;margin-bottom:8px;background:linear-gradient(90deg,#fff6f6,#fff);}
-  .filter-btn{padding:6px 12px;margin-right:6px;border:none;border-radius:6px;cursor:pointer;}
-  .active-4{background:#e63946;color:#fff;}
-  .active-6{background:#2a9d8f;color:#fff;}
-  .active-all{background:#ff9e00;color:#fff;}
-  .btn{padding:6px 12px;border:none;border-radius:6px;cursor:pointer;margin-right:6px;}
-  .btn-blue{background:#1d4ed8;color:#fff;}
-  .btn-green{background:#16a34a;color:#fff;}
+  body{font-family:Arial,sans-serif;margin:0;padding:0;background:#f5f5f5}
+  .btn{padding:6px 12px;border:none;border-radius:4px;cursor:pointer;margin:2px}
+  .btn-blue{background:#3498db;color:#fff}
+  .btn-green{background:#2ecc71;color:#fff}
+  .hidden{display:none}
+  .filter-btn.active-4,.filter-btn.active-6,.filter-btn.active-8,.filter-btn.active-all{font-weight:bold;text-decoration:underline}
+  #shuffle-overlay{position:fixed;top:0;left:0;width:100%;height:100%;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:2000}
+  .shuffle-card{position:absolute;width:120px;height:180px;border-radius:8px;background-size:cover;background-position:center;box-shadow:0 2px 6px rgba(0,0,0,0.2);}
+  .modal{position:relative;max-width:600px;margin:auto;padding:16px;background:#fff;border-radius:8px;opacity:0;transition:opacity 0.25s ease}
+  .modal.show{opacity:1}
+  #confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;display:none;z-index:5000}
+  table{width:100%;border-collapse:collapse}
+  th,td{border:1px solid #ccc;padding:6px;text-align:center}
 </style>
 </head>
 <body>
-
-<div class="logo-box">
-  <img id="logo-img" src="logo_1_entrada.png" alt="GANA YA! Logo"/>
-  <h1>🎯 GANA YA! — Juego y Administración</h1>
-</div>
+<canvas id="confetti-canvas"></canvas>
 
 <div id="main-grid">
-  <div id="view-admin">
-    <div style="margin-bottom:12px;">
-      <button id="filter-all" class="filter-btn active-all">TODOS</button>
-      <button id="filter-4" class="filter-btn">4 CARTAS</button>
-      <button id="filter-6" class="filter-btn">6 CARTAS</button>
-    </div>
-    <table id="players-table" style="width:100%;border-collapse:collapse;">
-      <!-- filas dinámicas -->
-    </table>
-    <button id="btn-export-admin" class="btn btn-blue" style="margin-top:12px;">Exportar PDF</button>
-    <button id="btn-clear-admin" class="btn btn-red" style="margin-top:12px;">Reiniciar Día</button>
-  </div>
-  <div id="game-panel">
-    <div id="current-card" style="margin-bottom:12px;text-align:center;"></div>
-    <div id="last-cards" style="display:flex;gap:6px;justify-content:center;margin-bottom:12px;"></div>
-    <div id="bolsa-amount" data-value="0" style="font-weight:800;font-size:22px;text-align:center;color:#b45309;"></div>
-    <div style="margin-top:12px;">
-      <button id="btn-shuffle" class="btn btn-blue">BARAJEAR</button>
-      <button id="btn-draw" class="btn btn-blue">SACAR CARTA</button>
-      <button id="btn-auto" class="btn btn-green">CARTAS AUTOMÁTICO</button>
-      <button id="btn-reset" class="btn btn-red">REINICIAR JUEGO</button>
-    </div>
-  </div>
+  <!-- Aquí irían inputs de registro, botones de control, filtros y tabla de jugadores -->
 </div>
 
-<canvas id="confetti-canvas"></canvas>
-<div id="shuffle-overlay"></div>
+<div id="view-admin" class="hidden">
+  <!-- Vista de administración -->
+</div>
 
 <!-- Modal jugador -->
 <div id="modal-player" class="hidden">
   <div class="modal">
-    <div id="modal-player-name" style="font-weight:700;margin-bottom:6px;"></div>
+    <div id="modal-player-name"></div>
     <div id="modal-body"></div>
-    <button id="modal-close" class="btn btn-red">Cerrar</button>
-    <button id="modal-close-x" class="btn btn-red">X</button>
+    <button id="modal-close" class="btn btn-blue">Cerrar</button>
+    <button id="modal-close-x" class="btn btn-blue">X</button>
   </div>
 </div>
 
 <!-- Modal ganador -->
 <div id="modal-winner" class="hidden">
   <div class="modal">
-    <div id="winner-body" style="font-weight:700;font-size:18px;"></div>
-    <div id="winner-sub" style="margin-top:6px;font-size:14px;color:#b45309;"></div>
-    <button id="winner-ok" class="btn btn-blue">Aceptar</button>
-    <button id="winner-close" class="btn btn-red">Cerrar</button>
+    <div id="winner-body"></div>
+    <div id="winner-sub"></div>
+    <button id="winner-ok" class="btn btn-blue">OK</button>
+    <button id="winner-close" class="btn btn-blue">Cerrar</button>
   </div>
 </div>
 
 <script>
-/*===============================
-=         Variables Iniciales     =
-===============================*/
-let purchases=[], winners=[], cartasPasadas=[], game={deck:Array.from({length:54},(_,i)=>i+1),drawn:[],current:0}, tx=[], animShuffling=false, autoInterval=null, isAuto=false, prices={price4:50,profit4:10,price6:75,profit6:15}, currentMode=4;
+/************** Variables globales **************/
+let purchases = [], winners = [], tx = [], cartasPasadas = [];
+let game = {deck: Array.from({length:54},(_,i)=>i+1), drawn:[], current:0};
+let prices = {price4:20, profit4:5, price6:30, profit6:7, price8:40, profit8:10};
+let isAuto = false, autoInterval = null, animShuffling = false;
+let currentMode = 4; // modo por defecto
+const Kmod = 'currentMode';
 
-/*===============================
-=          Funciones Utiles      =
-===============================*/
-function uuid(){return 'xxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return r.toString(16);});}
-function formatMoney(v){return '$'+Number(v||0).toFixed(2);}
-function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-function cardImageUrl(cid){return `cards/${cid}.png`;}
-function cardName(cid){return ['El Gallo','La Dama','El Valiente','La Bandera','El Pino','La Chalupa','El Mundo','El Corazón'][cid%8];}
+/************** Funciones utilitarias **************/
+function uuid(){ return 'xxxx-xxxx-xxxx-xxxx'.replace(/[x]/g,()=>Math.floor(Math.random()*16).toString(16)); }
+function formatMoney(v){ return `$${(v||0).toFixed(2)}`; }
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function cardImageUrl(id){ return `cards/${id}.png`; }
+function cardName(id){ return `Carta ${id}`; }
 
-/*===============================
-=       Render y Actualización   =
-===============================*/
-function renderAll(){
-  // CARTA ACTUAL
-  const cur=document.getElementById('current-card'); 
-  if(game.current && cur){
-    cur.innerHTML=`<div style="width:160px;height:220px;background-image:url('${cardImageUrl(game.current)}');background-size:contain;background-repeat:no-repeat;background-position:center;z-index:10;position:relative;"></div>`;
-  } else if(cur){cur.innerHTML='<div class="small-muted">Esperando barajeo...</div>'; }
-
-  // ULTIMAS CARTAS
-  const last=(game.drawn||[]).slice(-3).reverse(); 
-  const lastEl=document.getElementById('last-cards'); 
-  if(lastEl) lastEl.innerHTML = last.length? last.map(c=>`<div style="width:64px;height:96px;background-image:url('${cardImageUrl(c)}');background-size:cover;border-radius:6px"></div>`).join('') : '<div class="small-muted">Ninguna carta aún.</div>';
-
-  // LISTA GANADORES
-  const wl=document.getElementById('winners-list'); 
-  if(wl) wl.innerHTML = winners.length ? winners.slice().reverse().map(w=>`<div class="winner-item"><div><strong>${escapeHtml(w.playerName)}</strong><div class="small-muted">${new Date(w.timestamp).toLocaleString()}</div></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px"><div style="font-weight:800;color:#b45309">${formatMoney(w.amount)}</div><div class="small-muted">${escapeHtml(cardName(w.cardId))}</div><div>${w.paid?'<span class="badge badge-pagado">PAGADO</span>':'<span class="badge badge-porpagar">PENDIENTE</span>'}</div></div></div>`).join('') : '<div class="small-muted" style="text-align:center">Aún no hay ganadores.</div>';
-
-  renderPlayersTable();
-  // ACTUALIZA BOLSA SOLO MODALIDAD ACTIVA Y JUGANDO
-  const totalPot = purchases.filter(p=>p.state==='JUGANDO' && p.modality===currentMode).reduce((s,p)=> s + (p.totalPaid||0),0);
-  animateBolsa(totalPot);
+/************** Registro de jugadores **************/
+function generateCardForPurchase(modality){
+  const assigned = new Set();
+  const pool = Array.from({length:54},(_,i)=>i+1);
+  const out = [];
+  while(out.length<modality && pool.length){
+    const idx = Math.floor(Math.random()*pool.length);
+    const v = pool.splice(idx,1)[0];
+    if(!assigned.has(v)){ assigned.add(v); out.push(v); }
+  }
+  return out;
 }
 
-/*===============================
-=       BOLSA ANIMADA            =
-===============================*/
-function animateBolsa(target){
-  const el=document.getElementById('bolsa-amount'); if(!el) return;
-  const current = parseFloat((el.dataset.value||'0')); const t = Number(target||0);
-  const steps = 18; let i=0; const start=current; const diff = t - start;
-  if(el._anim) clearInterval(el._anim);
-  el._anim = setInterval(()=>{ i++; const val = start + diff*(i/steps); el.textContent = formatMoney(val); el.dataset.value = val; el.style.transform = (i%2===0)?'scale(1.03)':'scale(1)'; if(i>=steps){ clearInterval(el._anim); el.style.transform=''; delete el._anim; } }, 30);
-}
-
-/*===============================
-=       RENDER JUGADORES         =
-===============================*/
-function renderPlayerCard(p){
-  let cols=p.modality===4?2:3, displayCount=p.modality; 
-  const cardList=(p.card||[]).slice(0,displayCount);
-  let html = `<div class="player-card" onclick="openPurchaseDetail('${p.id}')"><div class="player-name">${escapeHtml(p.playerName)}</div><div class="player-cards" style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:8px;justify-items:center;margin-top:10px">`;
-  cardList.forEach(cid=>{ 
-    const passed = cartasPasadas.includes(cid); 
-    const sticker = passed? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : ''; 
-    html+=`<div class="card-thumb ${passed?'passed':''}" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`; 
-  });
-  let missing = displayCount - cardList.length; while(missing-->0) html+=`<div style="width:74px;height:106px;border-radius:8px;background:#fafafa;border:1px dashed #eee"></div>`;
-  html+='</div></div>'; return html;
-}
-
-function renderPlayersTable(filter){ 
-  const tbody=document.getElementById('players-table'); 
-  const list = purchases.slice().filter(p=> !filter || p.modality===filter); 
-  if(!tbody) return; 
-  if(!list.length){ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td></tr>'; return; } 
-  tbody.innerHTML = list.map(p=>`<tr><td style="padding:8px">${p.id}</td><td style="padding:8px">${escapeHtml(p.playerName)}<div class="small-muted">${escapeHtml(p.cell||'—')}</div></td><td style="padding:8px;text-align:center">${p.modality}</td><td style="padding:8px;text-align:center">${p.gamesLeft||0}</td><td style="padding:8px;text-align:center">${formatMoney(p.totalPaid)}</td><td style="padding:8px;text-align:center">${p.state||'JUGANDO'}</td><td style="padding:8px;text-align:center"><button class="btn btn-blue" onclick="openPurchaseDetail('${p.id}');event.stopPropagation()">Detalle</button></td></tr>`).join(''); 
-}
-
-/*===============================
-=       REGISTRO JUGADOR         =
-===============================*/
 function suggestFromBudget(budget){
   budget = Number(budget||0);
-  const p4 = prices.price4, p6 = prices.price6;
-  const max4 = Math.floor(budget / p4);
-  const max6 = Math.floor(budget / p6);
-  let msg = '';
-  if(budget<=0) msg = 'Ingresa presupuesto para ver sugerencias.';
-  else msg = `💡 Con ${formatMoney(budget)} puedes jugar: ${max4} partidas de 4 cartas • ${max6} partidas de 6 cartas.`;
-  document.getElementById('calc-info').textContent = msg;
-  document.getElementById('qty4').parentElement.style.display = budget>=p4? 'block':'none';
-  document.getElementById('qty6').parentElement.style.display = budget>=p6? 'block':'none';
+  const max4=Math.floor(budget/prices.price4);
+  const max6=Math.floor(budget/prices.price6);
+  const max8=Math.floor(budget/prices.price8);
+  let msg = budget<=0?'Ingresa presupuesto para ver sugerencias.':`Con ${formatMoney(budget)} puedes comprar: ${max4} partidas de 4 cartas • ${max6} partidas de 6 cartas • ${max8} partidas de 8 cartas.`;
+  const calcInfo = document.getElementById('calc-info'); if(calcInfo) calcInfo.textContent=msg;
+  ['qty4','qty6','qty8'].forEach(q=>{ const el=document.getElementById(q); if(el) el.parentElement.style.display=budget>=prices[q.slice(-1)+'']==prices['price'+q.slice(-1)]?'block':'none'; });
 }
 
 function registerPlayer(){
-  const name=(document.getElementById('input-name').value||'').trim();
-  const cell=(document.getElementById('input-cell').value||'').trim();
-  const clabe=(document.getElementById('input-clabe').value||'').trim();
-  const budgetRaw=document.getElementById('input-budget').value;
-  const budget = budgetRaw===''?0:parseFloat(budgetRaw||0);
-  const q4=parseInt(document.getElementById('qty4').value||0), q6=parseInt(document.getElementById('qty6').value||0);
-  if(!name) return alert('Captura el nombre');
-  if(!cell) return alert('Captura el celular');
-  if(q4+q6<=0) return alert('Selecciona al menos una partida (cantidad)');
-  const needed = q4*prices.price4 + q6*prices.price6;
+  const name = (document.getElementById('input-name')?.value||'').trim();
+  const cell = (document.getElementById('input-cell')?.value||'').trim();
+  const clabe = (document.getElementById('input-clabe')?.value||'').trim();
+  const budget = parseFloat(document.getElementById('input-budget')?.value||0);
+  const q4=parseInt(document.getElementById('qty4')?.value||0);
+  const q6=parseInt(document.getElementById('qty6')?.value||0);
+  const q8=parseInt(document.getElementById('qty8')?.value||0);
+  if(!name) return alert('Captura el nombre'); if(!cell) return alert('Captura el celular');
+  if(q4+q6+q8<=0) return alert('Selecciona al menos una partida');
+  const needed = q4*prices.price4 + q6*prices.price6 + q8*prices.price8;
   if(budget < needed) return alert(`El presupuesto no alcanza. Se requiere ${formatMoney(needed)}.`);
-  if(budget > needed) return alert(`Hay sobrante de ${formatMoney(budget-needed)}. Ajusta las cantidades o el presupuesto para continuar.`);
-  const parts=[];
-  if(q4>0) parts.push({modality:4,qty:q4,price:prices.price4});
-  if(q6>0) parts.push({modality:6,qty:q6,price:prices.price6});
-  let seqStart = purchases.length+1;
-  parts.forEach(pt=>{
-    for(let i=0;i<pt.qty;i++){
-      const idSeq = 'GanaYA!-'+String(seqStart).padStart(4,'0');
-      seqStart++;
-      const p={id:idSeq,playerName:name,cell:cell,clabe:clabe,modality:pt.modality,initialGames:1,gamesLeft:1,totalPaid:pt.price,wins:0,state:'JUGANDO',card:[],markedCards:[],selectionUsed:true,createdAt:Date.now()};
-      p.card=generateCardForPurchase(pt.modality);
+  if(budget > needed) return alert(`Hay sobrante de ${formatMoney(budget-needed)}. Ajusta cantidades o presupuesto.`);
+  
+  [[4,q4,prices.price4],[6,q6,prices.price6],[8,q8,prices.price8]].forEach(([mod,qty,price])=>{
+    for(let i=0;i<qty;i++){
+      const p={id:uuid(),playerName:name,cell:cell,clabe:clabe,modality:mod,initialGames:1,gamesLeft:1,totalPaid:price,wins:0,state:'JUGANDO',card:[],markedCards:[],selectionUsed:true,createdAt:Date.now()};
+      p.card=generateCardForPurchase(mod);
       purchases.push(p);
-      tx.push({id:uuid(),type:'purchase',player:name,modality:pt.modality,amount:pt.price,purchaseId:p.id,ts:Date.now()});
+      tx.push({id:uuid(),type:'purchase',player:name,modality:mod,amount:price,purchaseId:p.id,ts:Date.now()});
     }
   });
-  saveAll();
-  document.getElementById('input-name').value=''; document.getElementById('input-cell').value=''; document.getElementById('input-clabe').value=''; document.getElementById('input-budget').value=''; document.getElementById('qty4').value='0'; document.getElementById('qty6').value='0';
+  document.querySelectorAll('#input-name,#input-cell,#input-clabe,#input-budget,#qty4,#qty6,#qty8').forEach(el=>el.value='');
   alert('Jugador(s) registrado(s) y cartas asignadas automáticamente.');
-  // abrir whatsapp con mensaje prellenado
-  let msg='¡Bienvenido a GANA YA! 🎉\nTus partidas han sido registradas:\n';
-  purchases.slice(-q4-q6).forEach(p=>{ msg+=`${p.id}\nCartas asignadas: ${p.card.map(cardName).join(', ')}\n`; });
-  msg+='¡Mucha suerte! 🎴';
-  window.open(`https://wa.me/${cell}?text=${encodeURIComponent(msg)}`,'_blank');
   renderAll();
 }
 
-/*===============================
-=       MARCAR PAGADO / CLABE     =
-===============================*/
-window.markPaidById = function(id){
-  const p=purchases.find(x=>x.id===id); if(!p) return alert('No encontrado'); if(p.state!=='POR PAGAR') return alert('Solo marcar si está POR PAGAR');
-  p.state='PAGADO'; p.paidAt=Date.now(); 
-  winners=winners.map(w=> w.purchaseId===id? {...w,paid:true}:w);
-  tx.push({id:uuid(),type:'mark_paid',purchaseId:id,ts:Date.now()}); saveAll(); renderAll();
-  // enviar whatsapp de pago
-  const msg=`Hola ${p.playerName},\nse ha realizado tu pago de ${formatMoney(p.totalPaid)} a la cuenta ${p.clabe} el ${new Date().toLocaleDateString()}.\n\nTu carta de la suerte en esta partida fue:\n🌟 ${cardName(p.card[0])} 🌟\n\n¡Felicidades por tu premio en GANA YA! 🎉🇲🇽`;
-  window.open(`https://wa.me/${p.cell}?text=${encodeURIComponent(msg)}`,'_blank');
-};
+/************** Tabla de jugadores **************/
+function renderPlayersTable(filter){
+  const tbody=document.getElementById('players-table');
+  if(!tbody) return;
+  const list = purchases.slice().filter(p=>!filter||p.modality===filter);
+  tbody.innerHTML=list.length?list.map(p=>`<tr>
+    <td>${p.id}</td>
+    <td>${escapeHtml(p.playerName)}<div class="small-muted">${escapeHtml(p.cell||'—')}</div></td>
+    <td>${p.modality}</td>
+    <td>${p.gamesLeft||0}</td>
+    <td>${formatMoney(p.totalPaid)}</td>
+    <td>${p.state||'JUGANDO'}</td>
+    <td><button class="btn btn-blue" onclick="openPurchaseDetail('${p.id}');event.stopPropagation()">Detalle</button></td>
+  </tr>`).join(''):'<tr><td colspan="7" style="text-align:center;color:#888">No hay operaciones.</td></tr>';
+}
 
-window.copyClabe = function(id){
+/************** Modal jugador **************/
+function openPurchaseDetail(id){
   const p=purchases.find(x=>x.id===id); if(!p) return alert('No encontrado');
-  navigator.clipboard.writeText(p.clabe).then(()=>alert('CLABE copiada al portapapeles'));
-};
+  document.getElementById('modal-player-name').textContent=`${p.playerName} • ${p.cell||''} • ${p.id}`;
+  const cards=(p.card||[]).map(cid=>`<div style="width:100px;height:150px;background-image:url('${cardImageUrl(cid)}');background-size:cover;border-radius:8px;display:inline-block;margin-right:8px"></div>`).join('');
+  const details = `<div><strong>Modalidad:</strong> ${p.modality}</div>
+    <div><strong>Partidas restantes:</strong> ${p.gamesLeft||0}</div>
+    <div><strong>Total pagado:</strong> ${formatMoney(p.totalPaid)}</div>
+    <div style="margin-top:8px"><strong>Cartas asignadas:</strong></div><div>${cards}</div>
+    <div style="margin-top:8px"><strong>CLABE / Cuenta:</strong> ${escapeHtml(p.clabe||'')}</div>
+    <div style="margin-top:8px"><strong>Estado:</strong> ${p.state||'JUGANDO'}</div>
+    <div style="margin-top:8px">
+      <button class="btn btn-blue" onclick="printPurchase('${p.id}');">Imprimir</button>
+      <button class="btn btn-green" onclick="copyClabe('${p.id}');">Copiar CLABE</button>
+      <button class="btn btn-green" onclick="confirmWhatsapp('${p.id}');">Confirmar pago WhatsApp</button>
+      <button class="btn btn-green" onclick="markPaidById('${p.id}');">Marcar Pagado</button>
+    </div>`;
+  document.getElementById('modal-body').innerHTML=details;
+  openModal('modal-player');
+}
 
-/*===============================
-=       MODAL CONTROL             =
-===============================*/
+function copyClabe(id){ const p=purchases.find(x=>x.id===id); if(!p) return; const text=p.clabe||''; if(!text) return alert('No hay CLABE'); navigator.clipboard.writeText(text).then(()=>alert('CLABE copiada')); }
+function confirmWhatsapp(id){
+  const p=purchases.find(x=>x.id===id); if(!p||!p.clabe) return alert('No hay CLABE');
+  const msg = `Hola ${p.playerName}, se ha realizado tu pago de ${formatMoney(p.totalPaid)} a la cuenta ${p.clabe} el ${new Date().toLocaleString()}. ¡Felicidades! 🎉`;
+  window.open(`https://wa.me/${p.cell}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+function printPurchase(id){
+  const p=purchases.find(x=>x.id===id); if(!p) return;
+  const html = `<html><head><title>Compra ${p.id}</title></head><body>
+    <h2>Reporte de partidas — GANA YA!</h2>
+    <div>Jugador: ${escapeHtml(p.playerName)}</div>
+    <div>Celular: ${escapeHtml(p.cell||'')}</div>
+    <div>Modalidad: ${p.modality} cartas</div>
+    <div>Partidas: ${p.gamesLeft||0}</div>
+    <div>Total pagado: ${formatMoney(p.totalPaid)}</div>
+    <div>Cartas: ${(p.card||[]).map(c=>`<img src="${cardImageUrl(c)}" style="width:120px;height:180px;margin:4px">`).join('')}</div>
+    <div><em>${new Date().toLocaleString()}</em></div>
+  </body></html>`;
+  const w=window.open('','_blank'); w.document.write(html); w.document.close(); setTimeout(()=>w.print(),500);
+}
+
+/************** Barajado y dibujo **************/
+function shuffle(array){ return array.sort(()=>Math.random()-0.5); }
+
+function shufflePendingToFullScreen(){
+  if(animShuffling) return; animShuffling=true;
+  const pending = game.deck.filter(id=>!cartasPasadas.includes(id));
+  if(!pending.length){ alert('No hay cartas pendientes.'); animShuffling=false; return; }
+  const overlay=document.getElementById('shuffle-overlay'); overlay.classList.add('visible'); overlay.style.display='flex'; overlay.innerHTML='';
+  const center=document.createElement('div'); center.style.position='relative'; center.style.width='680px'; center.style.height='420px'; overlay.appendChild(center);
+  const sample=shuffle(pending).slice(0,12);
+  sample.forEach((cid,i)=>{
+    const el=document.createElement('div'); el.className='shuffle-card';
+    el.style.backgroundImage=`url('${cardImageUrl(cid)}')`;
+    el.style.left='50%'; el.style.top='50%';
+    el.style.transform=`translate(-50%,-50%) rotate(${(Math.random()*360)-180}deg) scale(${1 - Math.abs(i-6)*0.02})`;
+    el.style.zIndex=100+i;
+    center.appendChild(el);
+  });
+  setTimeout(()=>{ overlay.classList.remove('visible'); overlay.style.display='none'; animShuffling=false; renderAll(); },2400);
+}
+
+function drawOne(){
+  if(isAuto||animShuffling) return;
+  let idx = game.deck.findIndex(c=>!cartasPasadas.includes(c));
+  if(idx===-1){ alert('No hay cartas pendientes. Barajea'); return; }
+  const card = game.deck.splice(idx,1)[0];
+  game.drawn.push(card); game.current=card; cartasPasadas.push(card);
+  tx.push({id:uuid(),type:'draw',card,ts:Date.now()});
+  processCard(card); renderAll();
+}
+
+function processCard(cardId){
+  const winnersFound=[];
+  purchases.forEach((p,i)=>{
+    if(!(p.gamesLeft>0 && p.state==='JUGANDO')) return;
+    if(p.card?.includes(cardId) && !(p.markedCards||[]).includes(cardId)){
+      p.markedCards=[...(p.markedCards||[]),cardId];
+    }
+    if((p.markedCards||[]).length===p.modality){
+      winnersFound.push({idx:i,purchaseId:p.id});
+    }
+  });
+  if(!winnersFound.length) return;
+  stopAuto(); disableControls(true);
+  const active = purchases.filter(p=>p.state==='JUGANDO' && (p.gamesLeft||0)>0);
+  const totalSales = active.reduce((s,p)=>s+(p.totalPaid||0),0);
+  const house = active.reduce((s,p)=>s+((p.modality===4?prices.profit4:p.modality===6?prices.profit6:prices.profit8)*(p.initialGames||0)),0);
+  const pot = Math.max(0,totalSales-house); const share = pot/winnersFound.length;
+  const recs=[];
+  winnersFound.forEach(w=>{
+    const p=purchases[w.idx]; p.gamesLeft=Math.max(0,(p.gamesLeft||0)-1);
+    p.state = p.gamesLeft? 'JUGANDO':'FINALIZADO'; p.markedCards=[];
+    const rec={id:uuid(),purchaseId:p.id,playerName:p.playerName,amount:share,timestamp:Date.now(),paid:false,cardId:cardId,clabe:p.clabe||'',cell:p.cell||''};
+    winners.push({timestamp:rec.timestamp,playerName:rec.playerName,amount:rec.amount,cardId:rec.cardId,paid:false,purchaseId:p.id});
+    tx.push({id:uuid(),type:'winner',player:p.playerName,amount:share,ts:Date.now()});
+    recs.push(rec);
+  });
+  saveAll(); showWinner(recs); renderAll();
+}
+
+/************** Auto y controles **************/
+function startAuto(){ if(!game.deck.length){ alert('Mazo vacío'); return; } isAuto=true; document.getElementById('btn-auto').textContent='DETENER AUTOMÁTICO'; autoInterval=setInterval(drawOne,2000); }
+function stopAuto(){ isAuto=false; document.getElementById('btn-auto')?.textContent='CARTAS AUTOMÁTICO'; clearInterval(autoInterval); autoInterval=null; }
+function toggleAuto(){ isAuto?stopAuto():startAuto(); }
+function disableControls(d){ ['btn-shuffle','btn-draw','btn-auto','btn-reset','btn-register','save-prices','btn-export-admin','btn-clear-admin'].forEach(id=>document.getElementById(id)?.disabled=!!d); }
+
+/************** Modal confetti y ganadores **************/
+let confettiInterval=null;
+function startConfettiFullScreen(){
+  const canvas=document.getElementById('confetti-canvas'); canvas.style.display='block';
+  const ctx=canvas.getContext('2d'); const w=canvas.width=window.innerWidth; const h=canvas.height=window.innerHeight;
+  const colors=['#e63946','#ffd60a','#2a9d8f','#ff9e00','#ff6bcb','#6d9df5'];
+  let conf=Array.from({length:220},()=>({x:Math.random()*w,y:Math.random()*-h,r:Math.random()*6+3,c:colors[Math.floor(Math.random()*colors.length)],s:Math.random()*3+2,rrot:Math.random()*6}));
+  function draw(){ ctx.clearRect(0,0,w,h); conf.forEach(c=>{ ctx.save(); ctx.translate(c.x,c.y); ctx.rotate(c.rrot); ctx.fillStyle=c.c; ctx.fillRect(-c.r,-c.r,c.r*2,c.r*2); ctx.restore(); c.y+=c.s; c.x+=Math.sin(c.y*0.01)*2; if(c.y>h+30){ c.y=-20; c.x=Math.random()*w; } }); }
+  if(confettiInterval) clearInterval(confettiInterval); confettiInterval=setInterval(draw,20);
+  setTimeout(()=>stopConfettiFullScreen(),6000);
+}
+function stopConfettiFullScreen(){ if(confettiInterval) clearInterval(confettiInterval); const canvas=document.getElementById('confetti-canvas'); if(canvas){ const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); canvas.style.display='none'; } }
+
+function showWinner(recs){
+  const modal=document.getElementById('modal-winner');
+  const body=document.getElementById('winner-body');
+  const sub=document.getElementById('winner-sub');
+  const total=recs.reduce((s,r)=>s+(r.amount||0),0);
+  const names=recs.map(r=>escapeHtml(r.playerName)).join(', ');
+  body.innerHTML = `${names} ha ganado ${formatMoney(total)}`;
+  sub.innerHTML = `Carta ganadora: ${cardName(recs[0].cardId)}`;
+  modal.classList.remove('hidden'); modal.style.display='block';
+  playApplause(); startConfettiFullScreen();
+}
+
 function openModal(modalId){
-  const modal = document.getElementById(modalId);
-  if(!modal) return;
-  modal.classList.remove('hidden');
-  modal.style.display='block';
-  const inner = modal.querySelector('.modal');
-  setTimeout(()=> inner && inner.classList.add('show'),10);
+  const modal = document.getElementById(modalId); if(!modal) return;
+  modal.classList.remove('hidden'); modal.style.display='block';
+  const inner = modal.querySelector('.modal'); setTimeout(()=> inner?.classList.add('show'),10);
 }
 function closeModal(modalId){
-  const modal = document.getElementById(modalId);
-  if(!modal) return;
-  const inner = modal.querySelector('.modal'); inner && inner.classList.remove('show');
+  const modal = document.getElementById(modalId); if(!modal) return;
+  const inner = modal.querySelector('.modal'); inner?.classList.remove('show');
   setTimeout(()=>{ modal.classList.add('hidden'); modal.style.display='none'; if(modalId==='modal-winner'){ stopConfettiFullScreen(); renderAll(); } },260);
 }
 
-/*===============================
-=       CONFETTI Y APLAUSOS      =
-===============================*/
-let confettiInterval=null;
-function startConfettiFullScreen(){ 
-  const canvas=document.getElementById('confetti-canvas'); 
-  canvas.style.display='block'; 
-  const ctx=canvas.getContext('2d'); 
-  const w=canvas.width=window.innerWidth; 
-  const h=canvas.height=window.innerHeight; 
-  const colors=['#e63946','#ffd60a','#2a9d8f','#ff9e00','#ff6bcb','#6d9df5']; 
-  let conf=Array.from({length:220}, ()=>({x:Math.random()*w,y:Math.random()*-h,r:Math.random()*6+3,c:colors[Math.floor(Math.random()*colors.length)],s:Math.random()*3+2,rrot:Math.random()*6})); 
-  function draw(){ 
-    ctx.clearRect(0,0,w,h); 
-    conf.forEach(c=>{ 
-      ctx.save(); ctx.translate(c.x,c.y); ctx.rotate(c.rrot); ctx.fillStyle=c.c; ctx.fillRect(-c.r,-c.r,c.r*2,c.r*2); ctx.restore(); 
-      c.y += c.s; c.x += Math.sin(c.y*0.01)*2; 
-      if(c.y > h+30){ c.y = -20; c.x = Math.random()*w; } 
-    }); 
-  } 
-  if(confettiInterval) clearInterval(confettiInterval); 
-  confettiInterval=setInterval(draw,20); 
-  setTimeout(()=>{ stopConfettiFullScreen(); },6000); 
-}
-function stopConfettiFullScreen(){ 
-  if(confettiInterval) clearInterval(confettiInterval); 
-  const canvas=document.getElementById('confetti-canvas'); 
-  if(canvas){ 
-    const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); 
-    canvas.style.display='none'; 
-  } 
+/************** Pago y seguimiento **************/
+window.markPaidById=function(id){
+  const p=purchases.find(x=>x.id===id); if(!p) return alert('No encontrado');
+  if(p.state!=='POR PAGAR') return alert('Solo marcar si está POR PAGAR');
+  p.state='PAGADO'; p.paidAt=Date.now();
+  winners=winners.map(w=>w.purchaseId===id? {...w,paid:true}:w);
+  tx.push({id:uuid(),type:'mark_paid',purchaseId:id,ts:Date.now()});
+  saveAll(); renderAll(); alert('Marcado como PAGADO');
 }
 
-/*===============================
-=       GANADOR                  =
-===============================*/
-function showWinner(recs){ 
-  const modal=document.getElementById('modal-winner'); 
-  const body=document.getElementById('winner-body'); 
-  const sub=document.getElementById('winner-sub'); 
-  const total=recs.reduce((s,r)=> s + (r.amount||0),0); 
-  const names=recs.map(r=> escapeHtml(r.playerName)).join(', '); 
-  body.innerHTML = `${names} ha ganado ${formatMoney(total)}`; 
-  sub.innerHTML = `Carta ganadora: ${cardName(recs[0].cardId)}`; 
-  modal.classList.remove('hidden'); 
-  modal.style.display='block'; 
-  playApplause(); 
-  startConfettiFullScreen(); 
-  // llevar carta ganadora al frente
-  document.getElementById('current-card').style.zIndex=999;
+/************** Reset y reinicio **************/
+function resetGame(){
+  if(!confirm('Iniciar un juego nuevo: se reiniciará el mazo y se quitará 1 partida a todos los jugadores activos. ¿Continuar?')) return;
+  stopAuto();
+  purchases.forEach(p=>{ if(p.state==='JUGANDO' && (p.gamesLeft||0)>0){ p.gamesLeft=Math.max(0,(p.gamesLeft||0)-1); if(p.gamesLeft<=0) p.state='FINALIZADO'; } });
+  game.deck=Array.from({length:54},(_,i)=>i+1); game.drawn=[]; game.current=0; cartasPasadas=[]; purchases.forEach(p=>p.markedCards=[]);
+  document.getElementById('shuffle-overlay').classList.remove('visible');
+  document.getElementById('shuffle-overlay').style.display='none';
+  tx.push({id:uuid(),type:'reset',ts:Date.now()});
+  saveAll(); renderAll();
+  alert('Juego reiniciado y partidas descontadas.');
 }
 
-/*===============================
-=       FILTROS Y MODALIDAD      =
-===============================*/
-function setActiveFilter(f){ 
-  document.querySelectorAll('.filter-btn').forEach(b=> b.classList.remove('active-4','active-6','active-all')); 
-  if(f==='all'){ document.getElementById('filter-all').classList.add('active-all'); } 
-  else if(f===4){ document.getElementById('filter-4').classList.add('active-4'); } 
-  else if(f===6){ document.getElementById('filter-6').classList.add('active-6'); } 
-  renderPlayersTable(f==='all'?null:f); 
+function saveAll(){
+  localStorage.setItem('purchases',JSON.stringify(purchases));
+  localStorage.setItem('winners',JSON.stringify(winners));
+  localStorage.setItem('tx',JSON.stringify(tx));
+  localStorage.setItem('game',JSON.stringify(game));
+  localStorage.setItem('prices',JSON.stringify(prices));
 }
 
-/*===============================
-=       INICIALIZACION           =
-===============================*/
-document.addEventListener('DOMContentLoaded',()=>{ 
+/************** Render general **************/
+function renderAll(){ renderPlayersTable(currentMode); }
+
+/************** Inicialización **************/
+document.addEventListener('DOMContentLoaded',()=>{
   renderAll();
-  document.getElementById('filter-all').addEventListener('click',()=>setActiveFilter('all'));
-  document.getElementById('filter-4').addEventListener('click',()=>setActiveFilter(4));
-  document.getElementById('filter-6').addEventListener('click',()=>setActiveFilter(6));
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){ closeModal('modal-player'); closeModal('modal-winner'); }
+    if(e.code==='Space'){ e.preventDefault(); if(!isAuto) drawOne(); }
+  });
 });
-
 </script>
 </body>
 </html>

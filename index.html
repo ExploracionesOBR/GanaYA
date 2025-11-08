@@ -1,145 +1,136 @@
-<!-- Asumiendo que esto va al final del body, tras tu bloque HTML principal -->
-<canvas id="confetti-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;display:none;z-index:9999"></canvas>
 <script>
-/********************
- Variables principales
-********************/
-let game = { deck: Array.from({length:54},(_,i)=>i+1), drawn: [], current: null };
+// ==== CONFIGURACIONES INICIALES ====
+let game = {deck: Array.from({length:54},(_,i)=>i+1), drawn: [], current: 0};
 let purchases = [], winners = [], cartasPasadas = [], tx = [];
-let isAuto = false, autoInterval = null, animShuffling = false;
-let prices = {price4:50,profit4:20,price6:75,profit6:30,price8:100,profit8:40};
-let lastPlayerId = 0; // para generar IDs GanaYA!
+let prices = {price4:50, profit4:20, price6:75, profit6:30};
+let isAuto = false, autoInterval = null, animShuffling=false;
+let currentMode = 4;
 
-/********************
- Funciones auxiliares
-********************/
-function uuid(){ return 'xxxx-xxxx'.replace(/[xy]/g,c=>{ const r=Math.random()*16|0; return r.toString(16); }); }
+// ==== UTILS ====
+function uuid(){ return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0,v=c==='x'?r:(r&0x3|0x8);return v.toString(16);}); }
+function formatMoney(v){ return `$${v.toFixed(2)}`; }
+function cardImageUrl(id){ return `images/cards/${id}.png`; } 
+function cardName(id){ const names=['El Gallo','El Diablo','La Dama','El Catrin','El Paraguas','La Sirena','La Escalera','La Botella','El Barril','El Arbol','El Melon','El Valiente','El Gorrito','La Muerte','La Pera','La Bandera','El Bandolon','El Violoncello','La Garza','El Pajaro','La Mano','La Bota','La Luna','El Cotorro','El Borracho','El Negrito','El Corazon','La Sandia','El Tambor','El Camaron','Las Jaras','El Musico','La Araña','El Soldado','La Estrella','El Cazo','El Mundo','El Apache','El Nopal','La Rosa','La Calavera','La Campana','El Cantarito','El Venado','El Sol','La Corona','La Chalupa','El Pino','El Pescado','La Palma','La Maceta','El Arpa','La Rana']; return names[id-1]||`Carta-${id}`; }
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-function formatMoney(v){ return '$'+(v||0).toFixed(2); }
-function cardName(id){ const names=['El Gallo','La Dama','El Valiente','El Catrín','El Paraguas','La Sirena','La Escalera','La Botella','El Barril','El Árbol','El Melón','El Valiente','La Bandera','El Pino','La Chalupa','El Mundo','El Apache','El Nopal','El Corazón','La Sandía','El Tambor','El Camarón','El Sol','La Luna','La Corona','El Bandolón','El Violoncello','La Jarana','El Gallo II','La Dama II','El Valiente II','La Rosa','El Sol II','La Luna II','El Catrín II','La Chalupa II','El Pescado','El Diablito','La Estrella','El Gallo III','La Dama III','El Valiente III','La Bandera II','El Pino II','La Chalupa II','El Mundo II','El Apache II','El Nopal II','El Corazón II','La Sandía II','El Tambor II']; return names[(id-1)%names.length]||`Carta-${id}`; }
-function cardImageUrl(id){ return `cards/${id}.png`; }
+function shuffle(arr){ return arr.sort(()=>Math.random()-0.5); }
+function generateCardForPurchase(mod){ return shuffle([...game.deck]).slice(0,mod); }
 
-/********************
- Animaciones y confeti
-********************/
+// ==== ANIMACIONES ====
+// Bolsa animada
+function animateBolsa(target){
+  const el=document.getElementById('bolsa-amount'); if(!el) return;
+  const current = parseFloat((el.dataset.value||'0')); const t = Number(target||0);
+  const steps = 24; let i=0; const start=current; const diff = t - start;
+  if(el._anim) clearInterval(el._anim);
+  el._anim=setInterval(()=>{i++;const val=start+diff*(i/steps);el.textContent=formatMoney(val);el.dataset.value=val;el.style.transform=(i%2===0)?'scale(1.03)':'scale(1)'; if(i>=steps){clearInterval(el._anim);el.style.transform='';delete el._anim;}},30);
+}
+
+// Confeti
 let confettiInterval=null;
 function startConfettiFullScreen(){
   const canvas=document.getElementById('confetti-canvas'); canvas.style.display='block';
   const ctx=canvas.getContext('2d'); const w=canvas.width=window.innerWidth; const h=canvas.height=window.innerHeight;
   const colors=['#e63946','#ffd60a','#2a9d8f','#ff9e00','#ff6bcb','#6d9df5'];
   let conf=Array.from({length:220},()=>({x:Math.random()*w,y:Math.random()*-h,r:Math.random()*6+3,c:colors[Math.floor(Math.random()*colors.length)],s:Math.random()*3+2,rrot:Math.random()*6}));
-  function draw(){ ctx.clearRect(0,0,w,h); conf.forEach(c=>{ ctx.save(); ctx.translate(c.x,c.y); ctx.rotate(c.rrot); ctx.fillStyle=c.c; ctx.fillRect(-c.r,-c.r,c.r*2,c.r*2); ctx.restore(); c.y+=c.s; c.x+=Math.sin(c.y*0.01)*2; if(c.y>h+30){ c.y=-20; c.x=Math.random()*w; } }); }
+  function draw(){ ctx.clearRect(0,0,w,h); conf.forEach(c=>{ctx.save();ctx.translate(c.x,c.y);ctx.rotate(c.rrot);ctx.fillStyle=c.c;ctx.fillRect(-c.r,-c.r,c.r*2,c.r*2);ctx.restore();c.y+=c.s;c.x+=Math.sin(c.y*0.01)*2;if(c.y>h+30){c.y=-20;c.x=Math.random()*w;}});}
   if(confettiInterval) clearInterval(confettiInterval);
   confettiInterval=setInterval(draw,20);
-  setTimeout(stopConfettiFullScreen,6000);
+  setTimeout(()=>{stopConfettiFullScreen();},6000);
 }
-function stopConfettiFullScreen(){ if(confettiInterval) clearInterval(confettiInterval); const c=document.getElementById('confetti-canvas'); c.style.display='none'; }
+function stopConfettiFullScreen(){ if(confettiInterval) clearInterval(confettiInterval); const canvas=document.getElementById('confetti-canvas'); if(canvas){const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);canvas.style.display='none';}}
 
-/********************
- Render y animaciones de cartas
-********************/
+// ==== BARAJEO ANIMADO ====
+function shuffleDeckAnimation(callback){
+  if(animShuffling) return; animShuffling=true;
+  const container=document.getElementById('deck-container');
+  if(!container) return;
+  container.innerHTML=''; const deck=shuffle([...game.deck]);
+  deck.forEach((cid,i)=>{
+    const card=document.createElement('div');
+    card.className='card-back'; card.style.background='#eee url(logo_1_entrada.png) center/50% no-repeat';
+    card.style.width='80px'; card.style.height='120px'; card.style.position='absolute';
+    card.style.left=`${i*2}px`; card.style.top=`${-i*2}px`; card.style.transition='all 3s ease';
+    container.appendChild(card);
+    setTimeout(()=>{card.style.transform=`rotate(${Math.random()*20-10}deg) translateY(${Math.random()*10}px)`;card.style.boxShadow='0 0 12px gold';},i*10);
+  });
+  setTimeout(()=>{ animShuffling=false; if(callback) callback(deck); },3000);
+}
+
+// ==== RENDER ====
 function renderAll(){
-  renderCurrentCard();
-  renderLastCards();
   renderPlayersTable();
+  const totalInPlay = purchases.filter(p=>p.modality===currentMode && p.state==='JUGANDO').reduce((s,p)=>s+(p.totalPaid||0),0);
+  animateBolsa(totalInPlay);
   saveAll();
 }
-function renderCurrentCard(){
-  const cur=document.getElementById('current-card');
-  if(cur){
-    if(game.current){
-      cur.innerHTML=`<div style="width:160px;height:220px;background-image:url('${cardImageUrl(game.current)}');background-size:contain;background-repeat:no-repeat;background-position:center;border:2px solid gold;box-shadow:0 0 20px #ffd700;"></div>`;
-    } else cur.innerHTML='<div class="small-muted">Esperando barajeo...</div>';
-  }
-}
-function renderLastCards(){
-  const last=(game.drawn||[]).slice(-3).reverse();
-  const lastEl=document.getElementById('last-cards');
-  if(lastEl){
-    lastEl.innerHTML = last.length ? last.map(c=>`<div style="width:64px;height:96px;background-image:url('${cardImageUrl(c)}');background-size:cover;border-radius:6px;margin:0 2px;border:1px solid #ccc"></div>`).join('') : '<div class="small-muted">Ninguna carta aún.</div>';
-  }
+
+// ==== JUGADORES ====
+function renderPlayerCard(p){
+  let cols=2, displayCount=p.modality;
+  const cardList=(p.card||[]).slice(0,displayCount);
+  let html = `<div class="player-card" onclick="openPurchaseDetail('${p.id}')" style="margin-bottom:12px"><div class="player-name">${escapeHtml(p.playerName)}</div><div class="player-cards" style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:8px;justify-items:center;margin-top:10px">`;
+  cardList.forEach(cid=>{
+    const passed = cartasPasadas.includes(cid); 
+    const sticker = passed? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : ''; 
+    html+=`<div class="card-thumb ${passed?'passed':''}" style="background-image:url('${cardImageUrl(cid)}');width:74px;height:106px;border-radius:8px;box-shadow:0 0 6px gold">${sticker}</div>`;
+  });
+  let missing = displayCount - cardList.length; while(missing-->0) html+=`<div style="width:74px;height:106px;border-radius:8px;background:#fafafa;border:1px dashed #eee"></div>`;
+  html+='</div></div>'; return html;
 }
 
-/********************
- Registro de jugador con WhatsApp
-********************/
+function renderPlayersTable(filter){ 
+  const tbody=document.getElementById('players-table'); 
+  const list = purchases.slice().filter(p=> !filter || p.modality===filter); 
+  if(!tbody) return; 
+  if(!list.length){ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td></tr>'; return; } 
+  tbody.innerHTML = list.map(p=>`<tr><td style="padding:8px">${p.id}</td><td style="padding:8px">${escapeHtml(p.playerName)}<div class="small-muted">${escapeHtml(p.cell||'—')}</div></td><td style="padding:8px;text-align:center">${p.modality}</td><td style="padding:8px;text-align:center">${p.gamesLeft||0}</td><td style="padding:8px;text-align:center">${formatMoney(p.totalPaid)}</td><td style="padding:8px;text-align:center">${p.state||'JUGANDO'}</td><td style="padding:8px;text-align:center"><button class="btn btn-blue" onclick="openPurchaseDetail('${p.id}');event.stopPropagation()">Detalle</button></td></tr>`).join(''); 
+}
+
+// ==== REGISTRO DE JUGADOR + WHATSAPP ====
 function registerPlayer(){
-  const name=document.getElementById('input-name').value.trim();
-  const cell=document.getElementById('input-cell').value.trim();
-  const clabe=document.getElementById('input-clabe').value.trim();
+  const name=(document.getElementById('input-name').value||'').trim();
+  const cell=(document.getElementById('input-cell').value||'').trim();
+  const clabe=(document.getElementById('input-clabe').value||'').trim();
   const budgetRaw=document.getElementById('input-budget').value;
   const budget = budgetRaw===''?0:parseFloat(budgetRaw||0);
-  const q4=parseInt(document.getElementById('qty4').value||0), q6=parseInt(document.getElementById('qty6').value||0), q8=parseInt(document.getElementById('qty8').value||0);
-  if(!name) return alert('Captura el nombre'); if(!cell) return alert('Captura el celular');
-  if(q4+q6+q8<=0) return alert('Selecciona al menos una partida (cantidad)');
-  const needed = q4*prices.price4 + q6*prices.price6 + q8*prices.price8;
-  if(budget < needed) return alert(`El presupuesto no alcanza. Se requiere ${formatMoney(needed)}.`);
-  if(budget > needed) return alert(`Hay sobrante de ${formatMoney(budget-needed)}. Ajusta cantidades o presupuesto.`);
-  // Crear compras separadas
+  const q4=parseInt(document.getElementById('qty4').value||0), q6=parseInt(document.getElementById('qty6').value||0);
+  if(!name || !cell) return alert('Captura nombre y celular');
+  if(q4+q6<=0) return alert('Selecciona al menos una partida');
+  const needed = q4*prices.price4 + q6*prices.price6;
+  if(budget<needed) return alert(`Presupuesto insuficiente: requiere ${formatMoney(needed)}`);
+  if(budget>needed) return alert(`Sobrante de ${formatMoney(budget-needed)}. Ajusta presupuesto.`);
+
+  let lastIdNum = purchases.length? parseInt(purchases[purchases.length-1].id.split('-')[1]||0):0;
   const parts=[];
   if(q4>0) parts.push({modality:4,qty:q4,price:prices.price4});
   if(q6>0) parts.push({modality:6,qty:q6,price:prices.price6});
-  if(q8>0) parts.push({modality:8,qty:q8,price:prices.price8});
-  let whatsappMsg=`¡Bienvenido a GANA YA! 🎉\nTus partidas han sido registradas:\n`;
-  parts.forEach(pt=>{
-    for(let i=0;i<pt.qty;i++){
-      lastPlayerId++;
-      const idSeq = 'GanaYA!-'+String(1000+lastPlayerId).slice(-4);
-      const p={id:uuid(),playerName:name,cell:cell,clabe:clabe,modality:pt.modality,initialGames:1,gamesLeft:1,totalPaid:pt.price,wins:0,state:'JUGANDO',card:[],markedCards:[],selectionUsed:true,createdAt:Date.now(),seqId:idSeq};
-      p.card=generateCardForPurchase(pt.modality);
-      purchases.push(p);
-      tx.push({id:uuid(),type:'purchase',player:name,modality:pt.modality,amount:pt.price,purchaseId:p.id,ts:Date.now()});
-      whatsappMsg+=`${idSeq}\nCartas asignadas: ${p.card.map(c=>cardName(c)).join(', ')}\n\n`;
-    }
-  });
-  saveAll(); renderAll();
-  // Abrir WhatsApp
-  window.open(`https://wa.me/${cell}?text=${encodeURIComponent(whatsappMsg)}`,'_blank');
-  // Limpiar campos
-  document.getElementById('input-name').value=''; document.getElementById('input-cell').value=''; document.getElementById('input-clabe').value=''; document.getElementById('input-budget').value=''; document.getElementById('qty4').value='0'; document.getElementById('qty6').value='0'; document.getElementById('qty8').value='0';
-  alert('Jugador(s) registrado(s) y cartas asignadas automáticamente.');
+  parts.forEach(pt=>{for(let i=0;i<pt.qty;i++){lastIdNum++; const p={id:`GanaYA!-${String(lastIdNum).padStart(4,'0')}`,playerName:name,cell:cell,clabe:clabe,modality:pt.modality,initialGames:1,gamesLeft:1,totalPaid:pt.price,wins:0,state:'JUGANDO',card:[],markedCards:[],selectionUsed:true,createdAt:Date.now()}; p.card=generateCardForPurchase(pt.modality); purchases.push(p); tx.push({id:uuid(),type:'purchase',player:name,modality:pt.modality,amount:pt.price,purchaseId:p.id,ts:Date.now()});}});
+  saveAll(); document.getElementById('input-name').value='';document.getElementById('input-cell').value='';document.getElementById('input-clabe').value='';document.getElementById('input-budget').value='';document.getElementById('qty4').value='0';document.getElementById('qty6').value='0';
+
+  let msg=`¡Bienvenido a GANA YA! 🎉\nTus partidas han sido registradas:\n`; purchases.slice(-(q4+q6)).forEach(p=>{ msg += `${p.id}\nCartas asignadas: ${p.card.map(cid=>cardName(cid)).join(', ')}\n\n`; });
+  msg+="¡Mucha suerte! 🎴";
+  const waUrl=`https://wa.me/${cell}?text=${encodeURIComponent(msg)}`; window.open(waUrl,'_blank'); alert('Jugador(s) registrado(s) y cartas asignadas automáticamente.'); renderAll();
 }
 
-/********************
- Generación de cartas
-********************/
-function generateCardForPurchase(modality){
-  const assigned = new Set(); const pool = Array.from({length:54},(_,i)=>i+1); const out=[];
-  while(out.length<modality && pool.length){
-    const idx=Math.floor(Math.random()*pool.length);
-    const v=pool.splice(idx,1)[0];
-    if(!assigned.has(v)){ assigned.add(v); out.push(v); }
-  }
-  return out;
-}
-
-/********************
- Pago y carta de la suerte
-********************/
+// ==== PAGOS ====
 window.markPaidById = function(id){
   const p=purchases.find(x=>x.id===id); if(!p) return alert('No encontrado'); if(p.state!=='POR PAGAR') return alert('Solo marcar si está POR PAGAR');
   p.state='PAGADO'; p.paidAt=Date.now();
   winners=winners.map(w=> w.purchaseId===id? {...w,paid:true}:w);
   tx.push({id:uuid(),type:'mark_paid',purchaseId:id,ts:Date.now()});
-  saveAll(); renderAll();
-  // Mensaje WhatsApp con carta de la suerte
-  if(p.wins>0){
-    const msg=`Hola ${p.playerName},\nse ha realizado tu pago de ${formatMoney(p.totalPaid)}\na la cuenta ${p.clabe} el ${new Date().toLocaleString()}.\n\nTu carta de la suerte en esta partida fue:\n🌟 ${cardName(p.card[0])} 🌟\n\n¡Felicidades por tu premio en GANA YA! 🎉🇲🇽`;
-    navigator.clipboard.writeText(p.clabe||'');
-    window.open(`https://wa.me/${p.cell}?text=${encodeURIComponent(msg)}`,'_blank');
-  }
-  alert('Marcado como PAGADO y WhatsApp listo.');
+  const msg=`Hola ${p.playerName},\nse ha realizado tu pago de ${formatMoney(p.totalPaid)}\na la cuenta ${p.clabe} el ${new Date().toLocaleString()}.\n\nTu carta de la suerte en esta partida fue:\n🌟 ${cardName(p.card[0])} 🌟\n¡Felicidades por tu premio en GANA YA! 🎉🇲🇽`;
+  window.open(`https://wa.me/${p.cell}?text=${encodeURIComponent(msg)}`,'_blank');
+  saveAll(); renderAll(); alert('Marcado como PAGADO');
 };
 
-/********************
- Guardado local
-********************/
-function saveAll(){ localStorage.setItem('purchases',JSON.stringify(purchases)); localStorage.setItem('game',JSON.stringify(game)); localStorage.setItem('winners',JSON.stringify(winners)); localStorage.setItem('cartasPasadas',JSON.stringify(cartasPasadas)); localStorage.setItem('tx',JSON.stringify(tx)); }
+window.copyClabeById = function(id){ const p=purchases.find(x=>x.id===id); if(!p) return alert('Jugador no encontrado'); if(!p.card || !p.card.length) return alert('Solo se puede copiar CLABE si el jugador ganó'); navigator.clipboard.writeText(p.clabe).then(()=>{ alert('CLABE copiada al portapapeles'); }); }
 
-/********************
- Inicialización
-********************/
-document.addEventListener('DOMContentLoaded',()=>{
-  renderAll();
-});
+// ==== MODAL GANADOR ====
+function showWinner(recs){ const modal=document.getElementById('modal-winner'); const body=document.getElementById('winner-body'); const sub=document.getElementById('winner-sub'); const total=recs.reduce((s,r)=> s+(r.amount||0),0); const names=recs.map(r=> escapeHtml(r.playerName)).join(', '); body.innerHTML = `${names} ha ganado ${formatMoney(total)}`; sub.innerHTML = `Carta ganadora: ${cardName(recs[0].cardId)}`; modal.classList.remove('hidden'); modal.style.display='block'; playApplause(); startConfettiFullScreen(); }
+
+// ==== FILTROS ====
+function setActiveFilter(f){ document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active-4','active-6','active-all')); if(f==='all') document.getElementById('filter-all').classList.add('active-all'); else if(f===4) document.getElementById('filter-4').classList.add('active-4'); else if(f===6) document.getElementById('filter-6').classList.add('active-6'); }
+
+// ==== INICIO ====
+renderAll();
 </script>

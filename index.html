@@ -1,4 +1,4 @@
-<!doctype html>
+<!doctype html>\n<!--\n  Versión 9.4_EFX\n  Basado en: index_v9.0.html (original)\n  Mejoras: Barajeo 3s, brillo cálido doble, reverso gris claro con logo centrado.\n-->
 <html lang="es">
 <head>
 <meta charset="utf-8" />
@@ -41,7 +41,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 .mex-frame{ background:#fff; border-radius:12px; padding:14px; border:4px solid var(--rojo); box-shadow:var(--sombra); }
 .mex-frame-small{ background:#fff; border-radius:10px; padding:12px; border:3px solid var(--rojo); box-shadow:0 6px 14px rgba(0,0,0,.06); }
 
-.players-grid{ display:grid; grid-template-columns: repeat(4,1fr); gap:14px; align-items:start; }
+.players-grid{ display:grid; grid-template-columns: repeat(5,1fr); gap:14px; align-items:start; }
 @media(max-width:1100px){ .players-grid{ grid-template-columns: repeat(2,1fr); } }
 @media(max-width:700px){ .players-grid{ grid-template-columns: 1fr; } }
 
@@ -51,6 +51,35 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 .player-cards{ margin-top:10px; display:flex; flex-direction:column; gap:8px; align-items:center; overflow:hidden; }
 
 .card-thumb{ width:74px; height:106px; border-radius:8px; background-size:cover; background-position:center; position:relative; transition:transform .28s ease, opacity .28s ease; }
+  .card-thumb.back-pattern{
+    background: repeating-linear-gradient(45deg, #f6f6f6 0 10px, #ececec 10px 20px);
+    position:relative;
+    filter:none;
+  }
+  .card-thumb.back-pattern::after{
+    content:'';
+    position:absolute;
+    left:50%; top:50%;
+    width:48px; height:48px;
+    transform:translate(-50%,-50%);
+    background-image: url('logo_1_entrada.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity:0.95;
+    pointer-events:none;
+  }
+  .card-thumb.shine::before{
+    content:'';
+    position:absolute; top:0; left:-90%;
+    width:60%; height:100%;
+    background: linear-gradient(120deg, rgba(255,200,80,0.9) 0%, rgba(255,200,80,0.6) 30%, rgba(255,200,80,0.2) 50%, rgba(255,200,80,0) 100%);
+    transform: skewX(-20deg);
+    pointer-events:none;
+    z-index:3;
+    animation: shineMove 0.9s linear 0s 2;
+  }
+  @keyframes shineMove{ 100% { left:140%; } }
+
 .card-thumb.passed{ filter:grayscale(0.4) brightness(.7); } /* kept slightly dim but not full b/w */
 .sticker{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
 .sticker img{ width:42px; height:42px; filter:none; /* color sticker */ }
@@ -328,7 +357,98 @@ function confirmWhatsapp(id){ const p=purchases.find(x=>x.id===id); if(!p) retur
 
 function printPurchase(id){ const p=purchases.find(x=>x.id===id); if(!p) return; const logo = 'logo_1_entrada.png'; const html = `<html><head><title>Compra ${p.id}</title></head><body style="font-family:Arial;padding:12px"><div style="display:flex;align-items:center;gap:12px"><img src="${logo}" style="width:80px;height:80px;object-fit:contain"/> <div><h2>Reporte de partidas — GANA YA!</h2><div>${new Date().toLocaleString()}</div></div></div><hr/> <h3>Compra: ${p.id}</h3><div><strong>Jugador:</strong> ${escapeHtml(p.playerName)}</div><div><strong>Celular:</strong> ${escapeHtml(p.cell||'')}</div><div><strong>Modalidad:</strong> ${p.modality} cartas</div><div><strong>Partidas:</strong> ${p.gamesLeft||0}</div><div><strong>Total pagado:</strong> ${formatMoney(p.totalPaid)}</div><div style="margin-top:8px"><strong>Cartas:</strong></div>${(p.card||[]).map(cid=>`<div style="display:inline-block;margin:6px"><img src='${cardImageUrl(cid)}' style='width:120px;height:180px;object-fit:cover;border:1px solid #ccc;border-radius:8px'></div>`).join('')}<div style="margin-top:12px"><em>Generado: ${new Date().toLocaleString()}</em></div></body></html>`; const w=window.open('','_blank'); w.document.write(html); w.document.close(); setTimeout(()=>w.print(),500); }
 
-function shufflePendingToFullScreen(){ if(animShuffling) return; animShuffling=true; disableControls(true); playShuffleSound(); const pending = game.deck.filter(id=> !cartasPasadas.includes(id)); if(!pending.length){ alert('No hay cartas pendientes para barajar.'); animShuffling=false; disableControls(false); return; } const overlay=document.getElementById('shuffle-overlay'); overlay.classList.add('visible'); overlay.innerHTML=''; overlay.style.display='flex'; const center=document.createElement('div'); center.style.position='relative'; center.style.width='680px'; center.style.height='420px'; overlay.appendChild(center); const sample = shuffle(pending).slice(0,12); const cards = sample.map((cid,i)=>{ const el=document.createElement('div'); el.className='shuffle-card'; el.style.backgroundImage=`url('${cardImageUrl(cid)}')`; el.style.left='50%'; el.style.top='50%'; el.style.transform=`translate(-50%,-50%) rotate(${(Math.random()*360)-180}deg) scale(${1 - Math.abs(i-6)*0.02})`; el.style.zIndex=100+i; center.appendChild(el); return {el, cid}; }); cards.forEach((c,idx)=>{ setTimeout(()=>{ c.el.style.transition='transform .6s ease, opacity .6s ease'; c.el.style.transform = `translate(${(Math.random()*600-300)}px, ${(Math.random()*360-180)}px) rotate(${Math.random()*720-360}deg) scale(.9)`; playShuffleSound(); }, idx*60); }); setTimeout(()=>{ cards.forEach((c,ii)=>{ c.el.style.transition='transform .45s ease, opacity .45s ease'; c.el.style.transform = `translate(${(ii-6)*6}px,-40px) rotate(${(Math.random()*12)-6}deg) scale(.95)`; }); playShuffleSound(); }, 1100); setTimeout(()=>{ cards.forEach((c,ii)=>{ c.el.style.transition='transform .45s ease, opacity .45s ease, background-image .2s'; c.el.style.backgroundImage = `linear-gradient(#ddd,#bbb)`; c.el.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><img src="logo_1_entrada.png" style="width:60px;height:60px;opacity:.95"></div>`; }); playShuffleSound(); }, 1600); setTimeout(()=>{ overlay.classList.remove('visible'); overlay.style.display='none'; overlay.innerHTML=''; animShuffling=false; disableControls(false); shufflePending(); renderAll(); }, 2400); }
+
+function shufflePendingToFullScreen(){
+  if(animShuffling) return;
+  animShuffling=true;
+  disableControls(true);
+  playShuffleSound();
+  const pending = game.deck.filter(id=> !cartasPasadas.includes(id));
+  if(!pending.length){
+    alert('No hay cartas pendientes para barajar.');
+    animShuffling=false;
+    disableControls(false);
+    return;
+  }
+  // show overlay with animated sample
+  const overlay=document.getElementById('shuffle-overlay');
+  overlay.classList.add('visible');
+  overlay.innerHTML='';
+  overlay.style.display='flex';
+  const center=document.createElement('div');
+  center.style.position='relative';
+  center.style.width='760px';
+  center.style.height='420px';
+  overlay.appendChild(center);
+
+  // apply back-pattern to visible cards in main area
+  const visibleCards = Array.from(document.querySelectorAll('#players-area .card-thumb'));
+  visibleCards.forEach(c => c.classList.add('back-pattern'));
+
+  const sample = shuffle(pending).slice(0,14);
+  const cards = sample.map((cid,i)=>{
+    const el=document.createElement('div');
+    el.className='shuffle-card';
+    el.style.backgroundImage=`url('${cardImageUrl(cid)}')`;
+    el.style.left='50%'; el.style.top='50%';
+    const rot = (Math.random()*360)-180;
+    const scale = 1 - Math.abs(i - (sample.length/2))*0.02;
+    el.style.transform=`translate(-50%,-50%) rotate(${rot}deg) scale(${scale})`;
+    el.style.zIndex=100+i;
+    center.appendChild(el);
+    return {el, cid};
+  });
+
+  // total animation ~3000ms, staggered
+  cards.forEach((c,idx)=>{
+    setTimeout(()=>{
+      c.el.style.transition='transform .8s ease, opacity .8s ease';
+      c.el.style.transform = `translate(${(Math.random()*640-320)}px, ${(Math.random()*320-160)}px) rotate(${Math.random()*720-360}deg) scale(.92)`;
+      playShuffleSound();
+    }, idx * 120);
+  });
+
+  setTimeout(()=>{
+    // bring to neat stack center
+    cards.forEach((c,ii)=>{
+      c.el.style.transition='transform .6s ease, opacity .6s ease';
+      c.el.style.transform = `translate(${(ii - cards.length/2) * 8}px, -40px) rotate(${(Math.random()*12)-6}deg) scale(.95)`;
+    });
+    playShuffleSound();
+  }, 1600);
+
+  setTimeout(()=>{
+    // convert visuals to back-pattern with logo in overlay
+    cards.forEach((c,ii)=>{
+      c.el.style.transition='transform .45s ease, opacity .45s ease, background-image .2s';
+      c.el.style.backgroundImage = `linear-gradient(#ddd,#bbb)`;
+      c.el.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><img src="logo_1_entrada.png" style="width:80px;height:80px;opacity:.95"></div>`;
+    });
+    playShuffleSound();
+  }, 2200);
+
+  // after full animation, hide overlay and finalize shuffle
+  setTimeout(()=>{
+    overlay.classList.remove('visible');
+    overlay.style.display='none';
+    overlay.innerHTML='';
+    animShuffling=false;
+    disableControls(false);
+    shufflePending();
+    renderAll();
+
+    // trigger shine effect (two passes are handled by CSS animation iteration-count:2)
+    const visible = Array.from(document.querySelectorAll('#players-area .card-thumb'));
+    visible.forEach(c=>{
+      // add shine class which runs 2 iterations of the diagonal highlight
+      c.classList.add('shine');
+      // remove shine class after animation ends (0.9s *2 = 1.8s) plus small buffer
+      setTimeout(()=> c.classList.remove('shine'), 1900);
+    });
+
+  }, 3000);
+}
+
 
 function shufflePending(){ const pending=game.deck.filter(id=> !cartasPasadas.includes(id)); const past=game.deck.filter(id=> cartasPasadas.includes(id)); game.deck = shuffle(pending).concat(past); tx.push({id:uuid(),type:'shuffle',ts:Date.now()}); saveAll(); }
 

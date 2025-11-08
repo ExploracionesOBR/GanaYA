@@ -421,19 +421,18 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('filter-6').addEventListener('click', ()=>{ setActiveFilter(6); renderPlayersTable(6); });
   document.getElementById('filter-8').addEventListener('click', ()=>{ setActiveFilter(8); renderPlayersTable(8); });
 
-  // modal overlay clicks to close
-  document.getElementById('modal-player-back').addEventListener('click', (e)=>{ if(e.target.id==='modal-player-back') closeGroupModal(); });
-  document.getElementById('modal-winner-back').addEventListener('click', (e)=>{ if(e.target.id==='modal-winner-back') { document.getElementById('modal-winner').classList.add('hidden'); document.getElementById('modal-winner').style.display='none'; stopConfettiFullScreen(); renderAll(); } });
+  // modal overlay clicks to close (handled by generic openModal/closeModal)
+  document.getElementById('modal-close').addEventListener('click', ()=> closeModal('modal-player'));
+  document.getElementById('modal-close-x').addEventListener('click', ()=> closeModal('modal-player'));
 
-  document.getElementById('modal-close').addEventListener('click', closeGroupModal);
-  document.getElementById('modal-close-x').addEventListener('click', closeGroupModal);
+  document.getElementById('winner-ok').addEventListener('click', ()=> closeModal('modal-winner'));
+  document.getElementById('winner-close').addEventListener('click', ()=> closeModal('modal-winner'));
 
-  document.getElementById('winner-ok').addEventListener('click', ()=>{ const m=document.getElementById('modal-winner'); m.classList.add('hidden'); m.style.display='none'; stopConfettiFullScreen(); renderAll(); });
-  document.getElementById('winner-close').addEventListener('click', ()=>{ const m=document.getElementById('modal-winner'); m.classList.add('hidden'); m.style.display='none'; stopConfettiFullScreen(); renderAll(); });
-
-  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ // close modals
-      closeGroupModal();
-      const mw=document.getElementById('modal-winner'); if(mw && !mw.classList.contains('hidden')){ mw.classList.add('hidden'); mw.style.display='none'; stopConfettiFullScreen(); renderAll(); }
+  // handle Escape and Space keys (Escape closes modals, Space draws a card)
+  document.addEventListener('keydown', (e)=>{
+    if(e.key==='Escape'){
+      closeModal('modal-player');
+      closeModal('modal-winner');
     }
     if(e.code==='Space'){ e.preventDefault(); if(!isAuto) drawOne(); }
   });
@@ -459,7 +458,23 @@ function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;'
 
 window.markPaidById = function(id){ const p=purchases.find(x=>x.id===id); if(!p) return alert('No encontrado'); if(p.state!=='POR PAGAR') return alert('Solo marcar si está POR PAGAR'); p.state='PAGADO'; p.paidAt=Date.now(); winners=winners.map(w=> w.purchaseId===id? {...w,paid:true}:w); tx.push({id:uuid(),type:'mark_paid',purchaseId:id,ts:Date.now()}); saveAll(); renderAll(); alert('Marcado como PAGADO'); };
 
-function closeGroupModal(){ const modal=document.getElementById('modal-player'); modal.classList.add('hidden'); modal.style.display='none'; }
+function openModal(modalId){
+  const modal = document.getElementById(modalId);
+  if(!modal) return;
+  modal.classList.remove('hidden');
+  modal.style.display='block';
+  const inner = modal.querySelector('.modal');
+  // small timeout to allow CSS transition
+  setTimeout(()=> inner && inner.classList.add('show'), 10);
+}
+function closeModal(modalId){
+  const modal = document.getElementById(modalId);
+  if(!modal) return;
+  const inner = modal.querySelector('.modal');
+  inner && inner.classList.remove('show');
+  setTimeout(()=>{ modal.classList.add('hidden'); modal.style.display='none'; if(modalId==='modal-winner'){ stopConfettiFullScreen(); renderAll(); } }, 260);
+}
+function closeGroupModal(){ closeModal('modal-player'); }
 
 function setActiveFilter(f){ document.querySelectorAll('.filter-btn').forEach(b=> b.classList.remove('active-4','active-6','active-8','active-all')); if(f==='all'){ document.getElementById('filter-all').classList.add('active-all'); } else if(f===4){ document.getElementById('filter-4').classList.add('active-4'); } else if(f===6){ document.getElementById('filter-6').classList.add('active-6'); } else if(f===8){ document.getElementById('filter-8').classList.add('active-8'); } }
 

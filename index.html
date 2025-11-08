@@ -1,287 +1,145 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GANA YA! 🎉</title>
-<style>
-/* --- Diseño mexicano festivo --- */
-body {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-    background-color: #fff5e1;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-}
-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
-    background: linear-gradient(90deg,#ffcc00,#ff6600);
-    color: #fff;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-}
-header h1 {
-    font-size: 2em;
-    margin: 0;
-}
-header img {
-    height: 60px;
-}
-#bolsa {
-    font-size: 1.5em;
-    font-weight: bold;
-    margin: 10px;
-}
-button {
-    cursor: pointer;
-    padding: 8px 12px;
-    margin: 4px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1em;
-    font-weight: bold;
-    transition: 0.3s;
-}
-button:hover {
-    box-shadow: 0 0 8px gold;
-}
-.active {
-    box-shadow: 0 0 12px gold;
-}
-
-/* --- Área de cartas de jugadores --- */
-#cartas-jugadores {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    grid-auto-rows: 160px;
-    gap: 10px;
-    padding: 20px;
-    max-width: 1200px;
-    margin: auto;
-}
-.carta {
-    position: relative;
-    background-color: #fff;
-    border-radius: 8px;
-    border: 2px solid #ff6600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1.2em;
-    color: #333;
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-.carta.ganadora {
-    grid-column: span 2;
-    grid-row: span 2;
-    font-size: 1.8em;
-    box-shadow: 0 0 20px gold;
-    transform: scale(1.2);
-}
-
-/* --- Modales --- */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 999;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.6);
-}
-.modal-content {
-    background-color: #fff;
-    margin: 10% auto;
-    padding: 20px;
-    border-radius: 12px;
-    width: 80%;
-    max-width: 600px;
-    position: relative;
-}
-.modal-close {
-    position: absolute;
-    top: 10px;
-    right: 14px;
-    font-size: 1.5em;
-    cursor: pointer;
-}
-
-/* --- Animaciones confeti --- */
-.confeti-piece {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background-color: red;
-    opacity: 0.8;
-    animation: confetiFall 3s linear infinite;
-}
-@keyframes confetiFall {
-    0% { transform: translateY(-10px) rotate(0deg);}
-    100% { transform: translateY(500px) rotate(360deg);}
-}
-</style>
-</head>
-<body>
-
-<header>
-    <h1>🎉 GANA YA!</h1>
-    <img src="logo_1_entrada.png" alt="Logo">
-</header>
-
-<div id="bolsa">💰 Bolsa: $0.00</div>
-
-<!-- Área de control -->
-<div style="text-align:center; margin:10px;">
-    <button id="modo4" class="active">4 CARTAS</button>
-    <button id="modo6">6 CARTAS</button>
-</div>
-
-<!-- Cartas de jugadores -->
-<div id="cartas-jugadores"></div>
-
-<!-- Modales -->
-<div id="modal-detalle" class="modal">
-    <div class="modal-content">
-        <span class="modal-close">&times;</span>
-        <div id="detalle-jugador"></div>
-        <button id="tomar-captura">📸 TOMAR CAPTURA</button>
-    </div>
-</div>
-
-<!-- Script principal -->
+<!-- Asumiendo que esto va al final del body, tras tu bloque HTML principal -->
+<canvas id="confetti-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;display:none;z-index:9999"></canvas>
 <script>
-// --- Variables ---
-let modo = 4; // 4 o 6 cartas
-let ultimaID = 234; // empieza desde GanaYA!-0234
-let jugadores = []; // array de jugadores
+/********************
+ Variables principales
+********************/
+let game = { deck: Array.from({length:54},(_,i)=>i+1), drawn: [], current: null };
+let purchases = [], winners = [], cartasPasadas = [], tx = [];
+let isAuto = false, autoInterval = null, animShuffling = false;
+let prices = {price4:50,profit4:20,price6:75,profit6:30,price8:100,profit8:40};
+let lastPlayerId = 0; // para generar IDs GanaYA!
 
-// --- Funciones auxiliares ---
-function generarID() {
-    let id = "GanaYA!-"+(ultimaID++).toString().padStart(4,'0');
-    return id;
+/********************
+ Funciones auxiliares
+********************/
+function uuid(){ return 'xxxx-xxxx'.replace(/[xy]/g,c=>{ const r=Math.random()*16|0; return r.toString(16); }); }
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function formatMoney(v){ return '$'+(v||0).toFixed(2); }
+function cardName(id){ const names=['El Gallo','La Dama','El Valiente','El Catrín','El Paraguas','La Sirena','La Escalera','La Botella','El Barril','El Árbol','El Melón','El Valiente','La Bandera','El Pino','La Chalupa','El Mundo','El Apache','El Nopal','El Corazón','La Sandía','El Tambor','El Camarón','El Sol','La Luna','La Corona','El Bandolón','El Violoncello','La Jarana','El Gallo II','La Dama II','El Valiente II','La Rosa','El Sol II','La Luna II','El Catrín II','La Chalupa II','El Pescado','El Diablito','La Estrella','El Gallo III','La Dama III','El Valiente III','La Bandera II','El Pino II','La Chalupa II','El Mundo II','El Apache II','El Nopal II','El Corazón II','La Sandía II','El Tambor II']; return names[(id-1)%names.length]||`Carta-${id}`; }
+function cardImageUrl(id){ return `cards/${id}.png`; }
+
+/********************
+ Animaciones y confeti
+********************/
+let confettiInterval=null;
+function startConfettiFullScreen(){
+  const canvas=document.getElementById('confetti-canvas'); canvas.style.display='block';
+  const ctx=canvas.getContext('2d'); const w=canvas.width=window.innerWidth; const h=canvas.height=window.innerHeight;
+  const colors=['#e63946','#ffd60a','#2a9d8f','#ff9e00','#ff6bcb','#6d9df5'];
+  let conf=Array.from({length:220},()=>({x:Math.random()*w,y:Math.random()*-h,r:Math.random()*6+3,c:colors[Math.floor(Math.random()*colors.length)],s:Math.random()*3+2,rrot:Math.random()*6}));
+  function draw(){ ctx.clearRect(0,0,w,h); conf.forEach(c=>{ ctx.save(); ctx.translate(c.x,c.y); ctx.rotate(c.rrot); ctx.fillStyle=c.c; ctx.fillRect(-c.r,-c.r,c.r*2,c.r*2); ctx.restore(); c.y+=c.s; c.x+=Math.sin(c.y*0.01)*2; if(c.y>h+30){ c.y=-20; c.x=Math.random()*w; } }); }
+  if(confettiInterval) clearInterval(confettiInterval);
+  confettiInterval=setInterval(draw,20);
+  setTimeout(stopConfettiFullScreen,6000);
+}
+function stopConfettiFullScreen(){ if(confettiInterval) clearInterval(confettiInterval); const c=document.getElementById('confetti-canvas'); c.style.display='none'; }
+
+/********************
+ Render y animaciones de cartas
+********************/
+function renderAll(){
+  renderCurrentCard();
+  renderLastCards();
+  renderPlayersTable();
+  saveAll();
+}
+function renderCurrentCard(){
+  const cur=document.getElementById('current-card');
+  if(cur){
+    if(game.current){
+      cur.innerHTML=`<div style="width:160px;height:220px;background-image:url('${cardImageUrl(game.current)}');background-size:contain;background-repeat:no-repeat;background-position:center;border:2px solid gold;box-shadow:0 0 20px #ffd700;"></div>`;
+    } else cur.innerHTML='<div class="small-muted">Esperando barajeo...</div>';
+  }
+}
+function renderLastCards(){
+  const last=(game.drawn||[]).slice(-3).reverse();
+  const lastEl=document.getElementById('last-cards');
+  if(lastEl){
+    lastEl.innerHTML = last.length ? last.map(c=>`<div style="width:64px;height:96px;background-image:url('${cardImageUrl(c)}');background-size:cover;border-radius:6px;margin:0 2px;border:1px solid #ccc"></div>`).join('') : '<div class="small-muted">Ninguna carta aún.</div>';
+  }
 }
 
-function crearJugador(nombre, numPartidas) {
-    let nuevasPartidas = [];
-    for(let i=0;i<numPartidas;i++){
-        let id = generarID();
-        let cartas = generarCartas(modo);
-        nuevasPartidas.push({id:id, cartas:cartas, estado:"POR PAGAR"});
+/********************
+ Registro de jugador con WhatsApp
+********************/
+function registerPlayer(){
+  const name=document.getElementById('input-name').value.trim();
+  const cell=document.getElementById('input-cell').value.trim();
+  const clabe=document.getElementById('input-clabe').value.trim();
+  const budgetRaw=document.getElementById('input-budget').value;
+  const budget = budgetRaw===''?0:parseFloat(budgetRaw||0);
+  const q4=parseInt(document.getElementById('qty4').value||0), q6=parseInt(document.getElementById('qty6').value||0), q8=parseInt(document.getElementById('qty8').value||0);
+  if(!name) return alert('Captura el nombre'); if(!cell) return alert('Captura el celular');
+  if(q4+q6+q8<=0) return alert('Selecciona al menos una partida (cantidad)');
+  const needed = q4*prices.price4 + q6*prices.price6 + q8*prices.price8;
+  if(budget < needed) return alert(`El presupuesto no alcanza. Se requiere ${formatMoney(needed)}.`);
+  if(budget > needed) return alert(`Hay sobrante de ${formatMoney(budget-needed)}. Ajusta cantidades o presupuesto.`);
+  // Crear compras separadas
+  const parts=[];
+  if(q4>0) parts.push({modality:4,qty:q4,price:prices.price4});
+  if(q6>0) parts.push({modality:6,qty:q6,price:prices.price6});
+  if(q8>0) parts.push({modality:8,qty:q8,price:prices.price8});
+  let whatsappMsg=`¡Bienvenido a GANA YA! 🎉\nTus partidas han sido registradas:\n`;
+  parts.forEach(pt=>{
+    for(let i=0;i<pt.qty;i++){
+      lastPlayerId++;
+      const idSeq = 'GanaYA!-'+String(1000+lastPlayerId).slice(-4);
+      const p={id:uuid(),playerName:name,cell:cell,clabe:clabe,modality:pt.modality,initialGames:1,gamesLeft:1,totalPaid:pt.price,wins:0,state:'JUGANDO',card:[],markedCards:[],selectionUsed:true,createdAt:Date.now(),seqId:idSeq};
+      p.card=generateCardForPurchase(pt.modality);
+      purchases.push(p);
+      tx.push({id:uuid(),type:'purchase',player:name,modality:pt.modality,amount:pt.price,purchaseId:p.id,ts:Date.now()});
+      whatsappMsg+=`${idSeq}\nCartas asignadas: ${p.card.map(c=>cardName(c)).join(', ')}\n\n`;
     }
-    jugadores.push({nombre:nombre, partidas:nuevasPartidas});
-    abrirWhatsAppRegistro(nombre, nuevasPartidas);
-    renderCartas();
+  });
+  saveAll(); renderAll();
+  // Abrir WhatsApp
+  window.open(`https://wa.me/${cell}?text=${encodeURIComponent(whatsappMsg)}`,'_blank');
+  // Limpiar campos
+  document.getElementById('input-name').value=''; document.getElementById('input-cell').value=''; document.getElementById('input-clabe').value=''; document.getElementById('input-budget').value=''; document.getElementById('qty4').value='0'; document.getElementById('qty6').value='0'; document.getElementById('qty8').value='0';
+  alert('Jugador(s) registrado(s) y cartas asignadas automáticamente.');
 }
 
-// Genera cartas aleatorias
-const todasCartas = ["El Gallo","La Dama","El Valiente","La Rosa","El Nopal","La Luna","El Cotorro","El Venado","El Apache","La Bandera","El Pino","La Chalupa","El Mundo","El Barril","El Pescado","El Tambor","La Calavera","El Camarón","La Muerte","La Pera","La Mano","La Sirena","El Arpa"];
-function generarCartas(cantidad){
-    let seleccionadas = [];
-    while(seleccionadas.length < cantidad){
-        let carta = todasCartas[Math.floor(Math.random()*todasCartas.length)];
-        if(!seleccionadas.includes(carta)) seleccionadas.push(carta);
-    }
-    return seleccionadas;
+/********************
+ Generación de cartas
+********************/
+function generateCardForPurchase(modality){
+  const assigned = new Set(); const pool = Array.from({length:54},(_,i)=>i+1); const out=[];
+  while(out.length<modality && pool.length){
+    const idx=Math.floor(Math.random()*pool.length);
+    const v=pool.splice(idx,1)[0];
+    if(!assigned.has(v)){ assigned.add(v); out.push(v); }
+  }
+  return out;
 }
 
-// Render cartas
-function renderCartas(){
-    let cont = document.getElementById('cartas-jugadores');
-    cont.innerHTML = "";
-    jugadores.forEach(j=>{
-        j.partidas.forEach(p=>{
-            let div = document.createElement('div');
-            div.className = "carta";
-            div.textContent = p.id;
-            if(p.estado === "GANADOR") div.classList.add("ganadora");
-            div.onclick = ()=>abrirModalDetalle(j,p);
-            cont.appendChild(div);
-        });
-    });
-}
+/********************
+ Pago y carta de la suerte
+********************/
+window.markPaidById = function(id){
+  const p=purchases.find(x=>x.id===id); if(!p) return alert('No encontrado'); if(p.state!=='POR PAGAR') return alert('Solo marcar si está POR PAGAR');
+  p.state='PAGADO'; p.paidAt=Date.now();
+  winners=winners.map(w=> w.purchaseId===id? {...w,paid:true}:w);
+  tx.push({id:uuid(),type:'mark_paid',purchaseId:id,ts:Date.now()});
+  saveAll(); renderAll();
+  // Mensaje WhatsApp con carta de la suerte
+  if(p.wins>0){
+    const msg=`Hola ${p.playerName},\nse ha realizado tu pago de ${formatMoney(p.totalPaid)}\na la cuenta ${p.clabe} el ${new Date().toLocaleString()}.\n\nTu carta de la suerte en esta partida fue:\n🌟 ${cardName(p.card[0])} 🌟\n\n¡Felicidades por tu premio en GANA YA! 🎉🇲🇽`;
+    navigator.clipboard.writeText(p.clabe||'');
+    window.open(`https://wa.me/${p.cell}?text=${encodeURIComponent(msg)}`,'_blank');
+  }
+  alert('Marcado como PAGADO y WhatsApp listo.');
+};
 
-// Modal detalle jugador
-let modal = document.getElementById('modal-detalle');
-let span = document.querySelector('.modal-close');
-span.onclick = ()=>modal.style.display = "none";
-window.onclick = e=>{if(e.target==modal) modal.style.display="none";}
-window.addEventListener("keydown", e=>{if(e.key==="Escape") modal.style.display="none";});
+/********************
+ Guardado local
+********************/
+function saveAll(){ localStorage.setItem('purchases',JSON.stringify(purchases)); localStorage.setItem('game',JSON.stringify(game)); localStorage.setItem('winners',JSON.stringify(winners)); localStorage.setItem('cartasPasadas',JSON.stringify(cartasPasadas)); localStorage.setItem('tx',JSON.stringify(tx)); }
 
-function abrirModalDetalle(jugador, partida){
-    let detalle = document.getElementById('detalle-jugador');
-    detalle.innerHTML = `<h3>${jugador.nombre} - ${partida.id}</h3>
-    <p>Cartas asignadas: ${partida.cartas.join(", ")}</p>
-    <p>Estado: ${partida.estado}</p>
-    <button onclick="marcarPagado('${jugador.nombre}','${partida.id}')">✅ MARCAR PAGADO</button>`;
-    modal.style.display = "block";
-}
-
-// WhatsApp registro
-function abrirWhatsAppRegistro(nombre, partidas){
-    let mensaje = `¡Bienvenido a GANA YA! 🎉\nTus partidas han sido registradas:\n\n`;
-    partidas.forEach(p=>{
-        mensaje += `${p.id}\nCartas asignadas: ${p.cartas.join(", ")}\n\n`;
-    });
-    mensaje += "¡Mucha suerte! 🎴";
-    let tel = prompt("Número de WhatsApp del jugador (solo números, sin +):");
-    if(tel) window.open(`https://wa.me/52${tel}?text=${encodeURIComponent(mensaje)}`,'_blank');
-}
-
-// Marcar pagado
-function marcarPagado(nombre,id){
-    jugadores.forEach(j=>{
-        if(j.nombre===nombre){
-            j.partidas.forEach(p=>{
-                if(p.id===id){
-                    p.estado="PAGADO";
-                    abrirWhatsAppPago(nombre,p);
-                }
-            });
-        }
-    });
-    renderCartas();
-    modal.style.display=false;
-}
-
-// WhatsApp pago
-function abrirWhatsAppPago(nombre,partida){
-    let mensaje = `Hola ${nombre},\nse ha realizado tu pago de $${partida.monto || 0}\na la cuenta [CLABE] el ${new Date().toLocaleDateString()}.\n\nTu carta de la suerte en esta partida fue:\n🌟 ${partida.cartas[partida.cartas.length-1]} 🌟\n\n¡Felicidades por tu premio en GANA YA! 🎉🇲🇽`;
-    let tel = prompt("Número de WhatsApp del jugador (solo números, sin +) para pago:");
-    if(tel) window.open(`https://wa.me/52${tel}?text=${encodeURIComponent(mensaje)}`,'_blank');
-}
-
-// Tomar captura
-document.getElementById('tomar-captura').onclick = ()=>{
-    let detalle = document.getElementById('detalle-jugador');
-    html2canvas(detalle).then(canvas=>{
-        let a = document.createElement('a');
-        a.href = canvas.toDataURL("image/png");
-        a.download = `detalle_${detalle.querySelector('h3').textContent}.png`;
-        a.click();
-        alert("✅ Captura guardada como imagen");
-    });
-}
-
-// Cambiar modo
-document.getElementById('modo4').onclick=()=>{
-    modo=4;
-    document.getElementById('modo4').classList.add('active');
-    document.getElementById('modo6').classList.remove('active');
-}
-document.getElementById('modo6').onclick=()=>{
-    modo=6;
-    document.getElementById('modo6').classList.add('active');
-    document.getElementById('modo4').classList.remove('active');
-}
-
-// --- Librería html2canvas para capturas ---
-let script = document.createElement('script');
-script.src = "https://html2canvas.hertzen.com/dist/html2canvas.min.js";
-document.body.appendChild(script);
+/********************
+ Inicialización
+********************/
+document.addEventListener('DOMContentLoaded',()=>{
+  renderAll();
+});
 </script>
-
-</body>
-</html>

@@ -16,28 +16,24 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 .container{ 
   max-width:1200px; 
   margin:8px auto; 
-  padding:0 8px; /* Padding horizontal general para el contenido */
-  position: relative; /* Necesario para los FAB */
+  padding:0 8px; 
+  position: relative; 
 }
 
-/* AJUSTE CLAVE: Contenedor para la barra superior de Controles */
-.top-controls-row {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 12px;
+/* NUEVA ESTRUCTURA DE ENCABEZADO */
+.main-header {
     margin-bottom: 8px;
-    padding: 0 8px; /* Alineación con el resto del contenido */
+    padding: 0 8px; 
 }
 
-.header-row-top{ 
-  display:grid; 
-  grid-template-columns: 280px 1fr; /* Logo (280px) | Título (1fr) */
-  gap:8px; 
-  align-items:center; 
-  margin-bottom:4px; 
-  padding: 0 8px; /* Alineación con el resto del contenido */
-} 
+/* Barra superior: Logo y Controles (Bolsa/Admin) */
+.header-top-bar {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    height: 96px; 
+    margin-bottom: 8px; 
+}
 
 .logo-box-wrapper{
   display: flex;
@@ -49,12 +45,11 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 
 .logo-box img{ width:96px; height:96px; object-fit:contain; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.12); }
 
-.title-box{ 
-  display:flex; 
-  align-items:center; 
-  gap:12px; 
-  justify-content:center; 
-} 
+/* TÍTULO: Ahora es un bloque centrado de ancho completo */
+.title-container {
+    text-align: center;
+    margin-bottom: 8px;
+}
 
 .title { 
   font-size:50px; 
@@ -70,20 +65,18 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 @keyframes fiesta { 0%{ color:#e63946 }15%{ color:var(--accent1) }30%{ color:#2a9d8f }45%{ color:#6d9df5 }60%{ color:var(--accent2) }75%{ color:#ff9e00 }100%{ color:#e63946 } }
 
 
-/* AJUSTE CLAVE: Ancho fijo para las columnas y reducción de gap/margin */
+/* MAIN GRID */
 .main-grid{ display:grid; grid-template-columns: 280px 1fr 400px; gap:8px; align-items:start; margin-top:8px; 
-  padding: 0 8px; /* Alineación con el resto del contenido */
+  padding: 0 8px; 
 }
 @media(max-width:1200px){ .main-grid{ grid-template-columns:1fr; } }
 
 .mex-frame{ background:#fff; border-radius:12px; padding:10px; border:4px solid var(--rojo); box-shadow:var(--sombra); }
 .mex-frame-small{ background:#fff; border-radius:10px; padding:10px; border:3px solid var(--rojo); box-shadow:0 6px 14px rgba(0,0,0,.06); }
 
-/* AJUSTE UX: Centrar contenido de mex-frame-small por defecto */
 #control-partida { text-align: center; }
 #control-partida h3 { text-align: center; }
 
-/* AJUSTE CLAVE: Forzar centrado del selector de modalidad y texto interno */
 #control-partida select {
     display: block !important;
     margin: 0 auto !important;
@@ -92,7 +85,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
     text-align-last: center; 
 }
 
-/* Los controles de Bolsa/Admin que ahora estan en .top-controls-row */
+/* Controles de Bolsa/Admin */
 .header-controls{ 
   display:flex; 
   gap:12px; 
@@ -111,7 +104,6 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 .toggle-play{ background:#1565d8;color:white; }
 .toggle-admin{ background:#f3f4f6;color:#111; }
 
-/* AJUSTE CLAVE: Forzar 5 columnas de jugadores */
 .players-grid{ display:grid; grid-template-columns: repeat(5,1fr); gap:8px; align-items:start; }
 @media(max-width:1100px){ .players-grid{ grid-template-columns: repeat(4,1fr); } }
 @media(max-width:900px){ .players-grid{ grid-template-columns: repeat(3,1fr); } }
@@ -122,7 +114,6 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 .player-name{ font-weight:900; margin-top:4px; font-size:15px; }
 .player-cards{ margin-top:8px; display:flex; flex-direction:column; gap:6px; align-items:center; overflow:hidden; }
 
-/* AJUSTE CLAVE: Estilo para la simulación de espacios vacíos */
 .player-card.simulated {
   cursor:default; 
   opacity:1; 
@@ -244,10 +235,11 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
   transition: transform 0.3s ease-in-out;
 }
 
-/* ESTILOS FAB (FLOTANTE CIRCULAR) */
+/* ESTILOS FAB (FLOTANTE CIRCULAR) - AJUSTES DE TAMAÑO Y POSICIÓN */
 .fab-container {
     position: fixed;
-    bottom: 24px;
+    /* Subimos la posición para que no quede tan abajo */
+    bottom: 120px; 
     right: 24px;
     z-index: 1000;
     display: flex;
@@ -255,15 +247,17 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
     gap: 12px;
 }
 .fab-button {
-    width: 56px;
-    height: 56px;
+    /* Aumentamos el tamaño */
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
     border: none;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    /* Aumentamos el tamaño del ícono */
+    font-size: 28px;
     cursor: pointer;
     transition: transform 0.15s ease, opacity 0.3s ease;
     color: white;
@@ -277,7 +271,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 }
 #fab-reset-day {
     background: var(--rojo); /* Rojo para Reiniciar */
-    font-size: 20px;
+    font-size: 24px; /* Ajuste para el ícono de escoba */
 }
 </style>
 </head>
@@ -285,25 +279,28 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 
 <div class="container">
 
-  <div class="top-controls-row">
-    <div class="bolsa-compact">
-      <div style="font-weight:900" id="bolsa-label">💰 Bolsa</div>
-      <div class="amount" id="bolsa-amount">$0.00</div>
-    </div>
-    <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
-    <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
-  </div>
-  <div class="header-row-top">
-    <div class="logo-box-wrapper">
-        <div class="logo-box"><img id="logo-img" src="logo_1_entrada.png" alt="logo"></div>
-    </div>
-    <div class="title-box">
-      <div>
-        <div class="title">🎉 GANA YA!</div>
-        <div class="subtitle">Gana Ya! es una página de carácter interactivo y de entretenimiento.</div>
+  <header class="main-header">
+      
+      <div class="header-top-bar">
+          <div class="logo-box-wrapper">
+              <div class="logo-box"><img id="logo-img" src="logo_1_entrada.png" alt="logo"></div>
+          </div>
+
+          <div class="header-controls">
+              <div class="bolsa-compact">
+                  <div style="font-weight:900" id="bolsa-label">💰 Bolsa</div>
+                  <div class="amount" id="bolsa-amount">$0.00</div>
+              </div>
+              <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
+              <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
+          </div>
       </div>
-    </div>
-  </div>
+      
+      <div class="title-container">
+          <div class="title">🎉 GANA YA!</div>
+          <div class="subtitle">Gana Ya! es una página de carácter interactivo y de entretenimiento.</div>
+      </div>
+  </header>
   <div class="main-grid" id="main-grid">
 
     <aside class="mex-frame-small winners" id="winners-panel" aria-label="Últimos Ganadores">
@@ -413,15 +410,15 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 <canvas id="confetti-canvas"></canvas>
 
 <script>
-/* index_v9.4_efx_perfecto v3.16-FINAL - code block */
+/* index_v9.4_efx_perfecto v3.18-FINAL - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
-const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",49:"49 el pino-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg"};
+const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg",49:"49 el pino-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
 
 const Kp='ganya_v90_prices', Kg='ganya_v90_game', Kpu='ganya_v90_purchases', Ktx='ganya_v90_tx', Kw='ganya_v90_winners', Kpas='ganya_v90_pas', Kmod='ganya_v90_mod';
 
 const defaultsPrices=()=>({price4:10,profit4:2,price6:12,profit6:3});
-const defaultsGame=()=>({deck:Array.from({length:54},(_,i)=>i+1),drawn:[],current:0,pending:[],winnerPending:false});
+const defaultsGame=()=>({deck:Array.from({length:54},(_,i)=>i+1),drawn:[],current:0,pending:[]});
 
 let prices = load(Kp) || defaultsPrices();
 let game = load(Kg) || defaultsGame();
@@ -430,7 +427,7 @@ let tx = load(Ktx) || [];
 let winners = load(Kw) || [];
 let cartasPasadas = load(Kpas) || [];
 let currentMode = Number(localStorage.getItem(Kmod) || 4);
-if(currentMode===8) currentMode=4; // Corrección por si hay datos viejos de 8 cartas
+if(currentMode===8) currentMode=4; 
 
 let isAuto=false, autoInterval=null, animShuffling=false;
 let audioCtx=null; try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ audioCtx=null; }
@@ -477,9 +474,17 @@ function renderAll(){
   if (isAdminView) {
       if (mainGridEl) mainGridEl.style.display = 'none';
       if (fabControlsEl) fabControlsEl.classList.remove('hidden');
+      document.getElementById('btn-view-admin').classList.add('toggle-play');
+      document.getElementById('btn-view-admin').classList.remove('toggle-admin');
+      document.getElementById('btn-view-play').classList.remove('toggle-play');
+      document.getElementById('btn-view-play').classList.add('toggle-admin');
   } else {
       if (mainGridEl) mainGridEl.style.display = 'grid';
       if (fabControlsEl) fabControlsEl.classList.add('hidden');
+      document.getElementById('btn-view-play').classList.add('toggle-play');
+      document.getElementById('btn-view-play').classList.remove('toggle-admin');
+      document.getElementById('btn-view-admin').classList.remove('toggle-play');
+      document.getElementById('btn-view-admin').classList.add('toggle-admin');
   }
 
   let potAmount = 0;
@@ -493,7 +498,7 @@ function renderAll(){
     potLabelText = '💰 Casa';
   } else {
     const activeForPot = purchases.filter(p=> 
-      (p.state==='JUGANDO' || p.state==='POR PAGAR') && // FIX: Incluir POR PAGAR en el cálculo de la bolsa activa
+      (p.state==='JUGANDO' || p.state==='POR PAGAR') && 
       (p.gamesLeft||0)>0 &&
       p.modality === currentMode 
     );
@@ -509,7 +514,7 @@ function renderAll(){
   const deckCount=document.getElementById('deck-count'); if(deckCount) deckCount.textContent=game.deck.length;
 
   const area=document.getElementById('players-area');
-  const active = purchases.filter(p=> (p.gamesLeft||0)>0 && (p.state==='JUGANDO' || p.state==='POR PAGAR') && p.modality===currentMode); // FIX: Incluir POR PAGAR en la vista de jugadores
+  const active = purchases.filter(p=> (p.gamesLeft||0)>0 && (p.state==='JUGANDO' || p.state==='POR PAGAR') && p.modality===currentMode); 
   
   const maxPlayersInRow = 5;
   let numActive = active.length;
@@ -772,7 +777,7 @@ function processCard(cardId){
     winnersFound.forEach(w=>{
       const p=purchases[w.idx];
       p.wins=(p.wins||0)+1;
-      p.state='POR PAGAR'; // FIX CLAVE: Cambia a POR PAGAR
+      p.state='POR PAGAR'; 
       const rec={id:uuid(),purchaseId:p.id,playerName:p.playerName,amount:share,timestamp:Date.now(),paid:false,cardId:cardId,clabe:p.clabe||'',cell:p.cell||''};
       winners.push({timestamp:rec.timestamp,playerName:rec.playerName,amount:rec.amount,cardId:rec.cardId,paid:false,purchaseId:p.id});
       tx.push({id:uuid(),type:'winner',player:p.playerName,amount:share,ts:Date.now()});
@@ -877,13 +882,22 @@ function registerPlayer(){
 }
 
 function resetGame(){
-  if(!confirm('Iniciar un juego nuevo: se reiniciará el mazo y se quitará 1 partida a los jugadores **en estado JUGANDO**. ¿Continuar?')) return;
+  if(!confirm('Iniciar un juego nuevo: se reiniciará el mazo y se quitará 1 partida a los jugadores **de la modalidad en juego (JUGANDO o POR PAGAR)**. ¿Continuar?')) return;
   stopAuto();
   purchases.forEach(p=>{
-    if(p.state==='JUGANDO'){ // FIX CLAVE: SOLO descontar a los que están JUGANDO
-      p.gamesLeft = Math.max(0,(p.gamesLeft||0)-1);
-      if(p.gamesLeft<=0) p.state='FINALIZADO';
+    // 1. Deduce solo si el jugador está en la modalidad en juego
+    if (p.modality === currentMode) {
+        
+        // 2. Deduce si está JUGANDO (uso normal) o si ganó (POR PAGAR)
+        if(p.state==='JUGANDO' || p.state==='POR PAGAR'){ 
+          
+            p.gamesLeft = Math.max(0,(p.gamesLeft||0)-1);
+            
+            // 3. Si un jugador JUGANDO se queda sin partidas, FINALIZA.
+            if(p.gamesLeft<=0 && p.state==='JUGANDO') p.state='FINALIZADO';
+        }
     }
+    
     p.markedCards=[];
   });
   game.deck = Array.from({length:54},(_,i)=>i+1);
@@ -923,8 +937,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('reset-prices').addEventListener('click', ()=>{ if(!confirm('Restablecer precios por defecto?')) return; prices=defaultsPrices(); saveAll(); renderAll(); });
 
   // Eventos de botones de vista (EN JUEGO / ADMINISTRADOR)
-  document.getElementById('btn-view-play').addEventListener('click', ()=>{ document.getElementById('view-admin').classList.add('hidden'); document.getElementById('btn-view-play').classList.add('active'); document.getElementById('btn-view-admin').classList.remove('active'); renderAll(); });
-  document.getElementById('btn-view-admin').addEventListener('click', ()=>{ document.getElementById('view-admin').classList.remove('hidden'); document.getElementById('btn-view-admin').classList.add('active'); document.getElementById('btn-view-play').classList.remove('active'); renderAll(); });
+  document.getElementById('btn-view-play').addEventListener('click', ()=>{ document.getElementById('view-admin').classList.add('hidden'); renderAll(); });
+  document.getElementById('btn-view-admin').addEventListener('click', ()=>{ document.getElementById('view-admin').classList.remove('hidden'); renderAll(); });
 
   document.getElementById('select-modality').addEventListener('change', (e)=>{ currentMode = Number(e.target.value); localStorage.setItem(Kmod,String(currentMode)); renderAll(); });
 
@@ -958,7 +972,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   document.getElementById('winner-detail-ok').addEventListener('click', closeWinnerDetailModal);
   document.getElementById('winner-detail-close-x').addEventListener('click', closeWinnerDetailModal);
-  document.getElementById('modal-winner-detail-back').addEventListener('click', (e)=>{ if(e.target.id==='modal-winner-detail-back') closeWinnerDetailModal(); });
+  document.getElementById('modal-winner-detail-back').addEventListener('click', (e)=>{ if(e.target.id!=='modal-winner-detail-back') closeWinnerDetailModal(); });
 
 
   document.addEventListener('keydown', (e)=>{

@@ -2,7 +2,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎴 GANA YA! - Lotería Interactiva Mexicana (v9.7)</title>
+<title>🎴 GANA YA! - Lotería Interactiva Mexicana (v9.8)</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ff6bcb'/%3E%3Ctext x='50%25' y='55%25' font-size='18' font-family='Arial' fill='white' text-anchor='middle' font-weight='700'%3EG%3C/text%3E%3C/svg%3E">
 <style>
 /* VARIABLES DE COLOR */
@@ -43,7 +43,7 @@ body{
 /* ENCABEZADO */
 .main-header {
     display: flex;
-    align-items: center; 
+    align-items: flex-start; /* Alineación arriba para que los controles no empujen el título */
     justify-content: space-between;
     height: 96px; 
     margin-bottom: 8px;
@@ -73,6 +73,7 @@ body{
     text-align: center;
     pointer-events: none; 
     z-index: 5;
+    padding-top: 10px; /* Ajuste para centrar visualmente el título */
 }
 
 .title { 
@@ -108,7 +109,7 @@ body{
   display:grid;
   grid-template-columns: 280px 1fr 400px; 
   gap:8px; 
-  align-items:start; 
+  align-items:start; /* Alineación superior */
   margin-top:8px;
   padding: 0 8px; 
 }
@@ -144,16 +145,16 @@ body{
     text-align-last: center;
 }
 
-/* CONTROLES DE BOLSA/ADMIN */
+/* CONTROLES DE BOLSA/ADMIN (MOVIDOS AL HEADER) */
 .header-controls-wrapper {
   display: flex;
   align-items: center; 
   justify-content: flex-end; 
-  padding-top: 24px;
-  padding-bottom: 8px;
+  padding-top: 10px; /* Pequeño ajuste en el header */
   padding-right: 8px;
   z-index: 10;
-  width: 100%; 
+  width: auto; 
+  flex-shrink: 0;
 }
 
 .header-controls{ 
@@ -322,7 +323,9 @@ body{
   }
   @keyframes shineMove{ 100% { left:140%; } }
 
-.card-thumb.passed{ filter:grayscale(0.4) brightness(.7); }
+/* APLICAR BLANCO Y NEGRO/DIMMING A CARTAS YA PASADAS */
+.card-thumb.passed{ filter:grayscale(1) brightness(0.6); }
+
 .sticker{ 
   position:absolute; 
   inset:0; 
@@ -542,41 +545,19 @@ body{
   transition: transform 0.3s ease-in-out;
 }
 
-/* ESTILOS FAB (FLOTANTE CIRCULAR) */
-.fab-container {
-    position: fixed;
-    bottom: 120px; 
-    right: 24px;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+/* ESTILOS DE BOTONES DE ACCIÓN EN ADMIN */
+.admin-actions-top{
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 8px;
 }
-.fab-button {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    border: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    cursor: pointer;
-    transition: transform 0.15s ease, opacity 0.3s ease;
-    color: white;
-    font-weight: 900;
+.admin-actions-top .btn{
+  padding: 6px 10px;
 }
-.fab-button:hover {
-    transform: scale(1.08);
-}
-#fab-export {
-    background: var(--azul); 
-}
-#fab-reset-day {
-    background: var(--rojo);
-    font-size: 24px;
-}
+
 </style>
 </head>
 <body>
@@ -594,7 +575,17 @@ body{
           <div class="subtitle">Gana Ya! es una página de carácter interactivo y de entretenimiento.</div>
       </div>
       
-      <div style="width: 96px; flex-shrink: 0; padding-right: 8px;"></div>
+      <div class="header-controls-wrapper">
+          <div class="header-controls">
+              <div class="bolsa-compact">
+                  <div style="font-weight:900" id="bolsa-label">💰 Bolsa</div>
+    
+                  <div class="amount" id="bolsa-amount">$0.00</div>
+              </div>
+              <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
+              <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
+          </div>
+      </div>
   </header>
   
   <div class="main-grid" id="main-grid">
@@ -613,18 +604,6 @@ body{
     </section>
 
     <aside class="controls-panel" id="controls-panel">
-      
-      <div class="header-controls-wrapper">
-          <div class="header-controls">
-              <div class="bolsa-compact">
-                  <div style="font-weight:900" id="bolsa-label">💰 Bolsa</div>
-    
-                  <div class="amount" id="bolsa-amount">$0.00</div>
-              </div>
-              <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
-              <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
-          </div>
-      </div>
       
       <div class="mex-frame-small" aria-label="Control de partida" id="control-partida" style="margin-top:0px"> 
  
@@ -705,7 +684,7 @@ body{
           <input id="input-name" placeholder="Nombre completo" class="input">
           <input id="input-cell" placeholder="Celular (ej. 5512345678)" class="input">
           <input id="input-clabe" placeholder="CLABE / Cuenta" class="input">
-          <input id="input-budget" placeholder="Ingresa presupuesto" class="input" type="number" min="0" value="">
+          <input id="input-budget" placeholder="Ingresa presupuesto (Auto-Calcula)" class="input" type="number" min="0" value="">
           <div style="display:flex; gap:4px;">
             <div style="flex:1">
               <label class="small-muted">4 cartas - Cantidad</label>
@@ -725,14 +704,23 @@ body{
     </div>
 
     <div style="margin-top:8px" class="mex-frame-small">
-      <div style="display:flex; gap:8px; align-items:center; justify-content:space-between;">
-        <div style="font-weight:900">Administración de Jugadores / Compras</div>
-        <div class="admin-actions">
-          <button id="filter-all" class="filter-btn filter-all filter-btn active-all">VER TODO</button>
-          <button id="filter-4" class="filter-btn">4 CARTAS</button>
-          <button id="filter-6" class="filter-btn">6 CARTAS</button>
-        </div>
+      <div style="display:flex; flex-wrap: wrap; gap: 8px; align-items:center; justify-content:space-between; margin-bottom:8px">
+          <div style="font-weight:900">Administración de Jugadores / Compras</div>
+          <div class="admin-actions-top">
+              <button id="btn-export" class="btn btn-blue" title="Generar PDF (Con logo)">📄 Generar PDF</button>
+              <button id="btn-reset-day" class="btn btn-red" title="Reiniciar Día">🧹 Reiniciar Día</button>
+          </div>
       </div>
+
+      <div style="display:flex; gap:8px; align-items:center; justify-content:flex-start;">
+          <div style="font-weight:700; font-size:14px;">Filtro:</div>
+          <div class="admin-actions">
+            <button id="filter-all" class="filter-btn filter-all filter-btn active-all">VER TODO</button>
+            <button id="filter-4" class="filter-btn">4 CARTAS</button>
+            <button id="filter-6" class="filter-btn">6 CARTAS</button>
+          </div>
+      </div>
+      
       <div class="table-wrap" style="margin-top:6px">
         <table style="width:100%; border-collapse:collapse;">
           <thead style="background:#f8f8ff; position:sticky; top:0">
@@ -757,11 +745,6 @@ body{
     </div>
   </section>
   
-  <div class="fab-container hidden" id="fab-controls-admin">
-    <button id="fab-export" class="fab-button" title="Generar PDF (Con logo)">📄</button>
-    <button id="fab-reset-day" class="fab-button" title="Reiniciar Día">🧹</button>
-  </div>
-
   <footer style="text-align:center; margin-top:8px; padding-bottom:8px;" class="small-muted">Coloca <strong>logo_1_entrada.png</strong> en la raíz y la carpeta <strong>Cartas_baraja_loteria/</strong> con las 54 imágenes.</footer>
 </div>
 
@@ -773,13 +756,14 @@ body{
 <canvas id="confetti-canvas"></canvas>
 
 <script>
-/* index_v9.7_final - code block */
+/* index_v9.8_final - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
 const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg",49:"49 el pino-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
 
-const Kp='ganya_v90_prices', Kg='ganya_v90_game', Kpu='ganya_v90_purchases', Ktx='ganya_v90_tx', Kw='ganya_v90_winners', Kpas='ganya_v90_pas', Kmod='ganya_v90_mod';
-const Kid='ganya_v90_id_counter'; // Nuevo: Contador de ID secuencial
+// Se cambia el nombre de Kpas a Kdig (drawn in game) para mayor claridad
+const Kp='ganya_v90_prices', Kg='ganya_v90_game', Kpu='ganya_v90_purchases', Ktx='ganya_v90_tx', Kw='ganya_v90_winners', Kdig='ganya_v90_dig', Kmod='ganya_v90_mod';
+const Kid='ganya_v90_id_counter'; 
 const defaultsPrices=()=>({price4:10,profit4:2,price6:12,profit6:3});
 const defaultsGame=()=>({deck:Array.from({length:54},(_,i)=>i+1),drawn:[],current:0,pending:[]});
 
@@ -788,10 +772,10 @@ let game = load(Kg) || defaultsGame();
 let purchases = load(Kpu) || [];
 let tx = load(Ktx) || [];
 let winners = load(Kw) || [];
-let cartasPasadas = load(Kpas) || [];
+let drawnInGame = load(Kdig) || []; // Nombre de variable actualizado
 let currentMode = Number(localStorage.getItem(Kmod) || 4);
 if(currentMode===8) currentMode=4; 
-let currentIdCounter = Number(localStorage.getItem(Kid) || 233); // Inicia en 233 para que el primero sea GanaYA!-0234
+let currentIdCounter = Number(localStorage.getItem(Kid) || 233); 
 
 let isAuto=false, autoInterval=null, animShuffling=false;
 let audioCtx=null;
@@ -799,7 +783,7 @@ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){
 
 function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
 function load(k){ try{ const v=localStorage.getItem(k); return v? JSON.parse(v): null;}catch(e){return null;} }
-function saveAll(){ save(Kp,prices); save(Kg,game); save(Kpu,purchases); save(Ktx,tx); save(Kw,winners); save(Kpas,cartasPasadas); localStorage.setItem(Kmod,String(currentMode)); localStorage.setItem(Kid,String(currentIdCounter)); }
+function saveAll(){ save(Kp,prices); save(Kg,game); save(Kpu,purchases); save(Ktx,tx); save(Kw,winners); save(Kdig,drawnInGame); localStorage.setItem(Kmod,String(currentMode)); localStorage.setItem(Kid,String(currentIdCounter)); }
 
 function getNextPurchaseId() {
     currentIdCounter += 1;
@@ -807,7 +791,7 @@ function getNextPurchaseId() {
     return `GanaYA!-` + String(currentIdCounter).padStart(4, '0');
 }
 
-function uuid(){ return 'id-'+Math.random().toString(36).slice(2,10); } // Se sigue usando para transacciones
+function uuid(){ return 'id-'+Math.random().toString(36).slice(2,10); } 
 function shuffle(a){ const arr=a.slice();
 for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]] } return arr; }
 function formatMoney(n){ return '$'+Number(n||0).toFixed(2); }
@@ -865,16 +849,14 @@ function disableControls(disable){
 }
 
 function renderPlayerCard(p){
-    // *************************************************************************
-    // MEJORA FUNCIONAL: Se añade el atributo data-player-id y tabindex="0"
-    // *************************************************************************
     let html=`<div class="player-card" tabindex="0" data-player-id="${p.id}">`;
     html+=`<div class="player-name">${escapeHtml(p.playerName)}</div>`;
     html+=`<div class="small-muted">${p.modality} cartas - ${p.gamesLeft||0} restantes</div>`;
     html+=`<div class="player-cards" style="display:grid;grid-template-columns:repeat(${p.modality===4?2:3},1fr);gap:8px;justify-items:center;">`;
     (p.card||[]).forEach(cid=>{
         const isMarked = (p.markedCards||[]).includes(cid);
-        const passed = cartasPasadas.includes(cid) && !isMarked;
+        // Usa drawnInGame (anteriormente cartasPasadas) para dimming
+        const passed = drawnInGame.includes(cid) && !isMarked; 
         const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : '';
         html+=`<div class="card-thumb ${passed?'passed':''}" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
     });
@@ -885,18 +867,15 @@ function renderPlayerCard(p){
 function renderAll(){
     const isAdminView = !document.getElementById('view-admin').classList.contains('hidden');
     const mainGridEl = document.getElementById('main-grid');
-    const fabControlsEl = document.getElementById('fab-controls-admin');
     
     if (isAdminView) {
         if (mainGridEl) mainGridEl.style.display = 'none';
-        if (fabControlsEl) fabControlsEl.classList.remove('hidden');
         document.getElementById('btn-view-admin').classList.add('toggle-play');
         document.getElementById('btn-view-admin').classList.remove('toggle-admin');
         document.getElementById('btn-view-play').classList.remove('toggle-play');
         document.getElementById('btn-view-play').classList.add('toggle-admin');
     } else {
         if (mainGridEl) mainGridEl.style.display = 'grid';
-        if (fabControlsEl) fabControlsEl.classList.add('hidden');
         document.getElementById('btn-view-play').classList.add('toggle-play');
         document.getElementById('btn-view-play').classList.remove('toggle-admin');
         document.getElementById('btn-view-admin').classList.remove('toggle-play');
@@ -1011,25 +990,21 @@ function openPurchaseDetail(id){
     const modal=document.getElementById('modal-player');
     document.getElementById('modal-player-name').textContent=`${p.playerName} • ${p.cell||''} • ${p.id}`;
     
-    // Find if the player has a *pending* win for this purchase ID
     const pendingWin = winners.some(w => w.purchaseId === id && !w.paid);
 
     const cards=(p.card||[]).map(cid=>{ 
         const isMarked = (p.markedCards||[]).includes(cid); 
-        const passed = cartasPasadas.includes(cid) && !isMarked;
+        const passed = drawnInGame.includes(cid) && !isMarked;
         const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : ''; 
         return `<div class="card-thumb ${passed?'passed':''}" style="width:100px;height:150px;background-image:url('${cardImageUrl(cid)}');display:inline-block;margin-right:8px;position:relative">${sticker}</div>`; 
     }).join('');
     
-    // *** Lógica de botones condicional para WhatsApp y Marcar Pagado ***
     let buttonsHtml = `<button class="btn btn-blue" onclick="printPurchase('${p.id}');">Tomar captura / Imprimir</button>`;
     
     if (pendingWin) {
-        // Ganador pendiente de pago
         buttonsHtml += `<button class="btn btn-green" onclick="copyClabe('${p.id}');">Copiar CLABE</button>`;
         buttonsHtml += `<button class="btn btn-green" onclick="markPaidById('${p.id}');">Marcar Pagado & Enviar WhatsApp</button>`;
     } else if (p.state === 'JUGANDO' || p.state === 'FINALIZADO') {
-        // Jugador activo o finalizado (para reenviar el registro inicial si se perdió)
         buttonsHtml += `<button class="btn btn-blue" onclick="resendRegistrationWhatsapp('${p.id}');">Reenviar registro WhatsApp</button>`;
     }
 
@@ -1085,6 +1060,7 @@ function printPurchase(id){
                 .card-thumb{ width:74px; height:106px; border-radius:8px; background-size:cover; background-position:center; position:relative; display:inline-block; margin:4px;}
                 .sticker{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
                 .sticker img{ width:42px; height:42px; filter:none; }
+                .card-thumb.passed{ filter:grayscale(1) brightness(0.6); } /* CSS para dimming en impresión */
             </style>
         </head>
         <body>
@@ -1133,8 +1109,6 @@ function initializePurchaseData(p){
     p.totalPaid = p.totalPaid || p.price;
 }
 
-// ... (Resto de funciones) ...
-
 function animateBolsa(targetAmount){
     const el=document.getElementById('bolsa-amount');
     if(!el) return;
@@ -1152,9 +1126,6 @@ function animateBolsa(targetAmount){
     }
     window.requestAnimationFrame(step);
 }
-
-
-// Implementación de Lógica de Barajeo, Tirar Carta, Ganadores, etc.
 
 function animateShuffle(){
     if(animShuffling) return;
@@ -1223,9 +1194,7 @@ function animateShuffle(){
 }
 
 function shufflePending(){
-    const pending=game.deck.filter(id=> !cartasPasadas.includes(id));
-    const past=game.deck.filter(id=> cartasPasadas.includes(id));
-    game.deck = shuffle(pending).concat(past);
+    game.deck = shuffle(Array.from({length:54},(_,i)=>i+1));
     tx.push({id:uuid(),type:'shuffle',ts:Date.now()});
     saveAll();
 }
@@ -1233,25 +1202,17 @@ function shufflePending(){
 function drawOne(){
     if(animShuffling || game.winnerPending) return;
 
-    let idx=-1;
-    // Buscar la primera carta en el mazo que NO haya sido 'pasada' antes de este juego
-    for(let i=0;i<game.deck.length;i++){
-        if(!cartasPasadas.includes(game.deck[i])){
-            idx=i;
-            break;
-        }
-    }
-    
-    if(idx===-1){
-        alert('No hay cartas pendientes. Barajea para continuar.');
+    if(game.deck.length === 0){
+        alert('El mazo está vacío. Barajea para continuar.');
         stopAuto();
         return;
     }
     
-    const card = game.deck.splice(idx,1)[0];
+    // CORRECCIÓN: Usar shift() para tomar la primera carta del mazo barajeado
+    const card = game.deck.shift(); 
     game.drawn.push(card);
     game.current=card;
-    cartasPasadas.push(card); // Marcar como 'pasada' para el mazo inicial
+    drawnInGame.push(card); // Marcar como dibujada para efectos visuales (dimming)
     
     tx.push({id:uuid(),type:'draw',card:card,ts:Date.now()});
     saveAll();
@@ -1280,7 +1241,6 @@ function processCard(cardId){
         
         const winningModality = purchases.find(p => p.id === winnersFound[0].purchaseId)?.modality || currentMode;
         
-        // Calcular la bolsa de la modalidad ganadora
         const activeForPot = purchases.filter(p=> p.state==='JUGANDO' && (p.gamesLeft||0)>0 && p.modality === winningModality );
         activeForPot.forEach(p => initializePurchaseData(p));
         const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
@@ -1294,14 +1254,14 @@ function processCard(cardId){
             p.wins=(p.wins||0)+1;
             p.state='POR PAGAR';
             p.prize=share;
-            p.casa = (p.casa || 0) - share; // La casa pierde el premio
+            p.casa = (p.casa || 0) - share; 
             
             const rec = {
                 id: uuid(),
                 purchaseId: p.id,
                 playerName: p.playerName,
                 modality: p.modality,
-                cardId: cardId, // La última carta tirada que completa el juego
+                cardId: cardId, 
                 prize: share,
                 paid: false,
                 ts: Date.now()
@@ -1311,11 +1271,9 @@ function processCard(cardId){
             tx.push({id:uuid(),type:'win',player:p.playerName,modality:p.modality,amount:share,card:cardId,purchaseId:p.id,ts:Date.now()});
         });
 
-        // Guardar antes de mostrar el modal
         saveAll();
-        window._tempWinnerRecs = recs; // Guardar temporalmente para el modal de detalle
+        window._tempWinnerRecs = recs; 
 
-        // Mostrar Modal de Ganador
         const modal = document.getElementById('modal-winner');
         document.getElementById('winner-title').textContent = `🎉 ¡LOTERÍA!`;
         const winnerNames = winnersFound.map(w=> purchases[w.idx].playerName).join(' y ');
@@ -1327,20 +1285,17 @@ function processCard(cardId){
         playWinSound();
         startConfettiFullScreen();
 
-        // Actualizar render para mostrar estados 'POR PAGAR' y la bolsa en 0
         renderAll();
     }
 }
 
 function showWinnerDetailModal(purchaseId, cardId){
-    // Usa el ID de la última carta ganadora si no viene en los argumentos (desde el modal de felicitación)
     if(!purchaseId){
         if(!window._tempWinnerRecs || window._tempWinnerRecs.length === 0) return;
         purchaseId = window._tempWinnerRecs[0].purchaseId;
         cardId = window._tempWinnerRecs[0].cardId;
     }
     
-    // Si viene desde la lista de ganadores, buscar el registro.
     if(!cardId) {
         const winnerRec = winners.find(w => w.purchaseId === purchaseId);
         if(!winnerRec) return;
@@ -1350,11 +1305,9 @@ function showWinnerDetailModal(purchaseId, cardId){
     const player = purchases.find(p=>p.id===purchaseId);
     if(!player) return;
 
-    // 1. Ocultar el modal de felicitación si está visible
     document.getElementById('modal-winner').classList.add('hidden');
     document.getElementById('modal-winner').style.display='none';
     
-    // 2. Llenar el modal de detalle
     const detailPlayerName = document.getElementById('winner-detail-player-name');
     const detailCardName = document.getElementById('winner-detail-card-name');
     const detailCardsContainer = document.getElementById('winner-detail-player-cards');
@@ -1365,12 +1318,12 @@ function showWinnerDetailModal(purchaseId, cardId){
     const cardListHtml = (player.card || []).map(cid => {
         const isMarked = (player.markedCards || []).includes(cid);
         const isWinner = cid === cardId;
+        const passed = drawnInGame.includes(cid) && !isMarked; 
         const sticker = isMarked ? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : '';
-        return `<div class="card-thumb ${isWinner ? 'winner-card' : ''} ${isMarked ? 'passed' : ''}" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
+        return `<div class="card-thumb ${isWinner ? 'winner-card' : ''} ${passed ? 'passed' : ''}" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
     }).join('');
     detailCardsContainer.innerHTML = cardListHtml;
 
-    // 3. Mostrar el modal de detalle
     const modalDetail = document.getElementById('modal-winner-detail');
     modalDetail.classList.remove('hidden');
     modalDetail.style.display = 'flex';
@@ -1392,11 +1345,9 @@ window.markPaidById = function(id){
     if(!p) return alert('No encontrado');
     if(p.state!=='POR PAGAR') return alert('Solo marcar si está POR PAGAR');
     
-    // Find the WINNER record associated with this purchase (if multiple wins, it uses the first pending)
     const winnerRec = winners.find(w => w.purchaseId === id && !w.paid); 
     if(!winnerRec) return alert('No se encontró registro de premio pendiente de pago para esta compra.');
 
-    // Existing logic: Update state and winners array
     p.state='PAGADO';
     p.paidAt=Date.now();
     winners=winners.map(w=> w.purchaseId===id? {...w,paid:true}:w);
@@ -1404,7 +1355,6 @@ window.markPaidById = function(id){
     saveAll();
     renderAll();
 
-    // *** New WhatsApp Payment Confirmation Logic ***
     const prizeAmount = formatMoney(winnerRec.prize);
     const datePaid = new Date(p.paidAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
     const winningCardName = cardName(winnerRec.cardId);
@@ -1412,7 +1362,6 @@ window.markPaidById = function(id){
     
     const message = `Hola ${p.playerName}, se ha realizado tu pago de ${prizeAmount} a la cuenta ${p.clabe} el ${datePaid}.\n\nTu carta de la suerte en esta partida fue: 🌟 ${winningCardName} 🌟\n\n${winningCardUrl}\n\n¡Felicidades por tu premio en GANA YA! 🎉🇲🇽`;
 
-    // Only open WhatsApp after marking as paid
     window.open(`https://wa.me/${p.cell}?text=${encodeURIComponent(message)}`, '_blank');
 
     alert('Marcado como PAGADO y mensaje de confirmación de pago enviado por WhatsApp.');
@@ -1431,12 +1380,9 @@ function setActiveFilter(f){
     else if(f===6){ document.getElementById('filter-6').classList.add('active-6'); }
 }
 
-// ... (Resto de funciones) ...
-
 function generateCardForPurchase(modality){
     let cards = Array.from({length:54},(_,i)=>i+1);
     
-    // Excluir cartas ya usadas por otros jugadores en la misma modalidad
     const usedCards = purchases
         .filter(p => p.modality === modality && p.card)
         .flatMap(p => p.card);
@@ -1444,30 +1390,59 @@ function generateCardForPurchase(modality){
     const availableCards = cards.filter(c => !usedCards.includes(c));
     
     if (availableCards.length < modality) {
-        // Recurrir a barajar todas si no hay suficientes cartas únicas
         cards = shuffle(cards);
     } else {
         cards = shuffle(availableCards);
     }
     
-    // Seleccionar las primeras 'modality' cartas
     const selectedCards = cards.slice(0, modality);
 
-    // Asegurar que las cartas seleccionadas no se repitan
     if (new Set(selectedCards).size !== modality) {
-        // Esto no debería pasar si el shuffle funciona bien y hay suficientes cartas.
-        // Como fallback, forzar la selección única (e.g., tomar solo las primeras 'modality')
+        // Fallback for unique selection (should not happen often)
     }
 
     return selectedCards;
 }
 
+// CORRECCIÓN/MEJORA: Calcula la máxima cantidad de partidas
+function calculateMaxGames(budget, p4, p6) {
+    let q4 = 0;
+    let q6 = 0;
+    let remaining = budget;
+    
+    // Priorizar la partida de 6 cartas (la más cara en este caso)
+    const price6 = p6 > 0 ? p6 : 999999; 
+    const price4 = p4 > 0 ? p4 : 999999;
 
-function updateCalculatorInfo(){
+    if (price6 <= remaining) {
+        q6 = Math.floor(remaining / price6);
+        remaining -= q6 * price6;
+    }
+
+    if (price4 <= remaining) {
+        q4 = Math.floor(remaining / price4);
+        remaining -= q4 * price4;
+    }
+
+    return { q4, q6 };
+}
+
+
+function updateCalculatorInfo(autoFill = false){
     const p4=prices.price4, p6=prices.price6;
     const budgetRaw=document.getElementById('input-budget').value;
     const budget = budgetRaw===''?0:parseFloat(budgetRaw||0);
-    const q4=parseInt(document.getElementById('qty4').value||0), q6=parseInt(document.getElementById('qty6').value||0);
+
+    let q4=parseInt(document.getElementById('qty4').value||0);
+    let q6=parseInt(document.getElementById('qty6').value||0);
+    
+    if(autoFill && budget > 0) {
+        const { q4: maxQ4, q6: maxQ6 } = calculateMaxGames(budget, p4, p6);
+        document.getElementById('qty4').value = maxQ4;
+        document.getElementById('qty6').value = maxQ6;
+        q4 = maxQ4;
+        q6 = maxQ6;
+    }
     
     const cost4 = q4*p4;
     const cost6 = q6*p6;
@@ -1477,8 +1452,10 @@ function updateCalculatorInfo(){
     
     if(totalCost > budget && budget > 0){
         msg += `<br><span style="color:var(--rojo);font-weight:700;">Faltan: ${formatMoney(totalCost - budget)}</span>`;
-    } else if (budget > totalCost){
+    } else if (budget > totalCost && totalCost > 0){
         msg += `<br><span style="color:var(--verde);font-weight:700;">Sobrante: ${formatMoney(budget - totalCost)}</span>`;
+    } else if (budget > 0 && totalCost === 0) {
+        msg += `<br><span style="color:var(--azul);font-weight:700;">Presupuesto de ${formatMoney(budget)} sin asignar.</span>`;
     }
 
     document.getElementById('calc-info').innerHTML = msg;
@@ -1502,14 +1479,20 @@ function registerPlayer(){
     const needed = q4*prices.price4 + q6*prices.price6;
     
     if(budget < needed) return alert(`El presupuesto no alcanza. Se requiere ${formatMoney(needed)}.`);
-    if(budget > needed) return alert(`Hay sobrante de ${formatMoney(budget-needed)}. Ajusta las cantidades o el presupuesto para continuar.`);
+    
+    // Permitir sobrante. Ya no es error, solo advertencia.
+    if(budget > needed && budget > 0){
+        if(!confirm(`Hay un sobrante de ${formatMoney(budget-needed)}. ¿Deseas continuar el registro con las partidas asignadas?`)){
+            return;
+        }
+    }
 
     const parts=[];
     if(q4>0) parts.push({modality:4,qty:q4,price:prices.price4,profit:prices.profit4});
     if(q6>0) parts.push({modality:6,qty:q6,price:prices.price6,profit:prices.profit6});
 
     const purchasesInBatch = [];
-    const messageParts = []; // To build the WhatsApp message for registration
+    const messageParts = []; 
     
     parts.forEach(pt=>{
         const ptPrice = pt.price;
@@ -1517,7 +1500,7 @@ function registerPlayer(){
         const ptEnJuego = ptPrice - ptProfit;
 
         for(let i=0;i<pt.qty;i++){
-            const id = getNextPurchaseId(); // *** Uso de ID secuencial ***
+            const id = getNextPurchaseId(); 
             const p={
                 id:id,playerName:name,cell:cell,clabe:clabe,
                 modality:pt.modality,
@@ -1530,7 +1513,6 @@ function registerPlayer(){
             purchases.push(p);
             purchasesInBatch.push(p);
 
-            // Build message part for WhatsApp
             const cardNames = p.card.map(cardName).join(', ');
             messageParts.push(`${id} Cartas asignadas: ${cardNames}`);
             
@@ -1548,7 +1530,6 @@ function registerPlayer(){
     document.getElementById('qty4').value='0';
     document.getElementById('qty6').value='0';
     
-    // *** WhatsApp Registration Message Logic ***
     const finalMsg = `¡Bienvenido a GANA YA! 🎉 Tus partidas han sido registradas:\n\n${messageParts.join('\n')}\n\n¡Mucha suerte! 🎴`;
     window.open(`https://wa.me/${cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
     
@@ -1562,12 +1543,9 @@ function resetGame(){
     stopAuto();
     
     purchases.forEach(p=>{
-        // 1. Deduce solo si el jugador está en la modalidad en juego
         if (p.modality === currentMode) {
-            // 2. Deduce si está JUGANDO (uso normal) o si ganó (POR PAGAR)
             if(p.state==='JUGANDO' || p.state==='POR PAGAR'){
                 p.gamesLeft = Math.max(0,(p.gamesLeft||0)-1);
-                // 3. Si un jugador JUGANDO se queda sin partidas, FINALIZA.
                 if(p.gamesLeft<=0 && p.state==='JUGANDO') p.state='FINALIZADO';
             }
         }
@@ -1577,7 +1555,7 @@ function resetGame(){
     game.deck = Array.from({length:54},(_,i)=>i+1);
     game.drawn=[];
     game.current=0;
-    cartasPasadas=[];
+    drawnInGame=[];
     game.winnerPending = false;
     document.getElementById('shuffle-overlay').classList.remove('visible');
     document.getElementById('shuffle-overlay').style.display='none';
@@ -1589,6 +1567,7 @@ function resetGame(){
 }
 
 function exportPdf(){
+    // ... (logic for exportPdf remains the same) ...
     const date=new Date();
     const header=`Reporte de partidas — GANA YA!`;
     const logo='logo_1_entrada.png';
@@ -1673,20 +1652,16 @@ function exportPdf(){
     printWindow.print();
 }
 
-// ... (Resto de funciones) ...
 
 // INICIALIZACIÓN Y EVENT LISTENERS
 document.addEventListener('DOMContentLoaded', ()=>{
     
-    // Asignar el script de confetti
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js';
     document.head.appendChild(script);
 
-    // Renderizado inicial
     renderAll();
     
-    // Eventos de botones de control de juego
     document.getElementById('btn-shuffle').addEventListener('click', animateShuffle);
     document.getElementById('btn-draw').addEventListener('click', drawOne);
     document.getElementById('btn-auto').addEventListener('click', ()=>{ isAuto? stopAuto() : startAuto(); });
@@ -1713,9 +1688,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     // Eventos de control de admin (caja)
     document.getElementById('btn-register').addEventListener('click', registerPlayer);
-    document.getElementById('input-budget').addEventListener('input', updateCalculatorInfo);
-    document.getElementById('qty4').addEventListener('input', updateCalculatorInfo);
-    document.getElementById('qty6').addEventListener('input', updateCalculatorInfo);
+    
+    // Auto-calculo en el input de presupuesto
+    document.getElementById('input-budget').addEventListener('input', (e) => updateCalculatorInfo(true)); 
+    // Los inputs de cantidad solo actualizan el info
+    document.getElementById('qty4').addEventListener('input', (e) => updateCalculatorInfo(false));
+    document.getElementById('qty6').addEventListener('input', (e) => updateCalculatorInfo(false));
     
     // Eventos de botón JUEGO / ADMINISTRADOR
     document.getElementById('btn-view-play').addEventListener('click', ()=>{ 
@@ -1733,16 +1711,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
         renderAll(); 
     });
 
-    // Eventos de FAB Buttons (flotantes)
-    document.getElementById('fab-export').addEventListener('click', exportPdf);
-    document.getElementById('fab-reset-day').addEventListener('click', ()=>{ 
+    // Eventos de Botones de Acciones (Antes FAB)
+    document.getElementById('btn-export').addEventListener('click', exportPdf);
+    document.getElementById('btn-reset-day').addEventListener('click', ()=>{ 
         if(!confirm('Borrar todo y reiniciar día? Esto eliminará compras, transacciones y registros de ganadores. El contador de IDs **NO** se reiniciará.')) return;
         purchases=[];
         tx.push({id:uuid(),type:'clear',ts:Date.now()});
         game=defaultsGame();
         winners=[];
-        cartasPasadas=[];
-        // NOTA: No se reinicia currentIdCounter (Kid) para mantener la secuencia de IDs.
+        drawnInGame=[];
         saveAll();
         renderAll();
         alert('Día reiniciado. Todos los datos de compras y ganancias se borraron.');
@@ -1759,7 +1736,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     
     document.getElementById('modal-close').addEventListener('click', closeGroupModal);
     document.getElementById('modal-close-x').addEventListener('click', closeGroupModal);
-    document.getElementById('winner-ok').addEventListener('click', showWinnerDetailModal); // Abrir modal de detalle
+    document.getElementById('winner-ok').addEventListener('click', showWinnerDetailModal); 
     document.getElementById('winner-close').addEventListener('click', ()=>{ const m=document.getElementById('modal-winner'); m.classList.add('hidden'); m.style.display='none'; stopConfettiFullScreen(); });
     document.getElementById('winner-detail-ok').addEventListener('click', closeWinnerDetailModal);
     document.getElementById('winner-detail-close-x').addEventListener('click', closeWinnerDetailModal);
@@ -1775,9 +1752,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
     });
 
-    // *************************************************************************
-    // MEJORA FUNCIONAL: Event Delegation para tarjetas de jugador
-    // *************************************************************************
     const playersAreaEl = document.getElementById('players-area');
     if (playersAreaEl) {
         playersAreaEl.addEventListener('click', (e) => {

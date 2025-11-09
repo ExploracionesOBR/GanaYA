@@ -1,4 +1,12 @@
 <!doctype html>
+<!--
+  Versión 9.6 - Mejora visual y correcciones sobre v9.4_efx
+  - Barajeo 5s con múltiples oleadas y flips 3D
+  - Carta ganadora modal: ¡FELICIDADES! (dorado)
+  - Grid fijo 5 columnas, evita duplicados en asignación
+  - Reinicio sin recargar y ESC para cerrar ganador
+  - Eliminación completa de ''
+--><!--\n  Versión 9.4_EFX\n  Basado en: index_v9.0.html (original)\n  Mejoras: Barajeo 3s, brillo cálido doble, reverso gris claro con logo centrado.\n-->
 <html lang="es">
 <head>
 <meta charset="utf-8" />
@@ -126,24 +134,37 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 .tooltip.show .tip{ display:block; }
 
 
-/* v9.5 additions: back-pattern, shine, admin totals, winning card, fixed 5-col grid */
-.admin-totales{ position:sticky; top:0; background:#fff8e6; padding:10px; border-bottom:2px solid #f9d65d; display:flex; justify-content:space-around; font-weight:600; color:#333; z-index:100; }
-.winning-card{ position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(1.8); z-index:9999; border:4px solid gold; box-shadow:0 0 20px rgba(255,215,0,0.85); transition:transform .6s ease; width:240px; height:360px; border-radius:12px; background-size:cover; background-position:center; }
-.container{ margin:0 auto; padding:10px; display:flex; flex-direction:column; align-items:center; }
-.players-grid{ display:grid !important; grid-template-columns:repeat(5,1fr) !important; gap:14px; justify-items:center; }
-.card-thumb.back-pattern{ background: repeating-linear-gradient(45deg, #f6f6f6 0 10px, #ececec 10px 20px); position:relative; filter:none; }
-.card-thumb.back-pattern::after{ content:''; position:absolute; left:50%; top:50%; width:48px; height:48px; transform:translate(-50%,-50%); background-image: url('logo_1_entrada.png'); background-size:contain; background-repeat:no-repeat; opacity:0.95; pointer-events:none; }
-.card-thumb.shine::before{ content:''; position:absolute; top:0; left:-90%; width:60%; height:100%; background: linear-gradient(120deg, rgba(255,200,80,0.95) 0%, rgba(255,200,80,0.7) 30%, rgba(255,200,80,0.3) 50%, rgba(255,200,80,0) 100%); transform:skewX(-20deg); pointer-events:none; z-index:3; animation: shineMove 0.9s linear 0s 2; }
-@keyframes shineMove{ 100%{ left:140%; } }
-#shuffle-overlay{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.35); z-index:9998; }
-#shuffle-overlay .shuffle-center{ position:relative; width:760px; height:420px; pointer-events:none; }
-.shuffle-card{ position:absolute; width:120px; height:180px; border-radius:10px; background-size:cover; background-position:center; box-shadow:0 8px 20px rgba(0,0,0,0.25); transform-origin:center center; }
+/* v9.6 overrides */
+body, html { height:100%; }
+.container{ margin-bottom:0 !important; padding-bottom:0 !important; min-height:unset !important; }
+.players-grid{ grid-template-columns: repeat(5,1fr) !important; }
+/* remove extra whitespace below players area */
+#players-area{ margin-bottom:0 !important; padding-bottom:6px !important; }
+/* Logo top-left over últimos ganadores (absolute inside container) */
+#logo-top-left{ position:absolute; left:12px; top:12px; z-index:2000; width:64px; height:64px; background-image:url('logo_1_entrada.png'); background-size:contain; background-repeat:no-repeat; pointer-events:none; }
+/* Ensure title centered */
+.players-title{ text-align:center; width:100%; margin:8px 0 12px 0; }
+/* Controls right aligned */
+.controls-row{ justify-content:flex-end !important; align-items:center; }
+/* Winner modal */
+#winner-modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.6); z-index:10000; }
+#winner-modal .card-wrap{ width:360px; height:540px; transform-origin:center center; border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,0.6); overflow:visible; background-size:cover; background-position:center; background-repeat:no-repeat; position:relative; }
+#winner-modal .badge{ position:absolute; top:18px; left:50%; transform:translateX(-50%); font-size:28px; font-weight:800; color: #fff; text-shadow:0 4px 14px rgba(0,0,0,0.6); }
+#winner-modal .amount{ position:absolute; bottom:22px; left:50%; transform:translateX(-50%); font-size:36px; font-weight:900; color: #ffd966; text-shadow:0 6px 22px rgba(255,170,0,0.22); }
+/* Entry animation */
+@keyframes winnerPop { 0%{ transform:scale(.7) rotateX(20deg); opacity:0 } 60%{ transform:scale(1.12) rotateX(0deg); opacity:1 } 100%{ transform:scale(1) } }
+/* Shuffle enhancements (3D flip + diagonal waves) */
+.shuffle-wave { transform-style:preserve-3d; perspective:800px; }
+.shuffle-card.flip { transition: transform .6s cubic-bezier(.2,.9,.3,1); transform: rotateY(180deg) scale(.98); }
+.shuffle-card.wave-move { transition: transform .9s cubic-bezier(.2,.9,.3,1), opacity .9s; }
+/* hide remnants of 8 cards */
+.removed-8 { display:none !important; }
 
 </style>
 </head>
 <body>
 
-<div class="container">\n  <!-- Admin totals (ganancia visible solo en vista ⚙️) -->\n  <div id="totales-admin" class="admin-totales" style="display:none;">\n    <div>🏠 Ganancia total de la casa: <span id="gananciaCasaTotal">$0</span></div>\n    <div>💰 Bolsa total del juego: <span id="bolsaTotalInline">$0</span></div>\n  </div>\n
+<div class="container">\n  <div id="logo-top-left" aria-hidden="true"></div>\n
 
   <!-- HEADER: Logo at left, title centered, controls right -->
   <div class="header-row-top">
@@ -176,7 +197,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
     </aside>
 
     <section class="mex-frame" id="players-section" style="min-height:420px;">
-      <h2 style="text-align:center;margin:0 0 8px 0">CARTAS DE JUGADORES ACTIVOS</h2>
+      <h2 style="text-align:center;margin:0 0 8px 0"><span class="players-title">CARTAS DE JUGADORES ACTIVOS</span></h2>
       <div class="players-grid" id="players-area" style="margin-top:12px">
         <div class="small-muted" style="padding:18px; text-align:center">Aún no hay jugadores.</div>
       </div>
@@ -191,7 +212,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
           <select id="select-modality" style="padding:10px;border-radius:8px;border:1px solid #ddd;font-weight:800;width:100%;">
             <option value="4">4 cartas</option>
             <option value="6">6 cartas</option>
-            <option value="8"></option>
+            <option value="/*removed8*/"></option>
           </select>
         </div>
 
@@ -369,7 +390,84 @@ function copyClabe(id){ const p=purchases.find(x=>x.id===id); if(!p) return; con
 
 function confirmWhatsapp(id){ const p=purchases.find(x=>x.id===id); if(!p) return; if(!p.clabe) return alert('No hay CLABE registrada'); const amount = formatMoney(p.totalPaid); const date = new Date().toLocaleString(); const msg = `Hola ${p.playerName}, se ha realizado tu pago de ${amount} a la cuenta ${p.clabe} el ${date}. ¡Felicidades por tu premio en GANA YA! 🎉`; const url = `https://wa.me/${p.cell}?text=${encodeURIComponent(msg)}`; window.open(url,'_blank'); }
 
-function printPurchase(id){ const p=purchases.find(x=>x.id===id); if(!p) return; const logo = 'logo_1_entrada.png'; const html = `<html><head><title>Compra ${p.id}</title></head><body style="font-family:Arial;padding:12px"><div style="display:flex;align-items:center;gap:12px"><img src="${logo}" style="width:80px;height:80px;object-fit:contain"/> <div><h2>Reporte de partidas — GANA YA!</h2><div>${new Date().toLocaleString()}</div></div></div><hr/> <h3>Compra: ${p.id}</h3><div><strong>Jugador:</strong> ${escapeHtml(p.playerName)}</div><div><strong>Celular:</strong> ${escapeHtml(p.cell||'')}</div><div><strong>Modalidad:</strong> ${p.modality} cartas</div><div><strong>Partidas:</strong> ${p.gamesLeft||0}</div><div><strong>Total pagado:</strong> ${formatMoney(p.totalPaid)}</div><div style="margin-top:8px"><strong>Cartas:</strong></div>${(p.card||[]).map(cid=>`<div style="display:inline-block;margin:6px"><img src='${cardImageUrl(cid)}' style='width:120px;height:180px;object-fit:cover;border:1px solid #ccc;border-radius:8px'></div>`).join('')}<div style="margin-top:12px"><em>Generado: ${new Date().toLocaleString()}</em></div></body></html>`; const w=window.open('','_blank'); w.document.write(html); w.document.close(); setTimeout(()=>w.print(),500); }
+function printPurchase(id){ const p=purchases.find(x=>x.id===id); if(!p) return; const logo = 'logo_1_entrada.png'; const html = `<html><head><title>Compra ${p.id}</title></head><body style="font-family:Arial;padding:12px"><div style="display:flex;align-items:center;gap:12px"><img src="${logo}" style="width:80px;height:80px;object-fit:contain"/> <div><h2>Reporte de partidas — GANA YA!</h2><div>${new Date().toLocaleString()}</div></div></div><hr/> <h3>Compra: ${p.id}</h3><div><strong>Jugador:</strong> ${escapeHtml(p.playerName)}</div><div><strong>Celular:</strong> ${escapeHtml(p.cell||'')}</div><div><strong>Modalidad:</strong> ${p.modality} cartas</div><div><strong>Partidas:</strong> ${p.gamesLeft||0}</div><div><strong>Total pagado:</strong> ${formatMoney(p.totalPaid)}</div><div style="margin-top:8px"><strong>Cartas:</strong></div>${(p.card||[]).map(cid=>`<div style="display:inline-block;margin:6px"><img src='${cardImageUrl(cid)}' style='width:120px;height:180px;object-fit:cover;border:1px solid #ccc;border-radius:8px'></div>`).join('')}<div style="margin-top:12px"><em>Generado: ${new Date().toLocaleString()}</em></div><script>
+
+/* v9.6 JS helpers: unique assignment, enhanced shuffle, winner modal, reiniciar without reload */
+(function(){
+  function buildDeck54(){ return Array.from({length:54}, (_,i)=>i+1); }
+  window.deckRemaining = window.deckRemaining || new Set(buildDeck54());
+  function drawUniqueCard(){
+    if(!window.deckRemaining || window.deckRemaining.size === 0){ window.deckRemaining = new Set(buildDeck54()); }
+    const arr = Array.from(window.deckRemaining);
+    const choice = arr[Math.floor(Math.random()*arr.length)];
+    window.deckRemaining.delete(choice);
+    return choice;
+  }
+  window.drawUniqueCard = drawUniqueCard;
+  // safe registrarJugador - assigns unique cards and updates bolsa
+  window.registrarJugador = window.registrarJugador || function(j){
+    window.modalidades = window.modalidades || [{key:'4cartas',precio:40,ganancia:10},{key:'6cartas',precio:60,ganancia:15}];
+    const mod = window.modalidades.find(m=> m.key === j.modalidadKey) || window.modalidades[0] || {};
+    const gananciaCasa = Number(mod.ganancia || 0);
+    const costo = Number(mod.precio || j.costo || 0);
+    const cardsNeeded = j.cardsRequired || (mod.key === '6cartas' ? 6 : 4);
+    j.cards = j.cards || [];
+    for(let i=0;i<cardsNeeded;i++){ j.cards.push(drawUniqueCard()); }
+    const aporte = (j.comision === 0) ? (costo * cardsNeeded) : ((costo - gananciaCasa) * cardsNeeded);
+    j.aporte = aporte; j.gananciaCasa = (j.comision === 0) ? 0 : (gananciaCasa * cardsNeeded);
+    window.jugadoresActivos = window.jugadoresActivos || []; window.jugadoresActivos.push(j);
+    if(typeof actualizarBolsa === 'function') actualizarBolsa(); else if(typeof actualizarBolsa_v95 === 'function') actualizarBolsa_v95();
+  };
+  // Enhanced shuffle (5s)
+  function enhancedShuffle(){
+    if(window.animShuffling) return;
+    window.animShuffling = true;
+    if(typeof disableControls === 'function') disableControls(true);
+    const overlay = document.getElementById('shuffle-overlay') || (function(){ const o=document.createElement('div'); o.id='shuffle-overlay'; document.body.appendChild(o); return o; })();
+    overlay.style.display='flex'; overlay.innerHTML = '<div class="shuffle-center"></div>';
+    const center = overlay.querySelector('.shuffle-center');
+    const pending = (window.game && game.deck) ? game.deck.filter(id=> !window.cartasPasadas?.includes(id)) : (function(){ let a=[]; for(let i=1;i<=54;i++) a.push(i); return a; })();
+    const sample = pending.slice(0,20);
+    const cards = sample.map((cid,i)=>{ const el=document.createElement('div'); el.className='shuffle-card shuffle-wave'; el.style.backgroundImage = 'url(' + (typeof cardImageUrl==='function'? cardImageUrl(cid): ('Cartas_baraja_loteria/'+cid+'.png')) + ')'; el.style.left='50%'; el.style.top='50%'; el.style.transform='translate(-50%,-50%)'; el.style.zIndex=100+i; center.appendChild(el); return {el,cid}; });
+    cards.forEach((c,idx)=> setTimeout(()=>{ const tx=(idx-cards.length/2)*18+(Math.random()*40-20); const ty=-140+Math.random()*80; const rot=(Math.random()*40-20); c.el.style.transition='transform 1.2s cubic-bezier(.22,.9,.32,1), opacity 1.2s'; c.el.style.transform=`translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(1)`; if(Math.random()>0.6) c.el.classList.add('flip'); }, idx*60));
+    setTimeout(()=>{ cards.forEach((c,idx)=> setTimeout(()=>{ const tx=(Math.random()*700-350); const ty=(Math.random()*260-130); const rot=(Math.random()*720-360); c.el.classList.remove('flip'); c.el.classList.add('wave-move'); c.el.style.transform=`translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(.94)`; }, idx*50)); }, 1400);
+    setTimeout(()=>{ cards.forEach((c,idx)=>{ c.el.style.transition='transform .6s ease, opacity .6s ease'; c.el.style.transform=`translate(${(idx-cards.length/2)*10}px, -30px) rotate(${Math.random()*18-9}deg) scale(.96)`; c.el.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><img src="logo_1_entrada.png" style="width:80px;height:80px;opacity:.95"></div>'; c.el.style.backgroundImage='linear-gradient(#ddd,#bbb)'; }); }, 3000);
+    setTimeout(()=>{ const vis = Array.from(document.querySelectorAll('#players-area .card-thumb')); vis.forEach(c=>{ c.classList.add('shine'); setTimeout(()=> c.classList.remove('shine'),2400); }); overlay.style.display='none'; overlay.innerHTML=''; window.animShuffling=false; if(typeof disableControls==='function') disableControls(false); if(typeof renderAll==='function') renderAll(); }, 5000);
+  }
+  window.shufflePendingToFullScreen = enhancedShuffle;
+  // Winner modal
+  function showWinnerModal(opts){
+    // opts: { cardSelectorOrEl, amount }
+    (function closeExisting(){ const ex=document.getElementById('winner-modal'); if(ex) ex.remove(); })();
+    const modal = document.createElement('div'); modal.id='winner-modal'; modal.style.display='flex'; modal.style.position='fixed'; modal.style.inset='0'; modal.style.alignItems='center'; modal.style.justifyContent='center'; modal.style.background='rgba(0,0,0,0.6)'; modal.style.zIndex='10000';
+    const wrap = document.createElement('div'); wrap.className='card-wrap'; wrap.style.width='360px'; wrap.style.height='540px'; wrap.style.borderRadius='14px'; wrap.style.boxShadow='0 20px 60px rgba(0,0,0,0.6)'; wrap.style.backgroundSize='cover'; wrap.style.backgroundPosition='center';
+    const badge = document.createElement('div'); badge.className='badge'; badge.innerText='¡FELICIDADES!'; badge.style.position='absolute'; badge.style.top='18px'; badge.style.left='50%'; badge.style.transform='translateX(-50%)'; badge.style.fontSize='28px'; badge.style.fontWeight='800'; badge.style.color='#fff'; badge.style.textShadow='0 4px 14px rgba(0,0,0,0.6)';
+    const amount = document.createElement('div'); amount.className='amount'; amount.style.position='absolute'; amount.style.bottom='22px'; amount.style.left='50%'; amount.style.transform='translateX(-50%)'; amount.style.fontSize='36px'; amount.style.fontWeight='900'; amount.style.color='#ffd966'; amount.style.textShadow='0 6px 22px rgba(255,170,0,0.22)'; amount.innerText = opts && opts.amount ? ('$' + opts.amount) : '';
+    let source = null;
+    if(opts && typeof opts.cardSelectorOrEl === 'string') source = document.querySelector(opts.cardSelectorOrEl);
+    else if(opts && opts.cardSelectorOrEl instanceof Element) source = opts.cardSelectorOrEl;
+    else source = document.querySelector('#players-area .card-thumb.winner') || document.querySelector('#players-area .card-thumb');
+    if(source){ wrap.style.backgroundImage = source.style.backgroundImage || ''; } else { wrap.style.background = 'linear-gradient(#fff,#eee)'; wrap.innerHTML = '<div style="padding:18px;color:#333">Carta ganadora</div>'; }
+    wrap.appendChild(badge); wrap.appendChild(amount); modal.appendChild(wrap); document.body.appendChild(modal);
+    wrap.style.animation = 'winnerPop .9s cubic-bezier(.2,.9,.3,1)';
+    try{ const ap = new Audio('APLAUSOS_GANADOR.mp3'); ap.currentTime = 1; ap.play().catch(()=>{}); }catch(e){}
+    function escHandler(e){ if(e.key==='Escape'){ if(document.getElementById('winner-modal')) document.getElementById('winner-modal').remove(); document.removeEventListener('keydown', escHandler); } }
+    document.addEventListener('keydown', escHandler);
+    window._lastWinnerModal = modal;
+  }
+  window.showWinnerModal = window.showWinnerModal || showWinnerModal;
+  function closeWinnerModal(){ const m=document.getElementById('winner-modal'); if(m) m.remove(); window._lastWinnerModal=null; }
+  window.closeWinnerModal = window.closeWinnerModal || closeWinnerModal;
+  // reiniciar without reload
+  window.reiniciarPartida = window.reiniciarPartida || function(){ try{ window.jugadoresActivos=[]; window.cartasPasadas=[]; window.deckRemaining=new Set(buildDeck54()); if(typeof actualizarBolsa==='function') actualizarBolsa(); closeWinnerModal(); if(typeof clearWinningCard_v95==='function') clearWinningCard_v95(); if(typeof renderAll==='function') renderAll(); }catch(e){console.warn('reiniciar error',e);} };
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeWinnerModal(); if(typeof clearWinningCard_v95==='function') clearWinningCard_v95(); } });
+  // connect auto-toggle button
+  const autoBtn = document.getElementById('btn-auto-toggle');
+  if(autoBtn){ let running=false; autoBtn.addEventListener('click', ()=>{ if(!running){ window.autoInterval = setInterval(()=>{ if(typeof drawOne==='function') drawOne(); }, 2000); autoBtn.classList.add('btn-green'); autoBtn.textContent='⏹️ DETENER AUTOMÁTICO'; running=true; } else { clearInterval(window.autoInterval); window.autoInterval=null; autoBtn.classList.remove('btn-green'); autoBtn.textContent='⏱️ CARTAS AUTOMÁTICO'; running=false; } }); }
+})(); // end helpers IIFE
+
+</script>
+</body></html>`; const w=window.open('','_blank'); w.document.write(html); w.document.close(); setTimeout(()=>w.print(),500); }
 
 
 function shufflePendingToFullScreen(){
@@ -596,114 +694,6 @@ window.markPaidById = function(id){ const p=purchases.find(x=>x.id===id); if(!p)
 function closeGroupModal(){ const modal=document.getElementById('modal-player'); modal.classList.add('hidden'); modal.style.display='none'; }
 
 function setActiveFilter(f){ document.querySelectorAll('.filter-btn').forEach(b=> b.classList.remove('active-4','active-6','active-8','active-all')); if(f==='all'){ document.getElementById('filter-all').classList.add('active-all'); } else if(f===4){ document.getElementById('filter-4').classList.add('active-4'); } else if(f===6){ document.getElementById('filter-6').classList.add('active-6'); } else if(f===8){ document.getElementById('filter-8').classList.add('active-8'); } }
-
-
-/* =========================
-   v9.5 JS helpers injected
-   Sections:
-   // 🎴 BARAJEO Y EFECTOS
-   // 💰 ADMINISTRACIÓN Y CÁLCULOS
-   // 🏆 GANADOR Y SONIDO
-   // ⚙️ UTILIDADES / AUTO-DRAW
-   ========================= */
-
-/* 🎴 BARAJEO Y EFECTOS */
-function shufflePendingToFullScreen_v95(){
-  if(window.animShuffling) return;
-  window.animShuffling = true;
-  if(typeof disableControls === 'function') disableControls(true);
-  const overlay = document.getElementById('shuffle-overlay') || (function(){ const o=document.createElement('div'); o.id='shuffle-overlay'; document.body.appendChild(o); return o; })();
-  overlay.classList.add('visible');
-  overlay.style.display='flex';
-  overlay.innerHTML = '<div class="shuffle-center"></div>';
-  const visible = Array.from(document.querySelectorAll('#players-area .card-thumb'));
-  visible.forEach(c=> c.classList.add('back-pattern'));
-  const pending = (window.game && window.game.deck) ? game.deck.filter(id=> !window.cartasPasadas?.includes(id)) : Array.from({length:54},(_,i)=>i+1);
-  const sample = pending.slice(0,14);
-  const center = overlay.querySelector('.shuffle-center');
-  const cards = sample.map((cid,i)=>{
-    const el = document.createElement('div');
-    el.className = 'shuffle-card';
-    el.style.backgroundImage = `url('${cardImageUrl(cid)}')`;
-    el.style.left='50%'; el.style.top='50%'; el.style.transform='translate(-50%,-50%)';
-    el.style.zIndex = 100 + i;
-    center.appendChild(el);
-    return {el, cid};
-  });
-  cards.forEach((c, idx)=>{
-    setTimeout(()=>{
-      c.el.style.transition='transform .8s ease, opacity .8s ease';
-      const tx = (Math.random()*640 - 320);
-      const ty = (Math.random()*320 - 160);
-      const rot = (Math.random()*720 - 360);
-      c.el.style.transform = `translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(.92)`;
-    }, idx * 120);
-  });
-  setTimeout(()=>{ cards.forEach((c,ii)=>{ c.el.style.transition='transform .6s ease, opacity .6s ease'; c.el.style.transform = `translate(${(ii - cards.length/2) * 8}px, -40px) rotate(${(Math.random()*12)-6}deg) scale(.95)`; }); }, 1600);
-  setTimeout(()=>{ cards.forEach((c,ii)=>{ c.el.style.transition='transform .45s ease, opacity .45s ease'; c.el.style.backgroundImage = `linear-gradient(#ddd,#bbb)`; c.el.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><img src="logo_1_entrada.png" style="width:80px;height:80px;opacity:.95"></div>'; }); }, 2200);
-  setTimeout(()=>{
-    overlay.classList.remove('visible'); overlay.style.display='none'; overlay.innerHTML='';
-    window.animShuffling = false; if(typeof disableControls === 'function') disableControls(false);
-    if(typeof shufflePending === 'function') shufflePending(); if(typeof renderAll === 'function') renderAll();
-    const vis = Array.from(document.querySelectorAll('#players-area .card-thumb'));
-    vis.forEach(c=>{ c.classList.add('shine'); setTimeout(()=> c.classList.remove('shine'), 1900); });
-  }, 3000);
-}
-if(typeof shufflePendingToFullScreen === 'function'){
-  window.originalShufflePendingToFullScreen = shufflePendingToFullScreen;
-  function shufflePendingToFullScreen(){ shufflePendingToFullScreen_v95(); }
-} else { window.shufflePendingToFullScreen = shufflePendingToFullScreen_v95; }
-
-/* 💰 ADMINISTRACIÓN Y CÁLCULOS */
-function registrarJugador_v95(j){
-  window.modalidades = window.modalidades || window.modalidades || [{key:'4cartas',precio:40,ganancia:10},{key:'6cartas',precio:60,ganancia:15}];
-  const mod = window.modalidades.find(m=> m.key === j.modalidadKey) || window.modalidades[0] || {};
-  const gananciaCasa = Number(mod.ganancia || 0);
-  const costo = Number(mod.precio || j.costo || 0);
-  const aporte = (j.comision === 0) ? costo : (costo - gananciaCasa);
-  j.aporte = aporte; j.gananciaCasa = (j.comision === 0) ? 0 : gananciaCasa;
-  window.jugadoresActivos = window.jugadoresActivos || []; window.jugadoresActivos.push(j);
-  if(typeof actualizarBolsa === 'function') actualizarBolsa(); else actualizarBolsa_v95();
-}
-function actualizarBolsa_v95(){
-  window.jugadoresActivos = window.jugadoresActivos || [];
-  const totalAporte = window.jugadoresActivos.reduce((s,j)=> s + (Number(j.aporte)||0), 0);
-  const totalGananciaCasa = window.jugadoresActivos.reduce((s,j)=> s + (Number(j.gananciaCasa)||0), 0);
-  const bolsaInline = document.getElementById('bolsaTotalInline') || document.getElementById('bolsaTotal');
-  if(bolsaInline) bolsaInline.innerText = '$' + totalAporte;
-  const ganEl = document.getElementById('gananciaCasaTotal');
-  if(ganEl) ganEl.innerText = '$' + totalGananciaCasa;
-}
-if(typeof actualizarBolsa !== 'function'){ window.actualizarBolsa = actualizarBolsa_v95; } else { window.actualizarBolsa = actualizarBolsa; }
-
-function showAdminTotalsIfAdmin_v95(flag){
-  const el = document.getElementById('totales-admin'); if(!el) return;
-  if(typeof flag === 'boolean'){ el.style.display = flag ? 'flex' : 'none'; return; }
-  if(window.currentUser && window.currentUser.role === 'ADMINISTRADOR'){ el.style.display = 'flex'; } else { el.style.display = 'none'; }
-}
-window.registrarJugador = window.registrarJugador || registrarJugador_v95;
-
-/* 🏆 GANADOR Y SONIDO */
-function showWinnerEnhancements_v95(selectorOrEl){
-  try{ const ap = new Audio('APLAUSOS_GANADOR.mp3'); ap.currentTime = 1; ap.play().catch(()=>{}); }catch(e){}
-  try{
-    let el=null;
-    if(typeof selectorOrEl === 'string') el = document.querySelector(selectorOrEl);
-    else if(selectorOrEl instanceof Element) el = selectorOrEl;
-    else el = document.querySelector('#players-area .card-thumb.winner') || document.querySelector('#players-area .card-thumb');
-    if(!el) return;
-    const clone = el.cloneNode(true); clone.id = 'card-winner'; clone.classList.add('winning-card');
-    clone.style.width='240px'; clone.style.height='360px'; document.body.appendChild(clone);
-  }catch(e){}
-}
-window.showWinnerEnhancements = window.showWinnerEnhancements || showWinnerEnhancements_v95;
-
-/* ⚙️ UTILIDADES / AUTO-DRAW */
-window.autoInterval = window.autoInterval || null;
-function startAutoDraw(intervalMs){ if(window.autoInterval) return; window.autoInterval = setInterval(()=>{ if(typeof drawOne === 'function') drawOne(); }, intervalMs || 2000); }
-function stopAutoDraw(){ if(window.autoInterval){ clearInterval(window.autoInterval); window.autoInterval = null; } }
-function clearWinningCard_v95(){ const w = document.getElementById('card-winner'); if(w) w.remove(); }
-window.clearWinningCard = window.clearWinningCard || clearWinningCard_v95;
 
 </script>
 </body>

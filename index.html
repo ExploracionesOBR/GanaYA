@@ -13,7 +13,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 
 /* A J U S T E S   D E   A N C H O S  (COMPACTOS) */
 .container{ max-width:1200px; margin:8px auto; padding:0 8px; }
-.header-row-top{ display:flex; align-items:center; gap:12px; justify-content:space-between; margin-bottom:4px; } /* Reducido de 6px a 4px */
+.header-row-top{ display:flex; align-items:center; gap:12px; justify-content:space-between; margin-bottom:4px; } 
 
 /* AJUSTE CLAVE: Reposicionamiento de elementos */
 .header-left{ display:flex; align-items:center; gap:12px; } /* Nuevo contenedor para agrupar logo y controles a la izquierda */
@@ -45,12 +45,8 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 .mex-frame-small{ background:#fff; border-radius:10px; padding:10px; border:3px solid var(--rojo); box-shadow:0 6px 14px rgba(0,0,0,.06); }
 
 /* AJUSTE UX: Centrar contenido de mex-frame-small por defecto */
-#control-partida {
-  text-align: center;
-}
-#control-partida h3 {
-  text-align: center;
-}
+#control-partida { text-align: center; }
+#control-partida h3 { text-align: center; }
 
 /* AJUSTE CLAVE: Forzar 5 columnas de jugadores */
 .players-grid{ display:grid; grid-template-columns: repeat(5,1fr); gap:8px; align-items:start; }
@@ -194,7 +190,6 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
   <div class="header-row-top">
 
     <div class="header-left">
-      <div class="logo-box"><img id="logo-img" src="logo_1_entrada.png" alt="logo"></div>
       <div class="header-controls">
         <div class="bolsa-compact">
           <div style="font-weight:900" id="bolsa-label">💰 Bolsa</div>
@@ -203,6 +198,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
         <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
         <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
       </div>
+      <div class="logo-box"><img id="logo-img" src="logo_1_entrada.png" alt="logo"></div>
     </div>
 
     <div class="title-box">
@@ -324,7 +320,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 <canvas id="confetti-canvas"></canvas>
 
 <script>
-/* index_v9.4_efx_perfecto v3.6 - code block */
+/* index_v9.4_efx_perfecto v3.7 - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
 const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",49:"49 el pino-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
@@ -368,6 +364,7 @@ function initializePurchaseData(p) {
         let price = p.totalPaid || (p.modality === 4 ? currentPrices.price4 : currentPrices.price6) || 0;
         let profit = p.modality === 4 ? currentPrices.profit4 : currentPrices.profit6;
         
+        // Asegurarse de que el cálculo sea siempre el mismo
         p.price = p.price || price;
         p.profit = p.profit || profit;
         p.enJuego = price - profit;
@@ -382,7 +379,7 @@ function renderAll(){
   if(document.getElementById('price4')) document.getElementById('price4').value=prices.price4;
   if(document.getElementById('price6')) document.getElementById('price6').value=prices.price6;
 
-  // --- NUEVA LÓGICA DE BOLSA (POT) Y GANANCIA DE LA CASA ---
+  // --- LÓGICA DE BOLSA (POT) Y GANANCIA DE LA CASA (Puntos 5 y 6) ---
   const viewAdminEl = document.getElementById('view-admin');
   const isAdminView = viewAdminEl && !viewAdminEl.classList.contains('hidden');
   let potAmount = 0;
@@ -392,17 +389,16 @@ function renderAll(){
   purchases.forEach(p => initializePurchaseData(p));
 
   if (isAdminView) {
-    // Vista Administrador: Mostrar Ganancia Total de la Casa (Casa)
-    // Suma del campo 'casa' de TODAS las compras
+    // Vista Administrador: Mostrar Ganancia Total de la Casa (Casa) (Punto 5)
     const totalHouseProfit = purchases.reduce((s, p) => s + (p.casa || 0), 0);
     potAmount = totalHouseProfit;
     potLabelText = '💰 Casa';
   } else {
-    // Vista 'EN JUEGO': Mostrar Total Pot de la modalidad activa
+    // Vista 'EN JUEGO': Mostrar Total Pot de la modalidad activa (Punto 6)
     const activeForPot = purchases.filter(p=> 
       p.state==='JUGANDO' && 
       (p.gamesLeft||0)>0 &&
-      p.modality === currentMode 
+      p.modality === currentMode // FILTRO POR MODALIDAD
     );
     // Suma del campo 'enJuego' para todos los activos
     const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
@@ -420,7 +416,7 @@ function renderAll(){
   const area=document.getElementById('players-area');
   const active = purchases.filter(p=> (p.gamesLeft||0)>0 && p.state==='JUGANDO' && p.modality===currentMode);
   
-  // --- NUEVA LÓGICA DE LAYOUT DE JUGADORES (Fix 5 columnas) ---
+  // --- LÓGICA DE LAYOUT DE JUGADORES (Fix 5 columnas y 2x2 / 3x2) ---
   const maxPlayersInRow = 5;
   let numActive = active.length;
   let numSimulated = 0;
@@ -432,24 +428,19 @@ function renderAll(){
 
   // Agregar tarjetas simuladas si es necesario
   if(numSimulated > 0) {
-    const gridCols = 3; 
-    const totalSlots = 6; 
+    const gridCols = currentMode === 4 ? 2 : 3; // 2 cols for 4 cards, 3 for 6 cards (Punto 2)
     const numPattern = currentMode; // 4 o 6 cartas
-    const numEmpty = totalSlots - numPattern; // 2 o 0 espacios en blanco
+    const cardSlots = numPattern; // 4 slots (2x2) or 6 slots (3x2)
     
     let emptyHtml = '';
     for(let i=0; i<numSimulated; i++) {
         let cardSlotsHtml = '';
-        // 1. Slots con patrón (número de cartas de la modalidad)
+        // Slots con patrón (número de cartas de la modalidad)
         for(let j=0; j<numPattern; j++) {
             cardSlotsHtml += `<div class="card-thumb back-pattern"></div>`;
         }
-        // 2. Slots vacíos (solo para la modalidad de 4 cartas)
-        for(let j=0; j<numEmpty; j++) {
-            // Estilo para el espacio vacío visible, diferente al fondo de la carta sin patrón.
-            cardSlotsHtml += `<div class="card-thumb" style="background:#f5f5f5; border:1px dashed #ddd"></div>`;
-        }
-
+        
+        // El número de slots a mostrar es igual a numPattern para mantener el 2x2 o 3x2
         emptyHtml += `<div class="player-card simulated">
             <div class="player-name small-muted">&nbsp;</div>
             <div class="player-cards" style="display:grid;grid-template-columns:repeat(${gridCols},1fr);gap:8px;justify-items:center;margin-top:10px;">
@@ -495,28 +486,20 @@ function animateBolsa(target){
 }
 
 function renderPlayerCard(p){
-  // AJUSTE CLAVE: Usamos siempre 3 columnas (2x3 grid) para mantener el encuadre.
-  const cols = 3; 
-  const totalSlots = 6; 
+  // AJUSTE CLAVE (Punto 2): Dynamic columns (2x2 or 3x2) based on modality
+  const cols = p.modality === 4 ? 2 : 3; 
   
-  const cardList=(p.card||[]).slice(0,p.modality); // Cards actually assigned (4 or 6)
+  const cardList=(p.card||[]).slice(0,p.modality); 
 
   let html = `<div class="player-card" onclick="openPurchaseDetail('${p.id}')"><div class="player-name">${escapeHtml(p.playerName)}</div><div class="player-cards" style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:6px;justify-items:center;margin-top:8px">`;
   
-  // 1. Render actual cards
+  // Render actual cards
   cardList.forEach(cid=>{ 
     const passed = cartasPasadas.includes(cid); 
     const isMarked = (p.markedCards||[]).includes(cid); 
     const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : ''; 
     html+=`<div class="card-thumb ${passed?'passed':''}" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`; 
   });
-  
-  // 2. Render missing slots (2 para 4 cartas, 0 para 6 cartas)
-  let missing = totalSlots - cardList.length; 
-  while(missing-->0) {
-    // Usar un div simple con un estilo para el espacio vacío visible.
-    html+=`<div class="card-thumb" style="background:#f5f5f5; border:1px dashed #ddd"></div>`; 
-  }
   
   html+='</div></div>'; 
   return html;
@@ -535,7 +518,7 @@ function renderPlayersTable(filter){
     return; 
   } 
   
-  // FIX: Se agregaron las columnas En Juego y Casa
+  // FIX: Se agregaron las columnas En Juego y Casa (Punto 4)
   tbody.innerHTML = list.map(p=>`<tr><td style="padding:6px">${p.id}</td><td style="padding:6px">${escapeHtml(p.playerName)}<div class="small-muted">${escapeHtml(p.cell||'—')}</div></td><td style="padding:6px;text-align:center">${p.modality}</td><td style="padding:6px;text-align:center">${p.gamesLeft||0}</td><td style="padding:6px;text-align:center">${formatMoney(p.enJuego||0)}</td><td style="padding:6px;text-align:center">${formatMoney(p.casa||0)}</td><td style="padding:6px;text-align:center">${p.state||'JUGANDO'}</td><td style="padding:6px;text-align:center"><button class="btn btn-blue" onclick="openPurchaseDetail('${p.id}')">Detalle</button></td></tr>`).join(''); 
 }
 
@@ -801,7 +784,7 @@ function registerPlayer(){
         initialGames:1,gamesLeft:1,
         totalPaid:ptPrice,
         wins:0,state:'JUGANDO',card:[],markedCards:[],selectionUsed:true,createdAt:Date.now(),
-        // NUEVOS CAMPOS:
+        // CAMPOS EN JUEGO Y CASA (Punto 4)
         price: ptPrice,
         profit: ptProfit,
         enJuego: ptEnJuego,
@@ -865,7 +848,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
   document.getElementById('reset-prices').addEventListener('click', ()=>{ if(!confirm('Restablecer precios por defecto?')) return; prices=defaultsPrices(); saveAll(); renderAll(); });
 
-  // FIX: Al cambiar de vista, se llama a renderAll para actualizar la bolsa.
+  // Al cambiar de vista, se llama a renderAll para actualizar la bolsa.
   document.getElementById('btn-view-play').addEventListener('click', ()=>{ document.getElementById('view-admin').classList.add('hidden'); document.getElementById('main-grid').style.display='grid'; document.getElementById('btn-view-play').classList.add('active'); document.getElementById('btn-view-admin').classList.remove('active'); renderAll(); });
   document.getElementById('btn-view-admin').addEventListener('click', ()=>{ document.getElementById('view-admin').classList.remove('hidden'); document.getElementById('main-grid').style.display='none'; document.getElementById('btn-view-admin').classList.add('active'); document.getElementById('btn-view-play').classList.remove('active'); renderAll(); });
 
@@ -900,9 +883,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.addEventListener('keydown', (e)=>{
     if(e.key==='Escape'){
       closeGroupModal();
-      const mw=document.getElementById('modal-winner'); if(mw && !mw.classList.contains('hidden')){ mw.classList.add('hidden'); mw.style.display='none'; stopConfettiFullScreen(); } // Stop confetti on ESC for initial winner modal
-      // AJUSTE UX: Permitir cerrar el modal de detalle con ESC
-      closeWinnerDetailModal(); // This will also stop the confetti if it was somehow still running
+      const mw=document.getElementById('modal-winner'); if(mw && !mw.classList.contains('hidden')){ mw.classList.add('hidden'); mw.style.display='none'; stopConfettiFullScreen(); } 
+      closeWinnerDetailModal(); 
     }
     if(e.code==='Space'){ e.preventDefault(); if(!isAuto) drawOne(); }
   });
@@ -946,7 +928,7 @@ function showWinnerDetailModal(){
   // Cerrar el modal de felicitación y parar el confetti (previo al detalle)
   document.getElementById('modal-winner').classList.add('hidden');
   document.getElementById('modal-winner').style.display='none';
-  stopConfettiFullScreen(); // Aseguramos que pare aquí antes de la vista de detalle.
+  stopConfettiFullScreen();
 
   const winningCardId = recs[0].cardId;
   const winnerPlayer = purchases.find(p => p.id === recs[0].purchaseId);
@@ -955,6 +937,10 @@ function showWinnerDetailModal(){
   document.getElementById('winner-detail-player-name').textContent = `Jugador: ${winnerPlayer.playerName}`;
   document.getElementById('winner-detail-card-name').textContent = `Carta Ganadora: ${cardName(winningCardId)}`;
   const detailCardsContainer = document.getElementById('winner-detail-player-cards');
+  
+  // FIX: Ajustar el layout de la cuadrícula de detalle según la modalidad
+  const cols = winnerPlayer.modality === 4 ? 2 : 3;
+  detailCardsContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
 
   const cardListHtml = (winnerPlayer.card || []).map(cid => {
     const isWinner = cid === winningCardId;
@@ -962,13 +948,6 @@ function showWinnerDetailModal(){
     const sticker = isMarked ? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : '';
     return `<div class="card-thumb ${isWinner ? 'winner-card' : ''} ${isMarked ? 'passed' : ''}" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
   }).join('');
-  
-  // AJUSTE: Agregar espacios en blanco para mantener el encuadre (solo 2 para modalidad 4)
-  const totalSlots = 6;
-  let missing = totalSlots - (winnerPlayer.card || []).length; 
-  while(missing-->0) {
-    cardListHtml += `<div class="card-thumb" style="background:#f5f5f5; border:1px dashed #ddd"></div>`; 
-  }
   
   detailCardsContainer.innerHTML = cardListHtml;
 
@@ -982,7 +961,7 @@ function closeWinnerDetailModal(){
   modalDetail.classList.add('hidden');
   modalDetail.style.display = 'none';
   delete window._tempWinnerRecs;
-  stopConfettiFullScreen(); // FIX CONFETTI: Aseguramos que pare al cerrar el modal de detalle.
+  stopConfettiFullScreen(); 
   renderAll();
 }
 

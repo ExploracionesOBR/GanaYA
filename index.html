@@ -12,18 +12,19 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
   background-position: 0 0, 25px 25px; background-size: 50px 50px; }
 
 /* A J U S T E S   D E   A N C H O S  (COMPACTOS) */
-.container{ max-width:1200px; margin:8px auto; padding:0 8px; } /* Reducido de 12px a 8px */
+.container{ max-width:1200px; margin:8px auto; padding:0 8px; }
 .header-row-top{ display:flex; align-items:center; gap:12px; justify-content:space-between; margin-bottom:4px; } /* Reducido de 6px a 4px */
-.title-box{ display:flex; align-items:center; gap:12px; flex:1; justify-content:center; }
+
+/* AJUSTE CLAVE: Reposicionamiento de elementos */
+.title-box{ display:flex; align-items:center; gap:12px; flex:1; justify-content:center; } /* Mantiene el título centrado */
 .title { font-size:56px; font-weight:900; color:var(--rojo); margin:0; animation: fiesta 3.2s linear infinite; }
-.subtitle { color:#0b7a3b; font-size:14px; margin-top:4px; text-align:center; } /* Reducido de 6px a 4px */
+.subtitle { color:#0b7a3b; font-size:14px; margin-top:4px; text-align:center; }
 
 @keyframes fiesta { 0%{ color:#e63946 }15%{ color:var(--accent1) }30%{ color:#2a9d8f }45%{ color:#6d9df5 }60%{ color:var(--accent2) }75%{ color:#ff9e00 }100%{ color:#e63946 } }
 
-.header-left{ display:flex; align-items:center; gap:12px; }
+.header-controls{ display:flex; gap:12px; align-items:center; } /* Controls a la izquierda */
+.header-right{ display:flex; align-items:center; gap:12px; } /* Nuevo contenedor para el logo a la derecha */
 .logo-box img{ width:96px; height:96px; object-fit:contain; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.12); }
-
-.header-controls{ display:flex; gap:12px; align-items:center; }
 
 .bolsa-compact{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; background:linear-gradient(90deg,#e6fff1,#fff7e6); border:3px solid #c9a700; box-shadow:0 8px 20px rgba(0,0,0,0.06); }
 .bolsa-compact .label{ font-weight:900; color:#2d6b25; font-size:14px; }
@@ -34,13 +35,13 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 .toggle-admin{ background:#f3f4f6;color:#111; }
 
 /* AJUSTE CLAVE: Ancho fijo para las columnas y reducción de gap/margin */
-.main-grid{ display:grid; grid-template-columns: 280px 1fr 400px; gap:8px; align-items:start; margin-top:8px; } /* Reducido de 12px a 8px */
+.main-grid{ display:grid; grid-template-columns: 280px 1fr 400px; gap:8px; align-items:start; margin-top:8px; }
 @media(max-width:1200px){ .main-grid{ grid-template-columns:1fr; } }
 
-.mex-frame{ background:#fff; border-radius:12px; padding:10px; border:4px solid var(--rojo); box-shadow:var(--sombra); } /* Reducido de 14px a 10px */
-.mex-frame-small{ background:#fff; border-radius:10px; padding:10px; border:3px solid var(--rojo); box-shadow:0 6px 14px rgba(0,0,0,.06); } /* Reducido de 12px a 10px */
+.mex-frame{ background:#fff; border-radius:12px; padding:10px; border:4px solid var(--rojo); box-shadow:var(--sombra); }
+.mex-frame-small{ background:#fff; border-radius:10px; padding:10px; border:3px solid var(--rojo); box-shadow:0 6px 14px rgba(0,0,0,.06); }
 
-/* **AJUSTE UX:** Centrar contenido de mex-frame-small por defecto */
+/* AJUSTE UX: Centrar contenido de mex-frame-small por defecto */
 #control-partida {
   text-align: center;
 }
@@ -49,15 +50,34 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 }
 
 /* AJUSTE CLAVE: Forzar 5 columnas de jugadores */
-.players-grid{ display:grid; grid-template-columns: repeat(5,1fr); gap:8px; align-items:start; } /* Reducido de 14px a 8px */
+.players-grid{ display:grid; grid-template-columns: repeat(5,1fr); gap:8px; align-items:start; }
 @media(max-width:1100px){ .players-grid{ grid-template-columns: repeat(4,1fr); } }
 @media(max-width:900px){ .players-grid{ grid-template-columns: repeat(3,1fr); } }
 @media(max-width:640px){ .players-grid{ grid-template-columns: 1fr; } }
 
 .player-card{ background:#fff; border-radius:10px; padding:8px; text-align:center; box-shadow:0 6px 16px rgba(0,0,0,0.06); cursor:pointer; min-height:220px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; transition:transform .18s ease, box-shadow .18s ease; }
 .player-card:hover{ transform:translateY(-4px); box-shadow:0 18px 36px rgba(0,0,0,.12); }
-.player-name{ font-weight:900; margin-top:4px; font-size:15px; } /* Reducido de 8px a 4px */
-.player-cards{ margin-top:8px; display:flex; flex-direction:column; gap:6px; align-items:center; overflow:hidden; } /* Reducido de 10px a 8px */
+.player-name{ font-weight:900; margin-top:4px; font-size:15px; }
+.player-cards{ margin-top:8px; display:flex; flex-direction:column; gap:6px; align-items:center; overflow:hidden; }
+
+/* AJUSTE CLAVE: Estilo para la simulación de espacios vacíos */
+.player-card.simulated {
+  cursor:default; 
+  opacity:1; /* Totalmente visible para mantener el espacio */
+  background:#fff; 
+  border:1px solid #ddd; 
+  box-shadow:none;
+  min-height:220px; 
+}
+.player-card.simulated .player-name, 
+.player-card.simulated .player-cards .card-thumb.back-pattern::after {
+  display: none; /* Oculta texto y logo del patrón */
+}
+.player-card.simulated .player-cards .card-thumb{
+  background: #ffffff !important; /* Fuerza fondo blanco */
+  border: 1px dashed #eee; /* Borde sutil para que se vea el espacio */
+  filter: none !important; /* Asegura que no tenga filtros */
+}
 
 .card-thumb{ width:74px; height:106px; border-radius:8px; background-size:cover; background-position:center; position:relative; transition:transform .28s ease, opacity .28s ease; }
   .card-thumb.back-pattern{
@@ -93,20 +113,20 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 .sticker{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
 .sticker img{ width:42px; height:42px; filter:none; }
 
-.controls { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; justify-content:center; } /* Reducido de 10px a 8px */
-.btn{ padding:8px 10px; border-radius:8px; font-weight:800; border:none; cursor:pointer; color:white; } /* Reducido padding */
+.controls { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; justify-content:center; }
+.btn{ padding:8px 10px; border-radius:8px; font-weight:800; border:none; cursor:pointer; color:white; }
 .btn-blue{ background:#1565d8 } .btn-red{ background:var(--rojo)} .btn-green{ background:var(--verde)} .btn-muted{ background:#f3f4f6; color:#111 }
 
-.current-card{ min-height:180px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#fff; box-shadow:var(--sombra); border:3px solid #eee; padding:8px; } /* Reducido min-height y padding */
-.last-cards{ display:flex; gap:6px; justify-content:center; } /* Reducido gap */
+.current-card{ min-height:180px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#fff; box-shadow:var(--sombra); border:3px solid #eee; padding:8px; }
+.last-cards{ display:flex; gap:6px; justify-content:center; }
 
-.admin-row{ display:flex; gap:8px; align-items:flex-start; } /* Reducido gap */
+.admin-row{ display:flex; gap:8px; align-items:flex-start; }
 .admin-col{ flex:1; }
 
-.price-grid{ display:flex; gap:8px; } /* Reducido gap */
-.price-box{ padding:12px; border-radius:12px; border:2px dashed #eee; background:#fff; text-align:center; font-weight:800; box-shadow:0 6px 14px rgba(0,0,0,0.03); min-height:100px; flex:1; } /* Reducido padding */
+.price-grid{ display:flex; gap:8px; }
+.price-box{ padding:12px; border-radius:12px; border:2px dashed #eee; background:#fff; text-align:center; font-weight:800; box-shadow:0 6px 14px rgba(0,0,0,0.03); min-height:100px; flex:1; }
 
-.table-wrap{ overflow:auto; max-height:300px; border:1px solid #eee; border-radius:8px; padding:6px; background:#fff; font-size:12px; } /* Reducido max-height y padding */
+.table-wrap{ overflow:auto; max-height:300px; border:1px solid #eee; border-radius:8px; padding:6px; background:#fff; font-size:12px; }
 
 .filter-btn{ padding:6px 8px; border-radius:8px; border:none; cursor:pointer; font-weight:800; background:#f3f4f6 }
 .filter-btn.active-4{ background: #d1fae5; box-shadow:0 8px 18px rgba(34,197,94,0.08); }
@@ -114,7 +134,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 .filter-btn.active-all{ background: #f8fafc; box-shadow:0 8px 18px rgba(99,102,241,0.04); }
 
 .modal-back{ position:fixed; inset:0; background:rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; z-index:9999; }
-.modal{ background:#fff; border-radius:12px; padding:12px; width:820px; max-width:96%; box-shadow:var(--sombra); position:relative; } /* Reducido padding */
+.modal{ background:#fff; border-radius:12px; padding:12px; width:820px; max-width:96%; box-shadow:var(--sombra); position:relative; }
 .hidden{ display:none; }
 
 .shuffle-overlay{ position:fixed; inset:0; z-index:2200; display:none; align-items:center; justify-content:center; background:rgba(255,255,255,0.98); }
@@ -123,8 +143,8 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 
 #confetti-canvas{ position:fixed; left:0; top:0; width:100vw; height:100vh; z-index:3000; pointer-events:none; display:none; }
 
-.small-muted{ color:#6b7280; font-size:12px; } /* Reducido font-size */
-.badge{ display:inline-block; padding:4px 8px; border-radius:999px; color:white; font-weight:700; font-size:11px; margin-left:4px; } /* Reducido padding y font-size */
+.small-muted{ color:#6b7280; font-size:12px; }
+.badge{ display:inline-block; padding:4px 8px; border-radius:999px; color:white; font-weight:700; font-size:11px; margin-left:4px; }
 .badge-porpagar{ background:#d97706 } .badge-pagado{ background:#2a9d8f } .badge-jugando{ background:#1565d8 }
 
 .input{ width:100%; padding:8px 10px; border-radius:8px; border:1px solid #ddd; }
@@ -164,8 +184,14 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 <div class="container">
 
   <div class="header-row-top">
-    <div class="header-left">
-      <div class="logo-box"><img id="logo-img" src="logo_1_entrada.png" alt="logo"></div>
+
+    <div class="header-controls">
+      <div class="bolsa-compact">
+        <div style="font-weight:900">💰 Bolsa</div>
+        <div class="amount" id="bolsa-amount">$0.00</div>
+      </div>
+      <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
+      <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
     </div>
 
     <div class="title-box">
@@ -175,13 +201,8 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
       </div>
     </div>
 
-    <div class="header-controls">
-      <div class="bolsa-compact">
-        <div style="font-weight:900">💰 Bolsa</div>
-        <div class="amount" id="bolsa-amount">$0.00</div>
-      </div>
-      <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
-      <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
+    <div class="header-right">
+      <div class="logo-box"><img id="logo-img" src="logo_1_entrada.png" alt="logo"></div>
     </div>
   </div>
 
@@ -300,7 +321,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 <canvas id="confetti-canvas"></canvas>
 
 <script>
-/* index_v9.4_efx_perfecto v3.2 - code block */
+/* index_v9.4_efx_perfecto v3.3 - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
 const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",49:"49 el pino-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] || `${id}.jpg`);
@@ -346,7 +367,7 @@ function renderAll(){
   const pot = Math.max(0, totalSalesActive - houseActive);
   animateBolsa(pot);
 
-  // **AJUSTE UX:** Ganancia de la Casa (Admin View)
+  // AJUSTE UX: Ganancia de la Casa (Admin View)
   const totalSales = purchases.reduce((s,p)=> s + (p.totalPaid||0), 0); 
   const totalPrizesPaid = winners.reduce((s,w)=> s + (w.paid ? w.amount : 0), 0); 
   const houseProfit = totalSales - totalPrizesPaid; 
@@ -359,12 +380,23 @@ function renderAll(){
   const area=document.getElementById('players-area');
   const active = purchases.filter(p=> (p.gamesLeft||0)>0 && p.state==='JUGANDO' && p.modality===currentMode);
   if(!active.length){
-    // **AJUSTE UX:** Simular 5 cartas vacías para mantener el tamaño del grid
+    // AJUSTE CLAVE: Simular 5 cartas vacías (simuladas)
     let emptyHtml = '';
     const numSimulated = 5;
+    // Usamos grid 2x2 para 4 cartas, ya que es el menor y mantiene la forma.
+    const gridCols = 2; 
+    
     for(let i=0; i<numSimulated; i++) {
-        // Se usa la misma estructura de player-card para mantener el grid
-        emptyHtml += `<div class="player-card" style="cursor:default; min-height:220px; opacity:0.6; background:#f0f0f0; border:1px solid #ddd; box-shadow:none;"><div class="player-name small-muted">Espacio vacio</div><div class="player-cards" style="display:grid;grid-template-columns:repeat(${currentMode===4?2:3},1fr);gap:8px;justify-items:center;margin-top:10px;"><div class="card-thumb back-pattern"></div></div></div>`;
+        // Clase 'simulated' para aplicar los estilos de ocultación de texto
+        emptyHtml += `<div class="player-card simulated">
+            <div class="player-name small-muted"></div>
+            <div class="player-cards" style="display:grid;grid-template-columns:repeat(${gridCols},1fr);gap:8px;justify-items:center;margin-top:10px;">
+                <div class="card-thumb back-pattern"></div>
+                <div class="card-thumb back-pattern"></div>
+                <div class="card-thumb back-pattern"></div>
+                <div class="card-thumb back-pattern"></div>
+            </div>
+        </div>`;
     }
     area.innerHTML = emptyHtml;
   }
@@ -373,8 +405,6 @@ function renderAll(){
   const cur=document.getElementById('current-card'); if(game.current && cur) cur.innerHTML=`<div style="width:160px;height:220px;background-image:url('${cardImageUrl(game.current)}');background-size:contain;background-repeat:no-repeat;background-position:center;"></div>`; else if(cur) cur.innerHTML='<div class="small-muted">Esperando barajeo...</div>';
 
   const last=(game.drawn||[]).slice(-3).reverse(); const lastEl=document.getElementById('last-cards'); if(lastEl) lastEl.innerHTML = last.length? last.map(c=>`<div style="width:64px;height:96px;background-image:url('${cardImageUrl(c)}');background-size:cover;border-radius:6px"></div>`).join('') : '<div class="small-muted">Ninguna carta aún.</div>';
-
-  const wl=document.getElementById('winners-list'); if(wl) wl.innerHTML = winners.length ? winners.slice().reverse().map(w=>`<div class="winner-item" style="padding:8px;border-radius:8px;margin-bottom:8px;background:linear-gradient(90deg,#fff6f6,#fff)"><div><strong>${escapeHtml(w.playerName)}</strong><div class="small-muted">${new Date(w.timestamp).toLocaleString()}</div></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px"><div style="font-weight:800;color:#b45309">${formatMoney(w.amount)}</div><div class="small-muted">${escapeHtml(cardName(w.cardId))}</div><div>${w.paid?'<span class="badge badge-pagado">PAGADO</span>':'<span class="badge badge-porpagar">PENDIENTE</span>'}</div></div></div>`).join('') : '<div class="small-muted" style="text-align:center">Aún no hay ganadores.</div>';
 
   // AJUSTE UX: Control de visibilidad de botones al ganar
   const gameControls = document.getElementById('game-controls');
@@ -716,7 +746,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   // AJUSTE UX: Botones de confirmación del modal de Felicitación. Se cierra y se muestra el detalle.
   document.getElementById('winner-ok').addEventListener('click', showWinnerDetailModal);
-  // **FIX CONFETTI:** Asegurar que el botón X pare el confetti
+  // FIX CONFETTI: Asegurar que el botón X pare el confetti
   document.getElementById('winner-close').addEventListener('click', ()=>{ const m=document.getElementById('modal-winner'); m.classList.add('hidden'); m.style.display='none'; stopConfettiFullScreen(); });
 
   // AJUSTE UX: Botones del modal de Detalle del Ganador
@@ -803,7 +833,7 @@ function closeWinnerDetailModal(){
   modalDetail.classList.add('hidden');
   modalDetail.style.display = 'none';
   delete window._tempWinnerRecs;
-  stopConfettiFullScreen(); // **FIX CONFETTI:** Aseguramos que pare al cerrar el modal de detalle.
+  stopConfettiFullScreen(); // FIX CONFETTI: Aseguramos que pare al cerrar el modal de detalle.
   renderAll();
 }
 

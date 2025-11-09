@@ -468,7 +468,6 @@ function printPurchase(id){ const p=purchases.find(x=>x.id===id); if(!p) return;
   if(autoBtn){ let running=false; autoBtn.addEventListener('click', ()=>{ if(!running){ window.autoInterval = setInterval(()=>{ if(typeof drawOne==='function') drawOne(); }, 2000); autoBtn.classList.add('btn-green'); autoBtn.textContent='⏹️ DETENER AUTOMÁTICO'; running=true; } else { clearInterval(window.autoInterval); window.autoInterval=null; autoBtn.classList.remove('btn-green'); autoBtn.textContent='⏱️ CARTAS AUTOMÁTICO'; running=false; } }); }
 })(); // end helpers IIFE
 
-</script>
 </body></html>`; const w=window.open('','_blank'); w.document.write(html); w.document.close(); setTimeout(()=>w.print(),500); }
 
 

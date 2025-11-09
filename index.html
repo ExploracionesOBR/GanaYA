@@ -21,7 +21,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
   position: relative; 
 }
 
-/* FIX: Contenedor principal del encabezado (Logo, Título, Controles) */
+/* FIX: Contenedor principal del encabezado (Logo y Título) - SIMPLIFICADO */
 .main-header {
     display: flex;
     align-items: center; 
@@ -29,9 +29,11 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
     justify-content: space-between; 
     height: 96px; 
     margin-bottom: 8px;
-    /* Eliminamos el padding horizontal de aquí para que abarque todo el ancho del container */
     padding: 0; 
     position: relative;
+    /* FIX: Usamos space-between para separar el logo y el titulo, 
+           aunque visualmente parece centrado por el width del logo-wrapper.
+           Ajustamos el title-container para el centrado. */
 }
 
 /* Logo Box - Agregamos padding izquierdo para el borde visual */
@@ -46,14 +48,11 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 
 .logo-box img{ width:96px; height:96px; object-fit:contain; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.12); }
 
-/* TÍTULO: Posicionamiento absoluto para centrado real */
+/* TÍTULO: Posicionamiento para centrado real, ahora sin controles a la derecha */
 .title-container {
-    position: absolute;
-    left: 0;
-    right: 0;
+    /* Quitamos el position absolute. Lo centramos dentro de main-header */
+    flex-grow: 1; /* Permite que el contenedor de título ocupe el espacio */
     text-align: center;
-    top: 50%;
-    transform: translateY(-50%);
     pointer-events: none; 
     z-index: 5;
 }
@@ -65,6 +64,8 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
   margin:0; 
   animation: fiesta 3.2s linear infinite; 
   white-space: nowrap; 
+  /* FIX: Aseguramos el centrado forzando el contenedor a tomar el ancho */
+  width: 100%;
 }
 
 .subtitle { color:#0b7a3b; font-size:14px; margin-top:4px; text-align:center; }
@@ -99,15 +100,17 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 }
 
 /* Controles de Bolsa/Admin - Contenedor a la derecha */
-#header-controls-wrapper {
-  flex-shrink: 0; 
+/* ESTE CONTENEDOR SE MUEVE A LA COLUMNA 3 */
+.header-controls-wrapper {
   display: flex;
   align-items: center; 
   justify-content: flex-end; 
-  height: 96px; 
-  /* Agregamos padding derecho para el borde visual */
-  padding-right: 8px; /* FIX: Restaura el padding visual */
+  /* Usamos un padding superior para alinearlo visualmente con el logo de 96px */
+  padding-top: 24px; 
+  padding-bottom: 8px;
+  padding-right: 8px;
   z-index: 10;
+  width: 100%; /* Ocupa el ancho de la Columna 3 */
 }
 
 .header-controls{ 
@@ -314,16 +317,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
           <div class="subtitle">Gana Ya! es una página de carácter interactivo y de entretenimiento.</div>
       </div>
       
-      <div id="header-controls-wrapper">
-          <div class="header-controls">
-              <div class="bolsa-compact">
-                  <div style="font-weight:900" id="bolsa-label">💰 Bolsa</div>
-                  <div class="amount" id="bolsa-amount">$0.00</div>
-              </div>
-              <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
-              <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
-          </div>
-      </div>
+      <div style="width: 96px; flex-shrink: 0; padding-right: 8px;"></div>
   </header>
   <div class="main-grid" id="main-grid">
 
@@ -340,6 +334,17 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
     </section>
 
     <aside class="controls-panel" id="controls-panel">
+      
+      <div class="header-controls-wrapper">
+          <div class="header-controls">
+              <div class="bolsa-compact">
+                  <div style="font-weight:900" id="bolsa-label">💰 Bolsa</div>
+                  <div class="amount" id="bolsa-amount">$0.00</div>
+              </div>
+              <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
+              <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
+          </div>
+      </div>
       
       <div class="mex-frame-small" aria-label="Control de partida" id="control-partida" style="margin-top:0px"> 
         <h3 style="margin:0">CONTROL DE PARTIDA</h3>
@@ -434,7 +439,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 <canvas id="confetti-canvas"></canvas>
 
 <script>
-/* index_v9.4_efx_perfecto v3.20-FINAL-FIX - code block */
+/* index_v9.4_efx_perfecto v3.21-FINAL-FIX-2 - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
 const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg",49:"49 el pino-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);

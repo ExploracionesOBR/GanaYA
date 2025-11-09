@@ -10,46 +10,49 @@
 body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; padding:0; background:var(--crema); color:#222;
   background-image: radial-gradient(#ffd60a 1px, transparent 1px), radial-gradient(#e63946 1px, transparent 1px);
   background-position: 0 0, 25px 25px; background-size: 50px 50px; 
-  /* FIX CLAVE: Prevenir scroll horizontal */
   overflow-x: hidden; 
 }
 
-/* A J U S T E S   D E   A N C H O S  (COMPACTOS) */
 .container{ 
   max-width:1200px; 
   margin:8px auto; 
-  /* Se eliminó el padding horizontal para que header-row-top y main-grid lo controlen */
-  padding:0 0; 
+  padding:0 8px; /* Padding horizontal general para el contenido */
+  position: relative; /* Necesario para los FAB */
 }
 
-/* AJUSTE CLAVE: HEADER A 2 COLUMNAS (Logo | Título/Centro) */
+/* AJUSTE CLAVE: Contenedor para la barra superior de Controles */
+.top-controls-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    padding: 0 8px; /* Alineación con el resto del contenido */
+}
+
 .header-row-top{ 
   display:grid; 
-  grid-template-columns: 280px 1fr; /* 2 Columnas */
+  grid-template-columns: 280px 1fr; /* Logo (280px) | Título (1fr) */
   gap:8px; 
   align-items:center; 
   margin-bottom:4px; 
-  padding: 0; 
+  padding: 0 8px; /* Alineación con el resto del contenido */
 } 
 
-/* Seccion Izquierda: Logo (alineado a la izquierda de la columna 1) */
 .logo-box-wrapper{
   display: flex;
   align-items: center;
   justify-content: flex-start;
   height: 96px;
-  /* AJUSTE CLAVE (FIX #1): ELIMINAR padding-left para pegarlo al borde izquierdo del viewport */
   padding-left: 0 !important;
 }
 
 .logo-box img{ width:96px; height:96px; object-fit:contain; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.12); }
 
-/* Seccion Central/Derecha: Título (centrado en la columna 2) */
 .title-box{ 
   display:flex; 
   align-items:center; 
   gap:12px; 
-  /* AJUSTE CLAVE: Centrar el título en la columna 2 (Columna del contenido principal) */
   justify-content:center; 
 } 
 
@@ -67,15 +70,9 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 @keyframes fiesta { 0%{ color:#e63946 }15%{ color:var(--accent1) }30%{ color:#2a9d8f }45%{ color:#6d9df5 }60%{ color:var(--accent2) }75%{ color:#ff9e00 }100%{ color:#e63946 } }
 
 
-/* Sección Derecha: Controles (ELIMINADOS del Header, ahora están en el main-grid) */
-.controls-box-wrapper {
-  display: none; /* Se oculta */
-}
-
-
 /* AJUSTE CLAVE: Ancho fijo para las columnas y reducción de gap/margin */
 .main-grid{ display:grid; grid-template-columns: 280px 1fr 400px; gap:8px; align-items:start; margin-top:8px; 
-  padding: 0; 
+  padding: 0 8px; /* Alineación con el resto del contenido */
 }
 @media(max-width:1200px){ .main-grid{ grid-template-columns:1fr; } }
 
@@ -86,7 +83,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 #control-partida { text-align: center; }
 #control-partida h3 { text-align: center; }
 
-/* AJUSTE CLAVE (FIX #3): Forzar centrado del selector de modalidad y texto interno */
+/* AJUSTE CLAVE: Forzar centrado del selector de modalidad y texto interno */
 #control-partida select {
     display: block !important;
     margin: 0 auto !important;
@@ -95,17 +92,16 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
     text-align-last: center; 
 }
 
-/* Controles que se movieron a la columna derecha */
+/* Los controles de Bolsa/Admin que ahora estan en .top-controls-row */
 .header-controls{ 
   display:flex; 
   gap:12px; 
   align-items:center; 
   flex-shrink: 0; 
   padding: 0; 
-  margin: 0 0 8px 0; /* Espacio para separarse de CONTROL DE PARTIDA */
-  justify-content: flex-end; /* Asegurar que se pegue a la derecha de la columna */
+  margin: 0; 
+  justify-content: flex-end; 
 } 
-
 
 .bolsa-compact{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; background:linear-gradient(90deg,#e6fff1,#fff7e6); border:3px solid #c9a700; box-shadow:0 8px 20px rgba(0,0,0,0.06); }
 .bolsa-compact .label{ font-weight:900; color:#2d6b25; font-size:14px; }
@@ -129,7 +125,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 /* AJUSTE CLAVE: Estilo para la simulación de espacios vacíos */
 .player-card.simulated {
   cursor:default; 
-  opacity:1; /* Totalmente visible para mantener el espacio */
+  opacity:1; 
   background:#fff; 
   border:1px solid #ddd; 
   box-shadow:none;
@@ -137,15 +133,14 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 }
 .player-card.simulated .player-name, 
 .player-card.simulated .player-cards .card-thumb.back-pattern::after {
-  display: none; /* Oculta texto y logo del patrón */
+  display: none; 
 }
 .player-card.simulated .player-cards .card-thumb{
-  background: #ffffff !important; /* Fuerza fondo blanco */
-  filter: none !important; /* Asegura que no tenga filtros */
+  background: #ffffff !important; 
+  filter: none !important; 
 }
-/* Estilo específico para los spots simulados vacíos, sin patrón */
 .player-card.simulated .player-cards .card-thumb:not(.back-pattern) {
-  border: 1px dashed #eee; /* Borde sutil para que se vea el espacio */
+  border: 1px dashed #eee; 
   background: #f5f5f5 !important;
 }
 
@@ -223,7 +218,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 .tooltip{ position:relative; }
 .tooltip .tip{ position:absolute; bottom:110%; left:50%; transform:translateX(-50%); background:#111; color:#fff; padding:6px 8px; border-radius:6px; font-size:12px; display:none; white-space:nowrap; }
 .tooltip.show .tip{ display:block; }
-/* Estilo del Modal de Detalle de Ganador */
+
 #modal-winner-detail .modal{
   width: auto;
   padding: 20px;
@@ -248,18 +243,60 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
   transform: scale(1.15);
   transition: transform 0.3s ease-in-out;
 }
+
+/* ESTILOS FAB (FLOTANTE CIRCULAR) */
+.fab-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.fab-button {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.3s ease;
+    color: white;
+    font-weight: 900;
+}
+.fab-button:hover {
+    transform: scale(1.08);
+}
+#fab-export {
+    background: var(--azul); /* Azul para PDF */
+}
+#fab-reset-day {
+    background: var(--rojo); /* Rojo para Reiniciar */
+    font-size: 20px;
+}
 </style>
 </head>
 <body>
 
 <div class="container">
 
+  <div class="top-controls-row">
+    <div class="bolsa-compact">
+      <div style="font-weight:900" id="bolsa-label">💰 Bolsa</div>
+      <div class="amount" id="bolsa-amount">$0.00</div>
+    </div>
+    <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
+    <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
+  </div>
   <div class="header-row-top">
-
     <div class="logo-box-wrapper">
         <div class="logo-box"><img id="logo-img" src="logo_1_entrada.png" alt="logo"></div>
     </div>
-
     <div class="title-box">
       <div>
         <div class="title">🎉 GANA YA!</div>
@@ -283,16 +320,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 
     <aside class="controls-panel" id="controls-panel">
       
-      <div class="header-controls">
-        <div class="bolsa-compact">
-          <div style="font-weight:900" id="bolsa-label">💰 Bolsa</div>
-          <div class="amount" id="bolsa-amount">$0.00</div>
-        </div>
-        <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
-        <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
-      </div>
-      
-      <div class="mex-frame-small" aria-label="Control de partida" id="control-partida" style="margin-top:4px">
+      <div class="mex-frame-small" aria-label="Control de partida" id="control-partida" style="margin-top:0px"> 
         <h3 style="margin:0">CONTROL DE PARTIDA</h3>
         <div class="small-muted" style="margin-top:4px">Barajea, tira cartas o activa automático — selecciona modalidad</div>
 
@@ -329,11 +357,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 
     </aside>
 
-  </div> <section id="view-admin" class="mex-frame hidden" style="margin-top:8px; padding: 0 8px;">
-    <div style="display:flex;gap:8px; justify-content:flex-end; margin-bottom:8px;">
-      <button id="btn-export-admin" class="btn btn-blue">📄 Generar PDF (Con logo)</button>
-      <button id="btn-clear-admin" class="btn btn-red">🧹 Reiniciar Día</button>
-    </div>
+  </div> <section id="view-admin" class="mex-frame hidden" style="margin-top:8px; padding: 10px 8px;">
     
     <div class="admin-row">
       <div class="admin-col mex-frame-small">
@@ -372,21 +396,24 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
       </div>
     </div>
   </section>
+  
+  <div class="fab-container hidden" id="fab-controls-admin">
+    <button id="fab-export" class="fab-button" title="Generar PDF (Con logo)">📄</button>
+    <button id="fab-reset-day" class="fab-button" title="Reiniciar Día">🧹</button>
+  </div>
 
   <footer style="text-align:center; margin-top:8px; padding-bottom:8px;" class="small-muted">Coloca <strong>logo_1_entrada.png</strong> en la raíz y la carpeta <strong>Cartas_baraja_loteria/</strong> con las 54 imágenes.</footer>
 </div>
 
 <div id="modal-player" class="hidden"><div class="modal-back" id="modal-player-back"><div class="modal"><button id="modal-close-x" style="position:absolute;right:10px;top:8px;border:none;background:transparent;font-size:18px;cursor:pointer">✖</button><h3 id="modal-player-name">Jugador</h3><div id="modal-body"></div><div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px"><button id="modal-close" class="btn btn-muted">Cerrar</button></div></div></div></div>
-
 <div id="modal-winner" class="hidden"><div class="modal-back" id="modal-winner-back"><div class="modal" style="text-align:center"><button id="winner-close" style="position:absolute; right:10px; top:8px; border:none; background:transparent; font-size:20px; cursor:pointer;">❌</button><div style="font-size:28px; font-weight:900; color:var(--rojo); margin-bottom:6px" id="winner-title">🎉 ¡FELICIDADES!</div><div id="winner-body" style="font-size:18px; font-weight:700; margin-bottom:10px;"></div><div style="margin-bottom:6px" id="winner-sub"></div><div style="display:flex; gap:8px; justify-content:center;"><button id="winner-ok" class="btn btn-blue">Aceptar</button></div></div></div></div>
-
 <div id="modal-winner-detail" class="hidden"><div class="modal-back" id="modal-winner-detail-back"><div class="modal"><button id="winner-detail-close-x" style="position:absolute;right:10px;top:8px;border:none;background:transparent;font-size:24px;cursor:pointer">❌</button><h2 style="margin:0 0 10px 0; color:var(--verde)">¡LOTERÍA GANADA!</h2><h3 style="margin:0 0 10px 0; font-weight:900" id="winner-detail-player-name"></h3><div style="font-weight:700; color:var(--rojo);" id="winner-detail-card-name"></div><div id="winner-detail-player-cards"></div><div style="margin-top:20px"><button id="winner-detail-ok" class="btn btn-blue" style="width:200px">Cerrar Detalle</button></div></div></div></div>
 
 <div id="shuffle-overlay" class="shuffle-overlay"></div>
 <canvas id="confetti-canvas"></canvas>
 
 <script>
-/* index_v9.4_efx_perfecto v3.16 - code block */
+/* index_v9.4_efx_perfecto v3.16-FINAL - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
 const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",49:"49 el pino-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
@@ -403,7 +430,7 @@ let tx = load(Ktx) || [];
 let winners = load(Kw) || [];
 let cartasPasadas = load(Kpas) || [];
 let currentMode = Number(localStorage.getItem(Kmod) || 4);
-if(currentMode===8) currentMode=4;
+if(currentMode===8) currentMode=4; // Corrección por si hay datos viejos de 8 cartas
 
 let isAuto=false, autoInterval=null, animShuffling=false;
 let audioCtx=null; try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ audioCtx=null; }
@@ -420,17 +447,12 @@ function cardName(id){ return CARD_NAME_MAP[id] ? CARD_NAME_MAP[id].replace(/^\d
 function playShuffleSound(){ if(!audioCtx) return; const now=audioCtx.currentTime; const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*0.22,audioCtx.sampleRate); const d=buf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length); const s=audioCtx.createBufferSource(); s.buffer=buf; const g=audioCtx.createGain(); g.gain.setValueAtTime(0.001,now); g.gain.exponentialRampToValueAtTime(0.6,now+0.02); g.gain.exponentialRampToValueAtTime(0.001,now+0.2); s.connect(g); g.connect(audioCtx.destination); s.start(now); s.stop(now+0.22); }
 function playApplause(){ if(!audioCtx) return; const now=audioCtx.currentTime; for(let i=0;i<6;i++){ const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='square'; o.frequency.setValueAtTime(200+Math.random()*800, now + i*0.02); o.connect(g); g.connect(audioCtx.destination); g.gain.setValueAtTime(0.002, now + i*0.02); g.gain.exponentialRampToValueAtTime(0.3, now + i*0.02 + 0.05); g.gain.exponentialRampToValueAtTime(0.001, now + i*0.02 + 0.6); o.start(now + i*0.02); o.stop(now + i*0.02 + 0.65); } }
 
-/**
- * Inicializa los campos de precio, ganancia y distribución de fondos para una compra,
- * si faltan (para compatibilidad con datos viejos).
- */
 function initializePurchaseData(p) {
     if (!p.price || !p.profit || typeof p.enJuego === 'undefined' || typeof p.casa === 'undefined') {
         let currentPrices = load(Kp) || defaultsPrices();
         let price = p.totalPaid || (p.modality === 4 ? currentPrices.price4 : currentPrices.price6) || 0;
         let profit = p.modality === 4 ? currentPrices.profit4 : currentPrices.profit6;
         
-        // Asegurarse de que el cálculo sea siempre el mismo
         p.price = p.price || price;
         p.profit = p.profit || profit;
         p.enJuego = price - profit;
@@ -445,28 +467,36 @@ function renderAll(){
   if(document.getElementById('price4')) document.getElementById('price4').value=prices.price4;
   if(document.getElementById('price6')) document.getElementById('price6').value=prices.price6;
 
-  // --- LÓGICA DE BOLSA (POT) Y GANANCIA DE LA CASA (Puntos 5 y 6) ---
   const viewAdminEl = document.getElementById('view-admin');
+  const mainGridEl = document.getElementById('main-grid');
+  const fabControlsEl = document.getElementById('fab-controls-admin');
+  
   const isAdminView = viewAdminEl && !viewAdminEl.classList.contains('hidden');
+  
+  // FIX NAVEGACIÓN: Mostrar/Ocultar Grilla Principal y FAB
+  if (isAdminView) {
+      if (mainGridEl) mainGridEl.style.display = 'none';
+      if (fabControlsEl) fabControlsEl.classList.remove('hidden');
+  } else {
+      if (mainGridEl) mainGridEl.style.display = 'grid';
+      if (fabControlsEl) fabControlsEl.classList.add('hidden');
+  }
+
   let potAmount = 0;
   let potLabelText = '💰 Bolsa';
 
-  // Asegurar que todas las compras tienen los campos casa/enJuego para un cálculo robusto.
   purchases.forEach(p => initializePurchaseData(p));
 
   if (isAdminView) {
-    // Vista Administrador: Mostrar Ganancia Total de la Casa (Casa) (Punto 5)
     const totalHouseProfit = purchases.reduce((s, p) => s + (p.casa || 0), 0);
     potAmount = totalHouseProfit;
     potLabelText = '💰 Casa';
   } else {
-    // Vista 'EN JUEGO': Mostrar Total Pot de la modalidad activa (Punto 6)
     const activeForPot = purchases.filter(p=> 
-      p.state==='JUGANDO' && 
+      (p.state==='JUGANDO' || p.state==='POR PAGAR') && // FIX: Incluir POR PAGAR en el cálculo de la bolsa activa
       (p.gamesLeft||0)>0 &&
-      p.modality === currentMode // FILTRO POR MODALIDAD
+      p.modality === currentMode 
     );
-    // Suma del campo 'enJuego' para todos los activos
     const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
     potAmount = totalEnJuego;
     potLabelText = '💰 Bolsa';
@@ -475,14 +505,12 @@ function renderAll(){
   animateBolsa(potAmount);
   const bolsaLabelEl = document.getElementById('bolsa-label');
   if(bolsaLabelEl) bolsaLabelEl.textContent = potLabelText;
-  // --- FIN LÓGICA BOLSA ---
 
   const deckCount=document.getElementById('deck-count'); if(deckCount) deckCount.textContent=game.deck.length;
 
   const area=document.getElementById('players-area');
-  const active = purchases.filter(p=> (p.gamesLeft||0)>0 && p.state==='JUGANDO' && p.modality===currentMode);
+  const active = purchases.filter(p=> (p.gamesLeft||0)>0 && (p.state==='JUGANDO' || p.state==='POR PAGAR') && p.modality===currentMode); // FIX: Incluir POR PAGAR en la vista de jugadores
   
-  // --- LÓGICA DE LAYOUT DE JUGADORES (Fix 5 columnas y 2x2 / 3x2) ---
   const maxPlayersInRow = 5;
   let numActive = active.length;
   let numSimulated = 0;
@@ -492,21 +520,17 @@ function renderAll(){
   
   let finalHtml = active.map(p=> renderPlayerCard(p)).join('');
 
-  // Agregar tarjetas simuladas si es necesario
   if(numSimulated > 0) {
-    const gridCols = currentMode === 4 ? 2 : 3; // 2 cols for 4 cards, 3 for 6 cards (Punto 2)
-    const numPattern = currentMode; // 4 o 6 cartas
-    const cardSlots = numPattern; // 4 slots (2x2) or 6 slots (3x2)
+    const gridCols = currentMode === 4 ? 2 : 3; 
+    const numPattern = currentMode; 
     
     let emptyHtml = '';
     for(let i=0; i<numSimulated; i++) {
         let cardSlotsHtml = '';
-        // Slots con patrón (número de cartas de la modalidad)
         for(let j=0; j<numPattern; j++) {
             cardSlotsHtml += `<div class="card-thumb back-pattern"></div>`;
         }
         
-        // El número de slots a mostrar es igual a numPattern para mantener el 2x2 o 3x2
         emptyHtml += `<div class="player-card simulated">
             <div class="player-name small-muted">&nbsp;</div>
             <div class="player-cards" style="display:grid;grid-template-columns:repeat(${gridCols},1fr);gap:8px;justify-items:center;margin-top:10px;">
@@ -517,16 +541,12 @@ function renderAll(){
     finalHtml += emptyHtml;
   }
   
-  // Establecer el HTML final para el área de jugadores
   if (area) area.innerHTML = finalHtml || '<div class="small-muted" style="padding:18px; text-align:center">Aún no hay jugadores.</div>';
-  // --- FIN LÓGICA LAYOUT ---
-
 
   const cur=document.getElementById('current-card'); if(game.current && cur) cur.innerHTML=`<div style="width:160px;height:220px;background-image:url('${cardImageUrl(game.current)}');background-size:contain;background-repeat:no-repeat;background-position:center;"></div>`; else if(cur) cur.innerHTML='<div class="small-muted">Esperando barajeo...</div>';
 
   const last=(game.drawn||[]).slice(-3).reverse(); const lastEl=document.getElementById('last-cards'); if(lastEl) lastEl.innerHTML = last.length? last.map(c=>`<div style="width:64px;height:96px;background-image:url('${cardImageUrl(c)}');background-size:cover;border-radius:6px"></div>`).join('') : '<div class="small-muted">Ninguna carta aún.</div>';
 
-  // AJUSTE UX: Control de visibilidad de botones al ganar
   const gameControls = document.getElementById('game-controls');
   const btnReset = document.getElementById('btn-reset');
   if(gameControls && btnReset){
@@ -552,14 +572,12 @@ function animateBolsa(target){
 }
 
 function renderPlayerCard(p){
-  // AJUSTE CLAVE (Punto 2): Dynamic columns (2x2 or 3x2) based on modality
   const cols = p.modality === 4 ? 2 : 3; 
   
   const cardList=(p.card||[]).slice(0,p.modality); 
 
   let html = `<div class="player-card" onclick="openPurchaseDetail('${p.id}')"><div class="player-name">${escapeHtml(p.playerName)}</div><div class="player-cards" style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:6px;justify-items:center;margin-top:8px">`;
   
-  // Render actual cards
   cardList.forEach(cid=>{ 
     const passed = cartasPasadas.includes(cid); 
     const isMarked = (p.markedCards||[]).includes(cid); 
@@ -575,16 +593,14 @@ function renderPlayersTable(filter){
   const tbody=document.getElementById('players-table'); 
   const list = purchases.slice().filter(p=> !filter || p.modality===filter); 
   
-  // Inicializar data para mostrar en la tabla (incluyendo enJuego/casa)
   list.forEach(p => initializePurchaseData(p));
   
   if(!tbody) return; 
   if(!list.length){ 
-    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td></tr>'; // FIX colspan a 8
+    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td></tr>'; 
     return; 
   } 
   
-  // FIX: Se agregaron las columnas En Juego y Casa (Punto 4)
   tbody.innerHTML = list.map(p=>`<tr><td style="padding:6px">${p.id}</td><td style="padding:6px">${escapeHtml(p.playerName)}<div class="small-muted">${escapeHtml(p.cell||'—')}</div></td><td style="padding:6px;text-align:center">${p.modality}</td><td style="padding:6px;text-align:center">${p.gamesLeft||0}</td><td style="padding:6px;text-align:center">${formatMoney(p.enJuego||0)}</td><td style="padding:6px;text-align:center">${formatMoney(p.casa||0)}</td><td style="padding:6px;text-align:center">${p.state||'JUGANDO'}</td><td style="padding:6px;text-align:center"><button class="btn btn-blue" onclick="openPurchaseDetail('${p.id}')">Detalle</button></td></tr>`).join(''); 
 }
 
@@ -592,7 +608,6 @@ function openPurchaseDetail(id){
   const p=purchases.find(x=>x.id===id); 
   if(!p) return alert('No encontrado'); 
   
-  // Asegurar que la data esté completa
   initializePurchaseData(p);
   
   const modal=document.getElementById('modal-player'); 
@@ -604,7 +619,6 @@ function openPurchaseDetail(id){
     return `<div style="width:100px;height:150px;background-image:url('${cardImageUrl(cid)}');background-size:cover;border-radius:8px;display:inline-block;margin-right:8px;position:relative">${sticker}</div>`; 
   }).join(''); 
   
-  // FIX: Se incluyó el Total Pagado en el detalle
   const details = `<div><strong>Modalidad:</strong> ${p.modality} cartas</div><div><strong>Total Pagado:</strong> ${formatMoney(p.totalPaid)}</div><div><strong>Monto en Juego:</strong> ${formatMoney(p.enJuego||0)}</div><div><strong>Ganancia Casa:</strong> ${formatMoney(p.casa||0)}</div><div><strong>Partidas restantes:</strong> ${p.gamesLeft||0}</div><div style="margin-top:8px"><strong>Cartas asignadas:</strong></div><div style="margin-top:8px">${cards}</div><div style="margin-top:8px"><strong>CLABE / Cuenta:</strong> ${escapeHtml(p.clabe||'')}</div><div style="margin-top:8px"><strong>Estado:</strong> ${p.state||'JUGANDO'}</div><div style="margin-top:8px"><button class="btn btn-blue" onclick="printPurchase('${p.id}');">Tomar captura / Imprimir</button> <button class="btn btn-green" onclick="copyClabe('${p.id}');">Copiar CLABE</button> <button class="btn btn-green" onclick="confirmWhatsapp('${p.id}');">Confirmar pago WhatsApp</button> <button class="btn btn-green" onclick="markPaidById('${p.id}');">Marcar Pagado</button></div>`; 
   
   document.getElementById('modal-body').innerHTML = details; 
@@ -660,7 +674,6 @@ function shufflePendingToFullScreen(){
     return {el, cid};
   });
 
-  // 1. Dispersión inicial
   cards.forEach((c,idx)=>{
     setTimeout(()=>{
       c.el.style.transition='transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 1.5s ease';
@@ -670,16 +683,14 @@ function shufflePendingToFullScreen(){
     }, idx * 60);
   });
 
-  // 2. Traer al centro apilado
   setTimeout(()=>{
     cards.forEach((c,ii)=>{
       c.el.style.transition='transform 1.0s ease-in-out, opacity 1.0s ease';
       c.el.style.transform = `translate(${(ii - cards.length/2) * 2}px, -20px) rotate(${(Math.random()*8)-4}deg) scale(0.98)`;
     });
     playShuffleSound();
-  }, 2000); // 2.0s
+  }, 2000); 
 
-  // 3. Convertir a patrón reverso
   setTimeout(()=>{
     cards.forEach((c,ii)=>{
       c.el.style.transition='transform 0.8s ease, opacity 0.8s ease, background-image 0.2s';
@@ -687,9 +698,8 @@ function shufflePendingToFullScreen(){
       c.el.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><img src="logo_1_entrada.png" style="width:80px;height:80px;opacity:.95"></div>`;
     });
     playShuffleSound();
-  }, 3200); // 3.2s
+  }, 3200); 
 
-  // after full animation, hide overlay and finalize shuffle
   setTimeout(()=>{
     overlay.classList.remove('visible');
     overlay.style.display='none';
@@ -705,7 +715,7 @@ function shufflePendingToFullScreen(){
       setTimeout(()=> c.classList.remove('shine'), 1800);
     });
 
-  }, 4000); // Tiempo final total de 4.0s
+  }, 4000); 
 }
 
 
@@ -747,14 +757,12 @@ function processCard(cardId){
     game.winnerPending = true;
     disableControls(true);
     
-    // Calcular el premio usando el campo 'enJuego' de las compras
     const winningModality = purchases.find(p => p.id === winnersFound[0].purchaseId)?.modality || currentMode;
     const activeForPot = purchases.filter(p=> 
       p.state==='JUGANDO' && 
       (p.gamesLeft||0)>0 &&
       p.modality === winningModality 
     );
-    // Asegurar data inicializada para el cálculo del premio
     activeForPot.forEach(p => initializePurchaseData(p));
 
     const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
@@ -764,7 +772,7 @@ function processCard(cardId){
     winnersFound.forEach(w=>{
       const p=purchases[w.idx];
       p.wins=(p.wins||0)+1;
-      p.state='POR PAGAR';
+      p.state='POR PAGAR'; // FIX CLAVE: Cambia a POR PAGAR
       const rec={id:uuid(),purchaseId:p.id,playerName:p.playerName,amount:share,timestamp:Date.now(),paid:false,cardId:cardId,clabe:p.clabe||'',cell:p.cell||''};
       winners.push({timestamp:rec.timestamp,playerName:rec.playerName,amount:rec.amount,cardId:rec.cardId,paid:false,purchaseId:p.id});
       tx.push({id:uuid(),type:'winner',player:p.playerName,amount:share,ts:Date.now()});
@@ -793,7 +801,8 @@ function toggleAuto(){ if(isAuto) stopAuto(); else startAuto(); }
 
 function disableControls(d){
   ['btn-shuffle','btn-draw','btn-auto'].forEach(id=>{ const el=document.getElementById(id); if(el) el.disabled=!!d; });
-  ['btn-register','save-prices','btn-export-admin','btn-clear-admin'].forEach(id=>{ const el=document.getElementById(id); if(el) el.disabled=!!d; });
+  ['btn-register','save-prices'].forEach(id=>{ const el=document.getElementById(id); if(el) el.disabled=!!d; });
+  ['fab-export','fab-reset-day'].forEach(id=>{ const el=document.getElementById(id); if(el) el.disabled=!!d; });
 }
 
 function generateCardForPurchase(modality){
@@ -850,7 +859,6 @@ function registerPlayer(){
         initialGames:1,gamesLeft:1,
         totalPaid:ptPrice,
         wins:0,state:'JUGANDO',card:[],markedCards:[],selectionUsed:true,createdAt:Date.now(),
-        // CAMPOS EN JUEGO Y CASA (Punto 4)
         price: ptPrice,
         profit: ptProfit,
         enJuego: ptEnJuego,
@@ -869,10 +877,10 @@ function registerPlayer(){
 }
 
 function resetGame(){
-  if(!confirm('Iniciar un juego nuevo: se reiniciará el mazo y se quitará 1 partida a todos los jugadores activos. ¿Continuar?')) return;
+  if(!confirm('Iniciar un juego nuevo: se reiniciará el mazo y se quitará 1 partida a los jugadores **en estado JUGANDO**. ¿Continuar?')) return;
   stopAuto();
   purchases.forEach(p=>{
-    if(p.state==='JUGANDO' || p.state==='POR PAGAR'){
+    if(p.state==='JUGANDO'){ // FIX CLAVE: SOLO descontar a los que están JUGANDO
       p.gamesLeft = Math.max(0,(p.gamesLeft||0)-1);
       if(p.gamesLeft<=0) p.state='FINALIZADO';
     }
@@ -914,33 +922,40 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
   document.getElementById('reset-prices').addEventListener('click', ()=>{ if(!confirm('Restablecer precios por defecto?')) return; prices=defaultsPrices(); saveAll(); renderAll(); });
 
-  // Al cambiar de vista, se llama a renderAll para actualizar la bolsa.
-  document.getElementById('btn-view-play').addEventListener('click', ()=>{ document.getElementById('view-admin').classList.add('hidden'); document.getElementById('main-grid').style.display='grid'; document.getElementById('btn-view-play').classList.add('active'); document.getElementById('btn-view-admin').classList.remove('active'); renderAll(); });
-  document.getElementById('btn-view-admin').addEventListener('click', ()=>{ document.getElementById('view-admin').classList.remove('hidden'); document.getElementById('main-grid').style.display='none'; document.getElementById('btn-view-admin').classList.add('active'); document.getElementById('btn-view-play').classList.remove('active'); renderAll(); });
+  // Eventos de botones de vista (EN JUEGO / ADMINISTRADOR)
+  document.getElementById('btn-view-play').addEventListener('click', ()=>{ document.getElementById('view-admin').classList.add('hidden'); document.getElementById('btn-view-play').classList.add('active'); document.getElementById('btn-view-admin').classList.remove('active'); renderAll(); });
+  document.getElementById('btn-view-admin').addEventListener('click', ()=>{ document.getElementById('view-admin').classList.remove('hidden'); document.getElementById('btn-view-admin').classList.add('active'); document.getElementById('btn-view-play').classList.remove('active'); renderAll(); });
 
   document.getElementById('select-modality').addEventListener('change', (e)=>{ currentMode = Number(e.target.value); localStorage.setItem(Kmod,String(currentMode)); renderAll(); });
 
-  document.getElementById('btn-export-admin').addEventListener('click', exportPdf);
-  document.getElementById('btn-clear-admin').addEventListener('click', ()=>{ if(!confirm('Borrar todo y reiniciar día? Esto eliminará compras y registros.')) return; purchases=[]; tx.push({id:uuid(),type:'clear',ts:Date.now()}); game=defaultsGame(); winners=[]; cartasPasadas=[]; saveAll(); renderAll(); });
+  // Eventos de FAB Buttons (flotantes)
+  document.getElementById('fab-export').addEventListener('click', exportPdf);
+  document.getElementById('fab-reset-day').addEventListener('click', ()=>{ 
+    if(!confirm('Borrar todo y reiniciar día? Esto eliminará compras, transacciones y registros de ganadores.')) return; 
+    purchases=[]; 
+    tx.push({id:uuid(),type:'clear',ts:Date.now()}); 
+    game=defaultsGame(); 
+    winners=[]; 
+    cartasPasadas=[]; 
+    saveAll(); 
+    renderAll(); 
+    alert('Día reiniciado. Todos los datos de compras y ganancias se borraron.'); 
+  });
 
   // filters with active visual state
   document.getElementById('filter-all').addEventListener('click', ()=>{ setActiveFilter('all'); renderPlayersTable(); });
   document.getElementById('filter-4').addEventListener('click', ()=>{ setActiveFilter(4); renderPlayersTable(4); });
   document.getElementById('filter-6').addEventListener('click', ()=>{ setActiveFilter(6); renderPlayersTable(6); });
 
-  // modal overlay clicks to close
   document.getElementById('modal-player-back').addEventListener('click', (e)=>{ if(e.target.id==='modal-player-back') closeGroupModal(); });
   document.getElementById('modal-winner-back').addEventListener('click', (e)=>{ if(e.target.id==='modal-winner-back') { document.getElementById('modal-winner').classList.add('hidden'); document.getElementById('modal-winner').style.display='none'; stopConfettiFullScreen(); } });
 
   document.getElementById('modal-close').addEventListener('click', closeGroupModal);
   document.getElementById('modal-close-x').addEventListener('click', closeGroupModal);
 
-  // AJUSTE UX: Botones de confirmación del modal de Felicitación. Se cierra y se muestra el detalle.
   document.getElementById('winner-ok').addEventListener('click', showWinnerDetailModal);
-  // FIX CONFETTI: Asegurar que el botón X pare el confetti
   document.getElementById('winner-close').addEventListener('click', ()=>{ const m=document.getElementById('modal-winner'); m.classList.add('hidden'); m.style.display='none'; stopConfettiFullScreen(); });
 
-  // AJUSTE UX: Botones del modal de Detalle del Ganador
   document.getElementById('winner-detail-ok').addEventListener('click', closeWinnerDetailModal);
   document.getElementById('winner-detail-close-x').addEventListener('click', closeWinnerDetailModal);
   document.getElementById('modal-winner-detail-back').addEventListener('click', (e)=>{ if(e.target.id==='modal-winner-detail-back') closeWinnerDetailModal(); });
@@ -957,6 +972,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   document.getElementById('input-budget').addEventListener('input',(e)=>{ suggestFromBudget(Number(e.target.value||0)); });
 
+  // Inicializar vista: forzar a EN JUEGO
   document.getElementById('view-admin').classList.add('hidden');
   document.getElementById('main-grid').style.display = 'grid';
   document.getElementById('btn-view-play').classList.add('active');
@@ -991,7 +1007,6 @@ function showWinnerDetailModal(){
   const recs = window._tempWinnerRecs;
   if(!recs || !recs.length) return;
 
-  // Cerrar el modal de felicitación y parar el confetti (previo al detalle)
   document.getElementById('modal-winner').classList.add('hidden');
   document.getElementById('modal-winner').style.display='none';
   stopConfettiFullScreen();
@@ -1004,7 +1019,6 @@ function showWinnerDetailModal(){
   document.getElementById('winner-detail-card-name').textContent = `Carta Ganadora: ${cardName(winningCardId)}`;
   const detailCardsContainer = document.getElementById('winner-detail-player-cards');
   
-  // FIX: Ajustar el layout de la cuadrícula de detalle según la modalidad
   const cols = winnerPlayer.modality === 4 ? 2 : 3;
   detailCardsContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
 

@@ -28,6 +28,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 .header-right{ width:280px; } /* Mantenemos un espacio vacío del lado derecho para forzar el centro */
 .logo-box img{ width:96px; height:96px; object-fit:contain; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.12); }
 
+/* FIX HTML: Bolsa con label dinámico */
 .bolsa-compact{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; background:linear-gradient(90deg,#e6fff1,#fff7e6); border:3px solid #c9a700; box-shadow:0 8px 20px rgba(0,0,0,0.06); }
 .bolsa-compact .label{ font-weight:900; color:#2d6b25; font-size:14px; }
 .bolsa-compact .amount{ font-weight:900; color:#b45309; font-size:18px; }
@@ -77,9 +78,14 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 }
 .player-card.simulated .player-cards .card-thumb{
   background: #ffffff !important; /* Fuerza fondo blanco */
-  border: 1px dashed #eee; /* Borde sutil para que se vea el espacio */
   filter: none !important; /* Asegura que no tenga filtros */
 }
+/* Estilo específico para los spots simulados vacíos, sin patrón */
+.player-card.simulated .player-cards .card-thumb:not(.back-pattern) {
+  border: 1px dashed #eee; /* Borde sutil para que se vea el espacio */
+  background: #f5f5f5 !important;
+}
+
 
 .card-thumb{ width:74px; height:106px; border-radius:8px; background-size:cover; background-position:center; position:relative; transition:transform .28s ease, opacity .28s ease; }
   .card-thumb.back-pattern{
@@ -191,7 +197,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
       <div class="logo-box"><img id="logo-img" src="logo_1_entrada.png" alt="logo"></div>
       <div class="header-controls">
         <div class="bolsa-compact">
-          <div style="font-weight:900">💰 Bolsa</div>
+          <div style="font-weight:900" id="bolsa-label">💰 Bolsa</div>
           <div class="amount" id="bolsa-amount">$0.00</div>
         </div>
         <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
@@ -267,12 +273,6 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
       <button id="btn-clear-admin" class="btn btn-red">🧹 Reiniciar Día</button>
     </div>
     
-    <div class="mex-frame-small" id="house-winnings-box" style="margin-bottom:8px; text-align:center;">
-      <h3 style="margin:0 0 4px 0">GANANCIA BRUTA DE LA CASA (ACUMULADA)</h3>
-      <div id="house-profit-amount" style="font-size:24px; font-weight:900; color:var(--verde)">$0.00</div>
-      <div class="small-muted">(Ventas - Premios Pagados)</div>
-    </div>
-
     <div class="admin-row">
       <div class="admin-col mex-frame-small">
         <h3 style="margin:0 0 8px 0">Modalidades - Precio & Ganancia</h3>
@@ -304,8 +304,8 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
       <div style="display:flex; gap:8px; align-items:center; justify-content:space-between;"><div style="font-weight:900">Administración de Jugadores / Compras</div><div class="admin-actions"><button id="filter-all" class="filter-btn filter-all filter-btn active-all">VER TODO</button><button id="filter-4" class="filter-btn">4 CARTAS</button><button id="filter-6" class="filter-btn">6 CARTAS</button></div></div>
       <div class="table-wrap" style="margin-top:6px">
         <table style="width:100%; border-collapse:collapse;">
-          <thead style="background:#fafafa; position:sticky; top:0"><tr><th style="text-align:left;padding:6px">ID</th><th style="text-align:left;padding:6px">Jugador</th><th style="padding:6px">Modalidad</th><th style="padding:6px">Partidas</th><th style="padding:6px">Pagado</th><th style="padding:6px">Estado</th><th style="padding:6px">Acciones</th></tr></thead>
-          <tbody id="players-table"><tr><td colspan="7" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td></tr></tbody>
+          <thead style="background:#fafafa; position:sticky; top:0"><tr><th style="text-align:left;padding:6px">ID</th><th style="text-align:left;padding:6px">Jugador</th><th style="padding:6px">Modalidad</th><th style="padding:6px">Partidas</th><th style="padding:6px">En Juego</th><th style="padding:6px">Casa</th><th style="padding:6px">Estado</th><th style="padding:6px">Acciones</th></tr></thead>
+          <tbody id="players-table"><tr><td colspan="8" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -324,10 +324,10 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 <canvas id="confetti-canvas"></canvas>
 
 <script>
-/* index_v9.4_efx_perfecto v3.4 - code block */
+/* index_v9.4_efx_perfecto v3.6 - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
 const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",49:"49 el pino-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg"};
-const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] || `${id}.jpg`);
+const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
 
 const Kp='ganya_v90_prices', Kg='ganya_v90_game', Kpu='ganya_v90_purchases', Ktx='ganya_v90_tx', Kw='ganya_v90_winners', Kpas='ganya_v90_pas', Kmod='ganya_v90_mod';
 
@@ -358,52 +358,112 @@ function cardName(id){ return CARD_NAME_MAP[id] ? CARD_NAME_MAP[id].replace(/^\d
 function playShuffleSound(){ if(!audioCtx) return; const now=audioCtx.currentTime; const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*0.22,audioCtx.sampleRate); const d=buf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length); const s=audioCtx.createBufferSource(); s.buffer=buf; const g=audioCtx.createGain(); g.gain.setValueAtTime(0.001,now); g.gain.exponentialRampToValueAtTime(0.6,now+0.02); g.gain.exponentialRampToValueAtTime(0.001,now+0.2); s.connect(g); g.connect(audioCtx.destination); s.start(now); s.stop(now+0.22); }
 function playApplause(){ if(!audioCtx) return; const now=audioCtx.currentTime; for(let i=0;i<6;i++){ const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='square'; o.frequency.setValueAtTime(200+Math.random()*800, now + i*0.02); o.connect(g); g.connect(audioCtx.destination); g.gain.setValueAtTime(0.002, now + i*0.02); g.gain.exponentialRampToValueAtTime(0.3, now + i*0.02 + 0.05); g.gain.exponentialRampToValueAtTime(0.001, now + i*0.02 + 0.6); o.start(now + i*0.02); o.stop(now + i*0.02 + 0.65); } }
 
+/**
+ * Inicializa los campos de precio, ganancia y distribución de fondos para una compra,
+ * si faltan (para compatibilidad con datos viejos).
+ */
+function initializePurchaseData(p) {
+    if (!p.price || !p.profit || typeof p.enJuego === 'undefined' || typeof p.casa === 'undefined') {
+        let currentPrices = load(Kp) || defaultsPrices();
+        let price = p.totalPaid || (p.modality === 4 ? currentPrices.price4 : currentPrices.price6) || 0;
+        let profit = p.modality === 4 ? currentPrices.profit4 : currentPrices.profit6;
+        
+        p.price = p.price || price;
+        p.profit = p.profit || profit;
+        p.enJuego = price - profit;
+        p.casa = profit;
+    }
+    return p;
+}
+
+
 function renderAll(){
   const sel=document.getElementById('select-modality'); if(sel) sel.value=String(currentMode);
   if(document.getElementById('price4')) document.getElementById('price4').value=prices.price4;
   if(document.getElementById('price6')) document.getElementById('price6').value=prices.price6;
 
-  // Cálculo de la bolsa (Pot)
-  const activeForPot = purchases.filter(p=> p.state==='JUGANDO' && (p.gamesLeft||0)>0);
-  const totalSalesActive = activeForPot.reduce((s,p)=> s + (p.totalPaid||0),0);
-  const houseActive = activeForPot.reduce((s,p)=> s + ((p.modality===4?prices.profit4: prices.profit6) * (p.initialGames||0)),0);
-  const pot = Math.max(0, totalSalesActive - houseActive);
-  animateBolsa(pot);
+  // --- NUEVA LÓGICA DE BOLSA (POT) Y GANANCIA DE LA CASA ---
+  const viewAdminEl = document.getElementById('view-admin');
+  const isAdminView = viewAdminEl && !viewAdminEl.classList.contains('hidden');
+  let potAmount = 0;
+  let potLabelText = '💰 Bolsa';
 
-  // AJUSTE UX: Ganancia de la Casa (Admin View)
-  const totalSales = purchases.reduce((s,p)=> s + (p.totalPaid||0), 0); 
-  const totalPrizesPaid = winners.reduce((s,w)=> s + (w.paid ? w.amount : 0), 0); 
-  const houseProfit = totalSales - totalPrizesPaid; 
-  const houseEl = document.getElementById('house-profit-amount');
-  if(houseEl) houseEl.textContent = formatMoney(houseProfit);
+  // Asegurar que todas las compras tienen los campos casa/enJuego para un cálculo robusto.
+  purchases.forEach(p => initializePurchaseData(p));
 
+  if (isAdminView) {
+    // Vista Administrador: Mostrar Ganancia Total de la Casa (Casa)
+    // Suma del campo 'casa' de TODAS las compras
+    const totalHouseProfit = purchases.reduce((s, p) => s + (p.casa || 0), 0);
+    potAmount = totalHouseProfit;
+    potLabelText = '💰 Casa';
+  } else {
+    // Vista 'EN JUEGO': Mostrar Total Pot de la modalidad activa
+    const activeForPot = purchases.filter(p=> 
+      p.state==='JUGANDO' && 
+      (p.gamesLeft||0)>0 &&
+      p.modality === currentMode 
+    );
+    // Suma del campo 'enJuego' para todos los activos
+    const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
+    potAmount = totalEnJuego;
+    potLabelText = '💰 Bolsa';
+  }
+  
+  animateBolsa(potAmount);
+  const bolsaLabelEl = document.getElementById('bolsa-label');
+  if(bolsaLabelEl) bolsaLabelEl.textContent = potLabelText;
+  // --- FIN LÓGICA BOLSA ---
 
   const deckCount=document.getElementById('deck-count'); if(deckCount) deckCount.textContent=game.deck.length;
 
   const area=document.getElementById('players-area');
   const active = purchases.filter(p=> (p.gamesLeft||0)>0 && p.state==='JUGANDO' && p.modality===currentMode);
-  if(!active.length){
-    // AJUSTE CLAVE: Simular 5 cartas vacías (simuladas)
-    let emptyHtml = '';
-    const numSimulated = 5;
-    // Usamos grid 2x2 para 4 cartas, ya que es el menor y mantiene la forma.
-    const gridCols = 2; 
+  
+  // --- NUEVA LÓGICA DE LAYOUT DE JUGADORES (Fix 5 columnas) ---
+  const maxPlayersInRow = 5;
+  let numActive = active.length;
+  let numSimulated = 0;
+  if(numActive < maxPlayersInRow) {
+      numSimulated = maxPlayersInRow - numActive;
+  }
+  
+  let finalHtml = active.map(p=> renderPlayerCard(p)).join('');
+
+  // Agregar tarjetas simuladas si es necesario
+  if(numSimulated > 0) {
+    const gridCols = 3; 
+    const totalSlots = 6; 
+    const numPattern = currentMode; // 4 o 6 cartas
+    const numEmpty = totalSlots - numPattern; // 2 o 0 espacios en blanco
     
+    let emptyHtml = '';
     for(let i=0; i<numSimulated; i++) {
-        // Clase 'simulated' para aplicar los estilos de ocultación de texto
+        let cardSlotsHtml = '';
+        // 1. Slots con patrón (número de cartas de la modalidad)
+        for(let j=0; j<numPattern; j++) {
+            cardSlotsHtml += `<div class="card-thumb back-pattern"></div>`;
+        }
+        // 2. Slots vacíos (solo para la modalidad de 4 cartas)
+        for(let j=0; j<numEmpty; j++) {
+            // Estilo para el espacio vacío visible, diferente al fondo de la carta sin patrón.
+            cardSlotsHtml += `<div class="card-thumb" style="background:#f5f5f5; border:1px dashed #ddd"></div>`;
+        }
+
         emptyHtml += `<div class="player-card simulated">
-            <div class="player-name small-muted"></div>
+            <div class="player-name small-muted">&nbsp;</div>
             <div class="player-cards" style="display:grid;grid-template-columns:repeat(${gridCols},1fr);gap:8px;justify-items:center;margin-top:10px;">
-                <div class="card-thumb back-pattern"></div>
-                <div class="card-thumb back-pattern"></div>
-                <div class="card-thumb back-pattern"></div>
-                <div class="card-thumb back-pattern"></div>
+                ${cardSlotsHtml}
             </div>
         </div>`;
     }
-    area.innerHTML = emptyHtml;
+    finalHtml += emptyHtml;
   }
-  else area.innerHTML = active.map(p=> renderPlayerCard(p)).join('');
+  
+  // Establecer el HTML final para el área de jugadores
+  if (area) area.innerHTML = finalHtml || '<div class="small-muted" style="padding:18px; text-align:center">Aún no hay jugadores.</div>';
+  // --- FIN LÓGICA LAYOUT ---
+
 
   const cur=document.getElementById('current-card'); if(game.current && cur) cur.innerHTML=`<div style="width:160px;height:220px;background-image:url('${cardImageUrl(game.current)}');background-size:contain;background-repeat:no-repeat;background-position:center;"></div>`; else if(cur) cur.innerHTML='<div class="small-muted">Esperando barajeo...</div>';
 
@@ -435,20 +495,74 @@ function animateBolsa(target){
 }
 
 function renderPlayerCard(p){
-  let cols=4, displayCount=p.modality;
-  if(p.modality===4){ cols=2; displayCount=4; }
-  else if(p.modality===6){ cols=3; displayCount=6; }
-  const cardList=(p.card||[]).slice(0,displayCount);
+  // AJUSTE CLAVE: Usamos siempre 3 columnas (2x3 grid) para mantener el encuadre.
+  const cols = 3; 
+  const totalSlots = 6; 
+  
+  const cardList=(p.card||[]).slice(0,p.modality); // Cards actually assigned (4 or 6)
+
   let html = `<div class="player-card" onclick="openPurchaseDetail('${p.id}')"><div class="player-name">${escapeHtml(p.playerName)}</div><div class="player-cards" style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:6px;justify-items:center;margin-top:8px">`;
-  cardList.forEach(cid=>{ const passed = cartasPasadas.includes(cid); const isMarked = (p.markedCards||[]).includes(cid); const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : ''; html+=`<div class="card-thumb ${passed?'passed':''}" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`; });
-  let missing = displayCount - cardList.length; while(missing-->0) html+=`<div style="width:74px;height:106px;border-radius:8px;background:#fafafa;border:1px dashed #eee"></div>`;
-  html+='</div></div>'; return html;
+  
+  // 1. Render actual cards
+  cardList.forEach(cid=>{ 
+    const passed = cartasPasadas.includes(cid); 
+    const isMarked = (p.markedCards||[]).includes(cid); 
+    const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : ''; 
+    html+=`<div class="card-thumb ${passed?'passed':''}" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`; 
+  });
+  
+  // 2. Render missing slots (2 para 4 cartas, 0 para 6 cartas)
+  let missing = totalSlots - cardList.length; 
+  while(missing-->0) {
+    // Usar un div simple con un estilo para el espacio vacío visible.
+    html+=`<div class="card-thumb" style="background:#f5f5f5; border:1px dashed #ddd"></div>`; 
+  }
+  
+  html+='</div></div>'; 
+  return html;
 }
 
-function renderPlayersTable(filter){ const tbody=document.getElementById('players-table'); const list = purchases.slice().filter(p=> !filter || p.modality===filter); if(!tbody) return; if(!list.length){ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td></tr>'; return; } tbody.innerHTML = list.map(p=>`<tr><td style="padding:6px">${p.id}</td><td style="padding:6px">${escapeHtml(p.playerName)}<div class="small-muted">${escapeHtml(p.cell||'—')}</div></td><td style="padding:6px;text-align:center">${p.modality}</td><td style="padding:6px;text-align:center">${p.gamesLeft||0}</td><td style="padding:6px;text-align:center">${formatMoney(p.totalPaid)}</td><td style="padding:6px;text-align:center">${p.state||'JUGANDO'}</td><td style="padding:6px;text-align:center"><button class="btn btn-blue" onclick="openPurchaseDetail('${p.id}')">Detalle</button></td></tr>`).join(''); }
+function renderPlayersTable(filter){ 
+  const tbody=document.getElementById('players-table'); 
+  const list = purchases.slice().filter(p=> !filter || p.modality===filter); 
+  
+  // Inicializar data para mostrar en la tabla (incluyendo enJuego/casa)
+  list.forEach(p => initializePurchaseData(p));
+  
+  if(!tbody) return; 
+  if(!list.length){ 
+    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td></tr>'; // FIX colspan a 8
+    return; 
+  } 
+  
+  // FIX: Se agregaron las columnas En Juego y Casa
+  tbody.innerHTML = list.map(p=>`<tr><td style="padding:6px">${p.id}</td><td style="padding:6px">${escapeHtml(p.playerName)}<div class="small-muted">${escapeHtml(p.cell||'—')}</div></td><td style="padding:6px;text-align:center">${p.modality}</td><td style="padding:6px;text-align:center">${p.gamesLeft||0}</td><td style="padding:6px;text-align:center">${formatMoney(p.enJuego||0)}</td><td style="padding:6px;text-align:center">${formatMoney(p.casa||0)}</td><td style="padding:6px;text-align:center">${p.state||'JUGANDO'}</td><td style="padding:6px;text-align:center"><button class="btn btn-blue" onclick="openPurchaseDetail('${p.id}')">Detalle</button></td></tr>`).join(''); 
+}
 
-function openPurchaseDetail(id){ const p=purchases.find(x=>x.id===id); if(!p) return alert('No encontrado'); const modal=document.getElementById('modal-player'); document.getElementById('modal-player-name').textContent=`${p.playerName} • ${p.cell||''} • ${p.id}`; const cards=(p.card||[]).map(cid=>{ const isMarked = (p.markedCards||[]).includes(cid); const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : ''; return `<div style="width:100px;height:150px;background-image:url('${cardImageUrl(cid)}');background-size:cover;border-radius:8px;display:inline-block;margin-right:8px;position:relative">${sticker}</div>`; }).join(''); const details = `<div><strong>Modalidad:</strong> ${p.modality} cartas</div><div><strong>Partidas restantes:</strong> ${p.gamesLeft||0}</div><div><strong>Total pagado:</strong> ${formatMoney(p.totalPaid)}</div><div style="margin-top:8px"><strong>Cartas asignadas:</strong></div><div style="margin-top:8px">${cards}</div><div style="margin-top:8px"><strong>CLABE / Cuenta:</strong> ${escapeHtml(p.clabe||'')}</div><div style="margin-top:8px"><strong>Estado:</strong> ${p.state||'JUGANDO'}</div><div style="margin-top:8px"><button class="btn btn-blue" onclick="printPurchase('${p.id}');">Tomar captura / Imprimir</button> <button class="btn btn-green" onclick="copyClabe('${p.id}');">Copiar CLABE</button> <button class="btn btn-green" onclick="confirmWhatsapp('${p.id}');">Confirmar pago WhatsApp</button> <button class="btn btn-green" onclick="markPaidById('${p.id}');">Marcar Pagado</button></div>`; document.getElementById('modal-body').innerHTML = details; modal.classList.remove('hidden'); modal.style.display='block';
-  document.getElementById('modal-close').onclick=closeGroupModal; document.getElementById('modal-close-x').onclick=closeGroupModal;
+function openPurchaseDetail(id){ 
+  const p=purchases.find(x=>x.id===id); 
+  if(!p) return alert('No encontrado'); 
+  
+  // Asegurar que la data esté completa
+  initializePurchaseData(p);
+  
+  const modal=document.getElementById('modal-player'); 
+  document.getElementById('modal-player-name').textContent=`${p.playerName} • ${p.cell||''} • ${p.id}`; 
+  
+  const cards=(p.card||[]).map(cid=>{ 
+    const isMarked = (p.markedCards||[]).includes(cid); 
+    const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : ''; 
+    return `<div style="width:100px;height:150px;background-image:url('${cardImageUrl(cid)}');background-size:cover;border-radius:8px;display:inline-block;margin-right:8px;position:relative">${sticker}</div>`; 
+  }).join(''); 
+  
+  // FIX: Se incluyó el Total Pagado en el detalle
+  const details = `<div><strong>Modalidad:</strong> ${p.modality} cartas</div><div><strong>Total Pagado:</strong> ${formatMoney(p.totalPaid)}</div><div><strong>Monto en Juego:</strong> ${formatMoney(p.enJuego||0)}</div><div><strong>Ganancia Casa:</strong> ${formatMoney(p.casa||0)}</div><div><strong>Partidas restantes:</strong> ${p.gamesLeft||0}</div><div style="margin-top:8px"><strong>Cartas asignadas:</strong></div><div style="margin-top:8px">${cards}</div><div style="margin-top:8px"><strong>CLABE / Cuenta:</strong> ${escapeHtml(p.clabe||'')}</div><div style="margin-top:8px"><strong>Estado:</strong> ${p.state||'JUGANDO'}</div><div style="margin-top:8px"><button class="btn btn-blue" onclick="printPurchase('${p.id}');">Tomar captura / Imprimir</button> <button class="btn btn-green" onclick="copyClabe('${p.id}');">Copiar CLABE</button> <button class="btn btn-green" onclick="confirmWhatsapp('${p.id}');">Confirmar pago WhatsApp</button> <button class="btn btn-green" onclick="markPaidById('${p.id}');">Marcar Pagado</button></div>`; 
+  
+  document.getElementById('modal-body').innerHTML = details; 
+  modal.classList.remove('hidden'); 
+  modal.style.display='block';
+  document.getElementById('modal-close').onclick=closeGroupModal; 
+  document.getElementById('modal-close-x').onclick=closeGroupModal;
 }
 
 function copyClabe(id){ const p=purchases.find(x=>x.id===id); if(!p) return; const text = p.clabe||''; if(!text) return alert('No hay CLABE registrada'); navigator.clipboard.writeText(text).then(()=>{ alert('CLABE copiada al portapapeles'); }); }
@@ -583,12 +697,19 @@ function processCard(cardId){
     stopAuto();
     game.winnerPending = true;
     disableControls(true);
+    
+    // Calcular el premio usando el campo 'enJuego' de las compras
+    const winningModality = purchases.find(p => p.id === winnersFound[0].purchaseId)?.modality || currentMode;
+    const activeForPot = purchases.filter(p=> 
+      p.state==='JUGANDO' && 
+      (p.gamesLeft||0)>0 &&
+      p.modality === winningModality 
+    );
+    // Asegurar data inicializada para el cálculo del premio
+    activeForPot.forEach(p => initializePurchaseData(p));
 
-    const activeForPot = purchases.filter(p=> p.state==='JUGANDO' && (p.gamesLeft||0)>0);
-    const totalSalesActive = activeForPot.reduce((s,p)=> s + (p.totalPaid||0), 0);
-    const houseActive = activeForPot.reduce((s,p)=> s + ((p.modality===4?prices.profit4: prices.profit6) * (p.initialGames||0)), 0);
-    const pot = Math.max(0, totalSalesActive - houseActive);
-    const share = pot / winnersFound.length;
+    const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
+    const share = totalEnJuego / winnersFound.length;
 
     const recs=[];
     winnersFound.forEach(w=>{
@@ -663,15 +784,32 @@ function registerPlayer(){
   const needed = q4*prices.price4 + q6*prices.price6;
   if(budget < needed) return alert(`El presupuesto no alcanza. Se requiere ${formatMoney(needed)}.`);
   if(budget > needed) return alert(`Hay sobrante de ${formatMoney(budget-needed)}. Ajusta las cantidades o el presupuesto para continuar.`);
+  
   const parts=[];
-  if(q4>0) parts.push({modality:4,qty:q4,price:prices.price4});
-  if(q6>0) parts.push({modality:6,qty:q6,price:prices.price6});
+  if(q4>0) parts.push({modality:4,qty:q4,price:prices.price4,profit:prices.profit4});
+  if(q6>0) parts.push({modality:6,qty:q6,price:prices.price6,profit:prices.profit6});
+  
   parts.forEach(pt=>{
+    const ptPrice = pt.price;
+    const ptProfit = pt.profit;
+    const ptEnJuego = ptPrice - ptProfit;
+
     for(let i=0;i<pt.qty;i++){
-      const p={id:uuid(),playerName:name,cell:cell,clabe:clabe,modality:pt.modality,initialGames:1,gamesLeft:1,totalPaid:pt.price,wins:0,state:'JUGANDO',card:[],markedCards:[],selectionUsed:true,createdAt:Date.now()};
+      const p={
+        id:uuid(),playerName:name,cell:cell,clabe:clabe,
+        modality:pt.modality,
+        initialGames:1,gamesLeft:1,
+        totalPaid:ptPrice,
+        wins:0,state:'JUGANDO',card:[],markedCards:[],selectionUsed:true,createdAt:Date.now(),
+        // NUEVOS CAMPOS:
+        price: ptPrice,
+        profit: ptProfit,
+        enJuego: ptEnJuego,
+        casa: ptProfit
+      };
       p.card=generateCardForPurchase(pt.modality);
       purchases.push(p);
-      tx.push({id:uuid(),type:'purchase',player:name,modality:pt.modality,amount:pt.price,purchaseId:p.id,ts:Date.now()});
+      tx.push({id:uuid(),type:'purchase',player:name,modality:pt.modality,amount:ptPrice,purchaseId:p.id,ts:Date.now()});
     }
   });
   saveAll();
@@ -705,7 +843,7 @@ function resetGame(){
   disableControls(false);
 }
 
-function exportPdf(){ const date=new Date(); const header=`Reporte de partidas — GANA YA!`; const logo='logo_1_entrada.png'; let html=`<html><head><title>${header}</title></head><body style="font-family:Arial;padding:12px">`; html+=`<div style="display:flex;gap:12px;align-items:center"><img src="${logo}" style="width:80px;height:80px;object-fit:contain"/><div><h1 style="margin:0">${header}</h1><div style="font-size:13px;color:#555">${date.toLocaleString()}</div></div></div><hr/>`; html+=`<h2>Compras</h2><table border="1" cellpadding="6" style="border-collapse:collapse;width:100%"><thead><tr><th>ID</th><th>Jugador</th><th>Celular</th><th>Modalidad</th><th>Partidas</th><th>Total</th><th>Estado</th></tr></thead><tbody>`; purchases.forEach(p=>{ html+=`<tr><td>${p.id}</td><td>${escapeHtml(p.playerName)}</td><td>${escapeHtml(p.cell||'')}</td><td>${p.modality}</td><td>${p.gamesLeft||0}</td><td>${formatMoney(p.totalPaid)}</td><td>${p.state||'JUGANDO'}</td></tr>`; }); html+='</tbody></table>'; html+='<h2>Ganadores</h2><table border="1" cellpadding="6" style="border-collapse:collapse;width:100%"><thead><tr><th>Fecha</th><th>Jugador</th><th>Importe</th><th>Carta</th><th>Pagado</th></tr></thead><tbody>'; winners.forEach(w=>{ html+=`<tr><td>${new Date(w.timestamp).toLocaleString()}</td><td>${escapeHtml(w.playerName)}</td><td>${formatMoney(w.amount)}</td><td>${escapeHtml(cardName(w.cardId))}</td><td>${w.paid?'PAGADO':'PENDIENTE'}</td></tr>`; }); html+='</tbody></table>'; html+=`<div style="margin-top:12px"><em>Generado: ${new Date().toLocaleString()}</em></div></body></html>`; const w=window.open('','_blank'); w.document.write(html); w.document.close(); setTimeout(()=>w.print(),600); }
+function exportPdf(){ const date=new Date(); const header=`Reporte de partidas — GANA YA!`; const logo='logo_1_entrada.png'; let html=`<html><head><title>${header}</title></head><body style="font-family:Arial;padding:12px">`; html+=`<div style="display:flex;gap:12px;align-items:center"><img src="${logo}" style="width:80px;height:80px;object-fit:contain"/><div><h1 style="margin:0">${header}</h1><div style="font-size:13px;color:#555">${date.toLocaleString()}</div></div></div><hr/>`; html+=`<h2>Compras</h2><table border="1" cellpadding="6" style="border-collapse:collapse;width:100%"><thead><tr><th>ID</th><th>Jugador</th><th>Celular</th><th>Modalidad</th><th>Partidas</th><th>Total Pagado</th><th>En Juego</th><th>Casa</th><th>Estado</th></tr></thead><tbody>`; purchases.forEach(p=>{ initializePurchaseData(p); html+=`<tr><td>${p.id}</td><td>${escapeHtml(p.playerName)}</td><td>${escapeHtml(p.cell||'')}</td><td>${p.modality}</td><td>${p.gamesLeft||0}</td><td>${formatMoney(p.totalPaid)}</td><td>${formatMoney(p.enJuego||0)}</td><td>${formatMoney(p.casa||0)}</td><td>${p.state||'JUGANDO'}</td></tr>`; }); html+='</tbody></table>'; html+='<h2>Ganadores</h2><table border="1" cellpadding="6" style="border-collapse:collapse;width:100%"><thead><tr><th>Fecha</th><th>Jugador</th><th>Importe</th><th>Carta</th><th>Pagado</th></tr></thead><tbody>'; winners.forEach(w=>{ html+=`<tr><td>${new Date(w.timestamp).toLocaleString()}</td><td>${escapeHtml(w.playerName)}</td><td>${formatMoney(w.amount)}</td><td>${escapeHtml(cardName(w.cardId))}</td><td>${w.paid?'PAGADO':'PENDIENTE'}</td></tr>`; }); html+='</tbody></table>'; html+=`<div style="margin-top:12px"><em>Generado: ${new Date().toLocaleString()}</em></div></body></html>`; const w=window.open('','_blank'); w.document.write(html); w.document.close(); setTimeout(()=>w.print(),600); }
 
 document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('btn-shuffle').addEventListener('click', ()=>{ shufflePendingToFullScreen(); });
@@ -727,13 +865,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
   document.getElementById('reset-prices').addEventListener('click', ()=>{ if(!confirm('Restablecer precios por defecto?')) return; prices=defaultsPrices(); saveAll(); renderAll(); });
 
-  document.getElementById('btn-view-play').addEventListener('click', ()=>{ document.getElementById('view-admin').classList.add('hidden'); document.getElementById('main-grid').style.display='grid'; document.getElementById('btn-view-play').classList.add('active'); document.getElementById('btn-view-admin').classList.remove('active'); });
-  document.getElementById('btn-view-admin').addEventListener('click', ()=>{ document.getElementById('view-admin').classList.remove('hidden'); document.getElementById('main-grid').style.display='none'; document.getElementById('btn-view-admin').classList.add('active'); document.getElementById('btn-view-play').classList.remove('active'); });
+  // FIX: Al cambiar de vista, se llama a renderAll para actualizar la bolsa.
+  document.getElementById('btn-view-play').addEventListener('click', ()=>{ document.getElementById('view-admin').classList.add('hidden'); document.getElementById('main-grid').style.display='grid'; document.getElementById('btn-view-play').classList.add('active'); document.getElementById('btn-view-admin').classList.remove('active'); renderAll(); });
+  document.getElementById('btn-view-admin').addEventListener('click', ()=>{ document.getElementById('view-admin').classList.remove('hidden'); document.getElementById('main-grid').style.display='none'; document.getElementById('btn-view-admin').classList.add('active'); document.getElementById('btn-view-play').classList.remove('active'); renderAll(); });
 
   document.getElementById('select-modality').addEventListener('change', (e)=>{ currentMode = Number(e.target.value); localStorage.setItem(Kmod,String(currentMode)); renderAll(); });
 
   document.getElementById('btn-export-admin').addEventListener('click', exportPdf);
-  document.getElementById('btn-clear-admin').addEventListener('click', ()=>{ if(!confirm('Borrar todo y reiniciar día? Esto eliminará compras y registros.')) return; purchases=[]; tx.push({id:uuid(),type:'clear',ts:Date.now()}); game=defaultsGame(); winners=[]; cartasPasadas=[]; saveAll(); renderAll(); alert('Día reiniciado.'); });
+  document.getElementById('btn-clear-admin').addEventListener('click', ()=>{ if(!confirm('Borrar todo y reiniciar día? Esto eliminará compras y registros.')) return; purchases=[]; tx.push({id:uuid(),type:'clear',ts:Date.now()}); game=defaultsGame(); winners=[]; cartasPasadas=[]; saveAll(); renderAll(); });
 
   // filters with active visual state
   document.getElementById('filter-all').addEventListener('click', ()=>{ setActiveFilter('all'); renderPlayersTable(); });
@@ -823,7 +962,14 @@ function showWinnerDetailModal(){
     const sticker = isMarked ? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : '';
     return `<div class="card-thumb ${isWinner ? 'winner-card' : ''} ${isMarked ? 'passed' : ''}" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
   }).join('');
-
+  
+  // AJUSTE: Agregar espacios en blanco para mantener el encuadre (solo 2 para modalidad 4)
+  const totalSlots = 6;
+  let missing = totalSlots - (winnerPlayer.card || []).length; 
+  while(missing-->0) {
+    cardListHtml += `<div class="card-thumb" style="background:#f5f5f5; border:1px dashed #ddd"></div>`; 
+  }
+  
   detailCardsContainer.innerHTML = cardListHtml;
 
   const modalDetail = document.getElementById('modal-winner-detail');

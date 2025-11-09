@@ -38,8 +38,8 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
   align-items: center;
   justify-content: flex-start; /* Logo a la izquierda */
   height: 96px; /* Para centrar el logo verticalmente */
-  /* AJUSTE CLAVE: ELIMINAR padding-left para pegarlo al borde izquierdo del viewport */
-  padding-left: 0; 
+  /* AJUSTE CLAVE (FIX #1): ELIMINAR padding-left para pegarlo al borde izquierdo del viewport */
+  padding-left: 0 !important; /* FORZAR CERO */
 }
 
 .logo-box img{ width:96px; height:96px; object-fit:contain; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.12); }
@@ -73,7 +73,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
   align-items: center;
   justify-content: flex-end; /* Controles a la derecha */
   height: 96px; /* Para centrar los controles verticalmente */
-  /* Se mantiene el padding-right: 10px; en los elementos internos para alineación si fuera necesario, pero la caja principal no lo tiene */
+  /* Se mantiene el padding-right: 0; */
   padding-right: 0; 
 }
 
@@ -82,8 +82,8 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
   gap:12px; 
   align-items:center; 
   flex-shrink: 0; 
-  /* Se añade un padding-right para alinear los controles con el padding de 10px de la caja de abajo */
-  padding-right: 10px;
+  /* AJUSTE CLAVE (FIX #2): Se elimina el padding-right para pegarlo al borde derecho */
+  padding-right: 0; /* Cambio de 10px a 0 */
   margin-right: 0; 
 } 
 
@@ -110,10 +110,13 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 #control-partida { text-align: center; }
 #control-partida h3 { text-align: center; }
 
-/* AJUSTE CLAVE: Forzar centrado del selector de modalidad */
+/* AJUSTE CLAVE (FIX #3): Forzar centrado del selector de modalidad y texto interno */
 #control-partida select {
     display: block !important;
     margin: 0 auto !important;
+    width: 100%; /* Ocupar el 100% del contenedor con 10px de padding */
+    text-align: center; /* Centrar el texto en el selector */
+    text-align-last: center; /* Centrar las opciones (no universal, pero ayuda) */
 }
 
 /* AJUSTE CLAVE: Forzar 5 columnas de jugadores */
@@ -300,7 +303,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
         <div class="small-muted" style="margin-top:4px">Barajea, tira cartas o activa automático — selecciona modalidad</div>
 
         <div style="margin-top:8px; text-align:center;">
-          <select id="select-modality" style="padding:10px;border-radius:8px;border:1px solid #ddd;font-weight:800;width:90%;">
+          <select id="select-modality" style="padding:10px;border-radius:8px;border:1px solid #ddd;font-weight:800;">
             <option value="4">4 cartas</option>
             <option value="6">6 cartas</option>
           </select>
@@ -389,7 +392,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 <canvas id="confetti-canvas"></canvas>
 
 <script>
-/* index_v9.4_efx_perfecto v3.14 - code block */
+/* index_v9.4_efx_perfecto v3.15 - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
 const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",49:"49 el pino-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
@@ -413,6 +416,8 @@ let audioCtx=null; try{ audioCtx=new (window.AudioContext||window.webkitAudioCon
 
 function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
 function load(k){ try{ const v=localStorage.getItem(k); return v? JSON.parse(v): null;}catch(e){return null;} }
+function saveAll(){ save(Kp,prices); save(Kg,game); save(Kpu,purchases); save(Ktx,tx); save(Kw,winners); localStorage.setItem(Kmod,String(currentMode)); }
+//FIX: Corregido el saveAll para que guarde cartasPasadas (Kpas)
 function saveAll(){ save(Kp,prices); save(Kg,game); save(Kpu,purchases); save(Ktx,tx); save(Kw,winners); save(Kpas,cartasPasadas); localStorage.setItem(Kmod,String(currentMode)); }
 
 function uuid(){ return 'id-'+Math.random().toString(36).slice(2,10); }

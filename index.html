@@ -21,14 +21,14 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
   /* Se eliminó el padding horizontal para que header-row-top y main-grid lo controlen */
   padding:0 0; 
 }
+
+/* AJUSTE CLAVE: HEADER A 2 COLUMNAS (Logo | Título/Centro) */
 .header-row-top{ 
-  /* AJUSTE CLAVE: Usar GRID para replicar el layout de 3 columnas (280px 1fr 400px) */
   display:grid; 
-  grid-template-columns: 280px 1fr 400px;
-  gap:8px; /* Mismo gap que main-grid */
+  grid-template-columns: 280px 1fr; /* 2 Columnas */
+  gap:8px; 
   align-items:center; 
   margin-bottom:4px; 
-  /* FIX: Eliminar padding para que el contenido se pegue al margen de la web */
   padding: 0; 
 } 
 
@@ -36,24 +36,24 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 .logo-box-wrapper{
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Logo a la izquierda */
-  height: 96px; /* Para centrar el logo verticalmente */
+  justify-content: flex-start;
+  height: 96px;
   /* AJUSTE CLAVE (FIX #1): ELIMINAR padding-left para pegarlo al borde izquierdo del viewport */
-  padding-left: 0 !important; /* FORZAR CERO */
+  padding-left: 0 !important;
 }
 
 .logo-box img{ width:96px; height:96px; object-fit:contain; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.12); }
 
-/* Seccion Central: Título (centrado en la columna 2) */
+/* Seccion Central/Derecha: Título (centrado en la columna 2) */
 .title-box{ 
   display:flex; 
   align-items:center; 
   gap:12px; 
+  /* AJUSTE CLAVE: Centrar el título en la columna 2 (Columna del contenido principal) */
   justify-content:center; 
 } 
 
 .title { 
-  /* Ajustes para GANA YA! en una sola línea */
   font-size:50px; 
   font-weight:900; 
   color:var(--rojo); 
@@ -67,38 +67,14 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 @keyframes fiesta { 0%{ color:#e63946 }15%{ color:var(--accent1) }30%{ color:#2a9d8f }45%{ color:#6d9df5 }60%{ color:var(--accent2) }75%{ color:#ff9e00 }100%{ color:#e63946 } }
 
 
-/* Seccion Derecha: Controles (alineados a la derecha de la columna 3) */
+/* Sección Derecha: Controles (ELIMINADOS del Header, ahora están en el main-grid) */
 .controls-box-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end; /* Controles a la derecha */
-  height: 96px; /* Para centrar los controles verticalmente */
-  /* Se mantiene el padding-right: 0; */
-  padding-right: 0; 
+  display: none; /* Se oculta */
 }
 
-.header-controls{ 
-  display:flex; 
-  gap:12px; 
-  align-items:center; 
-  flex-shrink: 0; 
-  /* AJUSTE CLAVE (FIX #2): Se elimina el padding-right para pegarlo al borde derecho */
-  padding-right: 0; /* Cambio de 10px a 0 */
-  margin-right: 0; 
-} 
-
-
-.bolsa-compact{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; background:linear-gradient(90deg,#e6fff1,#fff7e6); border:3px solid #c9a700; box-shadow:0 8px 20px rgba(0,0,0,0.06); }
-.bolsa-compact .label{ font-weight:900; color:#2d6b25; font-size:14px; }
-.bolsa-compact .amount{ font-weight:900; color:#b45309; font-size:18px; }
-
-.toggle-btn{ padding:8px 12px; border-radius:10px; border:none; font-weight:800; cursor:pointer; box-shadow:0 6px 14px rgba(0,0,0,0.08); }
-.toggle-play{ background:#1565d8;color:white; }
-.toggle-admin{ background:#f3f4f6;color:#111; }
 
 /* AJUSTE CLAVE: Ancho fijo para las columnas y reducción de gap/margin */
 .main-grid{ display:grid; grid-template-columns: 280px 1fr 400px; gap:8px; align-items:start; margin-top:8px; 
-  /* FIX: Eliminar padding para que el contenido se pegue al margen de la web */
   padding: 0; 
 }
 @media(max-width:1200px){ .main-grid{ grid-template-columns:1fr; } }
@@ -114,10 +90,30 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 #control-partida select {
     display: block !important;
     margin: 0 auto !important;
-    width: 100%; /* Ocupar el 100% del contenedor con 10px de padding */
-    text-align: center; /* Centrar el texto en el selector */
-    text-align-last: center; /* Centrar las opciones (no universal, pero ayuda) */
+    width: 100%; 
+    text-align: center; 
+    text-align-last: center; 
 }
+
+/* Controles que se movieron a la columna derecha */
+.header-controls{ 
+  display:flex; 
+  gap:12px; 
+  align-items:center; 
+  flex-shrink: 0; 
+  padding: 0; 
+  margin: 0 0 8px 0; /* Espacio para separarse de CONTROL DE PARTIDA */
+  justify-content: flex-end; /* Asegurar que se pegue a la derecha de la columna */
+} 
+
+
+.bolsa-compact{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; background:linear-gradient(90deg,#e6fff1,#fff7e6); border:3px solid #c9a700; box-shadow:0 8px 20px rgba(0,0,0,0.06); }
+.bolsa-compact .label{ font-weight:900; color:#2d6b25; font-size:14px; }
+.bolsa-compact .amount{ font-weight:900; color:#b45309; font-size:18px; }
+
+.toggle-btn{ padding:8px 12px; border-radius:10px; border:none; font-weight:800; cursor:pointer; box-shadow:0 6px 14px rgba(0,0,0,0.08); }
+.toggle-play{ background:#1565d8;color:white; }
+.toggle-admin{ background:#f3f4f6;color:#111; }
 
 /* AJUSTE CLAVE: Forzar 5 columnas de jugadores */
 .players-grid{ display:grid; grid-template-columns: repeat(5,1fr); gap:8px; align-items:start; }
@@ -270,19 +266,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
         <div class="subtitle">Gana Ya! es una página de carácter interactivo y de entretenimiento.</div>
       </div>
     </div>
-
-    <div class="controls-box-wrapper">
-      <div class="header-controls">
-        <div class="bolsa-compact">
-          <div style="font-weight:900" id="bolsa-label">💰 Bolsa</div>
-          <div class="amount" id="bolsa-amount">$0.00</div>
-        </div>
-        <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
-        <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
-      </div>
-    </div>
   </div>
-
   <div class="main-grid" id="main-grid">
 
     <aside class="mex-frame-small winners" id="winners-panel" aria-label="Últimos Ganadores">
@@ -298,6 +282,16 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
     </section>
 
     <aside class="controls-panel" id="controls-panel">
+      
+      <div class="header-controls">
+        <div class="bolsa-compact">
+          <div style="font-weight:900" id="bolsa-label">💰 Bolsa</div>
+          <div class="amount" id="bolsa-amount">$0.00</div>
+        </div>
+        <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
+        <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
+      </div>
+      
       <div class="mex-frame-small" aria-label="Control de partida" id="control-partida" style="margin-top:4px">
         <h3 style="margin:0">CONTROL DE PARTIDA</h3>
         <div class="small-muted" style="margin-top:4px">Barajea, tira cartas o activa automático — selecciona modalidad</div>
@@ -392,7 +386,7 @@ body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; pa
 <canvas id="confetti-canvas"></canvas>
 
 <script>
-/* index_v9.4_efx_perfecto v3.15 - code block */
+/* index_v9.4_efx_perfecto v3.16 - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
 const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",49:"49 el pino-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
@@ -416,8 +410,6 @@ let audioCtx=null; try{ audioCtx=new (window.AudioContext||window.webkitAudioCon
 
 function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
 function load(k){ try{ const v=localStorage.getItem(k); return v? JSON.parse(v): null;}catch(e){return null;} }
-function saveAll(){ save(Kp,prices); save(Kg,game); save(Kpu,purchases); save(Ktx,tx); save(Kw,winners); localStorage.setItem(Kmod,String(currentMode)); }
-//FIX: Corregido el saveAll para que guarde cartasPasadas (Kpas)
 function saveAll(){ save(Kp,prices); save(Kg,game); save(Kpu,purchases); save(Ktx,tx); save(Kw,winners); save(Kpas,cartasPasadas); localStorage.setItem(Kmod,String(currentMode)); }
 
 function uuid(){ return 'id-'+Math.random().toString(36).slice(2,10); }

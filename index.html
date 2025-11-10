@@ -2,10 +2,10 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎴 GANA YA! - Lotería Interactiva (v11.1)</title>
+<title>🎴 GANA YA! - Lotería Interactiva (v11.2)</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ff6bcb'/%3E%3Ctext x='50%25' y='55%25' font-size='18' font-family='Arial' fill='white' text-anchor='middle' font-weight='700'%3EG%3C/text%3E%3C/svg%3E">
 <style>
-/* --- INICIO DE ESTILO (Tomado de v9.14) --- */
+/* --- INICIO DE ESTILO (v11.2) --- */
 
 /* VARIABLES DE COLOR */
 :root{ 
@@ -32,16 +32,15 @@ body{
   overflow-x: hidden; 
   margin:0; 
   padding:0;
-  min-height: 100vh; /* CORRECCIÓN 4: min-height en body */
+  min-height: 100vh;
 }
 
 /* CONTENEDOR PRINCIPAL CENTRADO */
 .container{ 
-  max-width: 1600px; /* CORRECCIÓN 4: Aumentado de 1200px */
-  width: 100%; /* CORRECCIÓN 4: Ocupa ancho disponible */
+  max-width: 1600px; 
+  width: 100%; 
   margin: 0 auto;
   padding: 10px; 
-  /* min-height: 100vh; <-- CORRECCIÓN 4: Eliminado de aquí */
   display: flex;
   flex-direction: column;
 }
@@ -139,8 +138,9 @@ body{
   display:flex; flex-direction: column; align-items:flex-end;
   padding: 5px 10px; background: var(--crema); border-radius: 8px; border: 1px solid var(--accent1);
 }
-.bolsa-compact .label{ font-size:11px; font-weight:700; color:var(--verde); text-transform: uppercase; }
-.bolsa-compact .amount{ font-weight:900; color:var(--rojo); font-size:18px; line-height: 1; }
+/* CORRECCIÓN 9: Bolsa más grande */
+.bolsa-compact .label{ font-size:13px; font-weight:800; color:var(--verde); text-transform: uppercase; }
+.bolsa-compact .amount{ font-weight:900; color:var(--rojo); font-size:20px; line-height: 1; }
 
 .toggle-btn{ 
   padding:8px 12px; border-radius:8px; border:none; font-weight:700; cursor:pointer; 
@@ -160,7 +160,7 @@ body{
 .player-card{ 
   background:#fff; border-radius:8px; padding:5px; text-align:center;
   box-shadow: 0 2px 5px rgba(0,0,0,0.08); cursor:pointer; transition:all .2s ease;
-  border: 1px solid #eee;
+  border: 1px solid #ddd; /* CORRECCIÓN 5: Borde más visible */
   min-height: 110px; 
   display: flex; 
   flex-direction: column; 
@@ -183,11 +183,13 @@ body{
     min-width: 25px; 
 } 
 
+/* CORRECCIÓN 3: Oscurecer carta pasada, pero mantener sticker a color */
 .card-thumb.passed{ filter:grayscale(1) opacity(0.5); }
+.card-thumb.passed .sticker { filter: grayscale(0) opacity(1); }
+
 .sticker{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
 .sticker img{ width:70%; height:70%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 
-/* Efecto Shine (de v9.6b para anim. barajeo) */
 .card-thumb.shine::before{
     content:'';
     position:absolute;
@@ -249,6 +251,9 @@ tr:hover { background: #f9f9f9; }
 .winner-card {
     animation: mexicanGlow 1.5s infinite ease-in-out;
     z-index: 10;
+    /* CORRECCIÓN 2: Carta ganadora más grande */
+    width: 90px !important;
+    height: 135px !important;
 }
 
 /* --- SHUFFLE OVERLAY (de v9.6b) --- */
@@ -307,9 +312,21 @@ tr:hover { background: #f9f9f9; }
 
 @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
+/* CORRECCIÓN 6: Animación para Ganadores Recientes */
+.winner-item.new {
+    animation: fadeInDown 0.6s ease-out;
+}
+@keyframes fadeInDown {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
 </style>
 </head>
 <body>
+
+<audio id="snd-win" src="APLAUSOS_GANADOR.mp3" preload="auto"></audio>
+<audio id="snd-flip" src="flip.mp3" preload="auto"></audio>
 
 <div class="container">
 
@@ -478,7 +495,8 @@ tr:hover { background: #f9f9f9; }
   </section>
   
   <footer style="text-align:center; margin-top:12px; padding: 10px; font-size: 13px; color: #777;" class="small-muted">
-      Coloca <strong>logo_1_entrada.png</strong> en la raíz y la carpeta <strong>Cartas_baraja_loteria/</strong> con las 54 imágenes.
+      Coloca <strong>logo_1_entrada.png</strong>, <strong>APLAUSOS_GANADOR.mp3</strong> y <strong>flip.mp3</strong> en la raíz.<br>
+      Coloca la carpeta <strong>Cartas_baraja_loteria/</strong> con las 54 imágenes.
   </footer>
 </div> <div class="modal-back hidden" id="modal-player">
     <div class="modal">
@@ -494,9 +512,9 @@ tr:hover { background: #f9f9f9; }
 <div class="modal-back hidden" id="modal-winner">
     <div class="modal text-center" style="border: 5px solid var(--accent1);">
         <button class="close-modal-x" id="winner-close">×</button>
-        <h1 id="winner-title" style="color:var(--rojo); font-size: 36px; margin:10px 0;">🎉 ¡LOTERÍA! 🎉</h1>
-        <div id="winner-body" style="font-size:20px; margin-bottom:10px;"></div>
-        <div id="winner-sub" style="font-size:16px; margin-bottom:20px; color: var(--verde); font-weight: bold;"></div>
+        <h1 id="winner-title" style="color:var(--rojo); font-size: 40px; margin:10px 0;">🎉 ¡LOTERÍA! 🎉</h1>
+        <div id="winner-body" style="font-size:22px; margin-bottom:10px;"></div>
+        <div id="winner-sub" style="font-size:18px; margin-bottom:20px; color: var(--verde); font-weight: bold;"></div>
         <button id="winner-ok" class="btn btn-green" style="font-size:20px; padding:15px 30px;">¡VER GANADOR!</button>
     </div>
 </div>
@@ -504,9 +522,9 @@ tr:hover { background: #f9f9f9; }
 <div class="modal-back hidden" id="modal-winner-detail">
     <div class="modal text-center">
         <button class="close-modal-x" id="winner-detail-close-x">×</button>
-        <h2 style="color:var(--verde); margin-top:0;">👑 ¡TENEMOS GANADOR!</h2>
-        <h3 id="winner-detail-player-name" style="color:var(--azul)"></h3>
-        <div id="winner-detail-card-name" style="font-weight:700; color:var(--rojo); margin-bottom: 15px;"></div>
+        <h2 style="color:var(--verde); margin-top:0; font-size: 28px;">👑 ¡TENEMOS GANADOR!</h2>
+        <h3 id="winner-detail-player-name" style="color:var(--azul); font-size: 22px;"></h3>
+        <div id="winner-detail-card-name" style="font-weight:700; color:var(--rojo); margin-bottom: 15px; font-size: 20px;"></div>
         <div id="winner-detail-player-cards" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:20px 0;">
         </div>
         <button id="winner-detail-ok" class="btn btn-blue">Cerrar y Continuar</button>
@@ -520,15 +538,15 @@ tr:hover { background: #f9f9f9; }
 
 
 <script>
-/* index_v11.1_pulido - code block */
+/* index_v11.2_pulido - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
-const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg",49:"49 el pino-min.jpg"};
+// CORRECCIÓN 4: Arreglado "mundo-min.min.jpg"
+const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg",49:"49 el pino-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
 
 const Kp='ganya_v90_prices', Kg='ganya_v90_game', Kpu='ganya_v90_purchases', Ktx='ganya_v90_tx', Kw='ganya_v90_winners', Kdig='ganya_v90_dig', Kmod='ganya_v90_mod';
 const Kid='ganya_v90_id_counter'; 
 const defaultsPrices=()=>({price4:10,profit4:2,price6:12,profit6:3});
-// CORRECCIÓN 3: Añadir winnerPending al estado por defecto
 const defaultsGame=()=>({deck:Array.from({length:54},(_,i)=>i+1),drawn:[],current:0,pending:[], winnerPending: false});
 
 let prices = load(Kp) || defaultsPrices();
@@ -567,8 +585,37 @@ function cardName(id){
     return baseName.replace(/_/g, ' ').replace(/\.jpg/i, '').trim(); 
 }
 
-// --- Sonido de Ganador --- 
-function playWinSound(){ if(!audioCtx) return; const now=audioCtx.currentTime; const osc=audioCtx.createOscillator(); osc.type='triangle'; const gain=audioCtx.createGain(); gain.gain.setValueAtTime(0.0,now); gain.gain.linearRampToValueAtTime(0.3,now+0.05); gain.gain.exponentialRampToValueAtTime(0.0001,now+1.2); osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(500,now); osc.frequency.exponentialRampToValueAtTime(800,now+0.3); osc.frequency.exponentialRampToValueAtTime(1000,now+0.8); osc.start(now); osc.stop(now+1.2); }
+// --- Sonidos ---
+function playSound(id) {
+    // CORRECCIÓN 1 y 7: Función genérica para reproducir sonidos
+    const el = $q('#' + id);
+    if(el) {
+        el.currentTime = 0;
+        el.play().catch(e => console.log("Audio play failed:", e));
+    }
+}
+
+function playWinSound(){
+    // CORRECCIÓN 1: Tocar APLAUSOS_GANADOR.mp3
+    playSound('snd-win');
+}
+
+function playShuffleSound(){ 
+    // CORRECCIÓN 8: Sonido sintético de barajeo
+    if(!audioCtx) return; 
+    const now=audioCtx.currentTime; 
+    const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*0.22,audioCtx.sampleRate); 
+    const d=buf.getChannelData(0); 
+    for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length); 
+    const s=audioCtx.createBufferSource(); 
+    s.buffer=buf;
+    const g=audioCtx.createGain();
+    g.gain.setValueAtTime(0.04,now);
+    s.connect(g);
+    g.connect(audioCtx.destination);
+    s.start(0); 
+}
+
 
 // --- Confetti --- 
 let confettiInstance = null;
@@ -603,15 +650,16 @@ function startAuto(){
     if(btn){ btn.textContent='⏹ DETENER'; btn.classList.remove('btn-green'); btn.classList.add('btn-muted'); }
     autoInterval=setInterval(drawOne, 2500);
     disableControls(true);
-    $q('#btn-auto').disabled = false;
+    $q('#btn-auto').disabled = false; // Permitir que se detenga
 }
 
 function disableControls(disable){
+    // CORRECCIÓN 11: Bug de botón Auto
     $q('#btn-shuffle').disabled = disable;
     $q('#btn-draw').disabled = disable;
     $q('#select-modality').disabled = disable;
     $q('#btn-reset-win').disabled = disable;
-    if(disable){ $q('#btn-auto').disabled = true; }
+    $q('#btn-auto').disabled = disable; // Esta línea era la que faltaba/estaba incorrecta
 }
 
 // --- Renderizado --- 
@@ -624,6 +672,7 @@ function renderPlayerCard(p){
         const isMarked = (p.markedCards||[]).includes(cid);
         const passed = drawnInGame.includes(cid) && !isMarked; 
         const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : '';
+        // CORRECCIÓN 3: Aplicar clase 'passed'
         html+=`<div class="card-thumb ${passed?'passed':''}" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
     });
     html+='</div></div>';
@@ -693,11 +742,11 @@ function renderAll(){
     if(lastEl) lastEl.innerHTML = last.length? 
         last.map(id=> `<div class="card-thumb" style="width:40px;height:55px;background-image:url('${cardImageUrl(id)}')"></div>`).join('') : '<div class="small-muted">...</div>';
 
-    // CORRECCIÓN 3: Lógica de botones robustecida
+    // CORRECCIÓN 10: Lógica de botones robustecida
     const winnerPending = game.winnerPending || false;
     $q('#game-controls').classList.toggle('hidden', !!winnerPending);
     $q('#btn-reset-win').classList.toggle('hidden', !winnerPending);
-    // CORRECCIÓN 2: Lógica de deshabilitar select (ya estaba bien)
+    
     $q('#select-modality').disabled = (isAuto || winnerPending || (game.drawn && game.drawn.length > 0));
 
     const currentFilter = $q('.toggle-btn[id^="filter-"][style*="background: var(--azul)"]');
@@ -717,12 +766,14 @@ function renderWinnersList(){
     if(!listEl) return;
     if(!sortedWinners.length){ listEl.innerHTML='<div class="text-center small-muted" style="padding: 20px; opacity: 0.6;">Sin ganadores hoy.</div>'; return; }
 
-    listEl.innerHTML=sortedWinners.map(w=>{ 
+    listEl.innerHTML=sortedWinners.map((w, index)=>{ 
         const player=purchases.find(p=>p.id===w.purchaseId);
         if(!player) return ''; 
         const paidText = w.paid ? 'PAGADO' : 'PENDIENTE';
         const paidColor = w.paid ? 'var(--verde)' : 'var(--rojo)';
-        return `<div style="padding:8px; border-bottom:1px solid #eee; font-size:13px; cursor:pointer;" onclick="showWinnerDetailModal('${w.purchaseId}','${w.cardId}')">
+        // CORRECCIÓN 6: Añadir clase 'new' al primer item
+        const isNew = index === 0 ? 'new' : '';
+        return `<div class="winner-item ${isNew}" style="padding:8px; border-bottom:1px solid #eee; font-size:13px; cursor:pointer;" onclick="showWinnerDetailModal('${w.purchaseId}','${w.cardId}')">
             <div style="font-weight:bold; color:var(--azul)">${escapeHtml(player.playerName)}</div>
             <div style="display:flex; justify-content:space-between; color:#666;">
                 <span>${formatMoney(w.prize)} (${w.modality} CARTAS)</span>
@@ -772,7 +823,7 @@ function openPurchaseDetail(id){
         const isMarked = (p.markedCards||[]).includes(cid); 
         const passed = drawnInGame.includes(cid) && !isMarked;
         const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : ''; 
-        return `<div class="card-thumb" style="width:60px; height:90px; background-image:url('${cardImageUrl(cid)}');">${sticker}</div>`; 
+        return `<div class="card-thumb ${passed?'passed':''}" style="width:60px; height:90px; background-image:url('${cardImageUrl(cid)}');">${sticker}</div>`; 
     }).join('');
     
     let bodyHtml = `<div class="text-center">
@@ -922,6 +973,7 @@ function animateShuffle(){
     c.el.style.transition='transform 1.2s cubic-bezier(.22,.9,.32,1),opacity 1.2s'; 
     c.el.style.transform=`translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(1)`;
     if(Math.random()>0.6) c.el.classList.add('flip');
+    if(idx % 5 === 0) playShuffleSound(); // CORRECCIÓN 8: Tocar sonido
   }, idx*60));
   
   // Wave 2
@@ -933,11 +985,13 @@ function animateShuffle(){
           c.el.classList.remove('flip'); 
           c.el.classList.add('wave-move'); 
           c.el.style.transform=`translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(.94)`; 
+          if(idx % 5 === 0) playShuffleSound(); // CORRECCIÓN 8: Tocar sonido
       }, idx*50)); 
   }, 1600);
   
   // Wave 3 final gather
   setTimeout(()=>{ 
+      playShuffleSound(); // CORRECCIÓN 8: Tocar sonido
       cards.forEach((c,idx)=>{ 
           c.el.style.transition='transform .6s ease, opacity .6s ease'; 
           c.el.style.transform=`translate(${(idx-cards.length/2)*10}px, -30px) rotate(${Math.random()*18-9}deg) scale(.96)`; 
@@ -976,6 +1030,7 @@ function drawOne(){
         return;
     }
     
+    playSound('snd-flip'); // CORRECCIÓN 7: Tocar sonido de flip
     const card = game.deck.shift(); 
     game.drawn.push(card);
     game.current=card;
@@ -1047,7 +1102,7 @@ function processCard(cardId){
         $q('#winner-sub').innerHTML = `Premio por jugador: <strong style="color:var(--verde);">${formatMoney(share)}</strong>`;
         modal.classList.remove('hidden');
         
-        playWinSound();
+        playWinSound(); // CORRECCIÓN 1
         startConfettiFullScreen();
 
         renderAll();
@@ -1084,6 +1139,7 @@ function showWinnerDetailModal(purchaseId, cardId){
         const isWinner = (cid == cardId);
         const passed = drawnInGame.includes(cid) && !isMarked; 
         const sticker = isMarked ? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : '';
+        // CORRECCIÓN 3: Aplicar 'passed'
         return `<div class="card-thumb ${isWinner ? 'winner-card' : ''} ${passed ? 'passed' : ''}" style="width:80px; height:120px; background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
     }).join('');
     detailCardsContainer.innerHTML = cardListHtml;
@@ -1318,7 +1374,7 @@ function exportPdf(){
                     totalEnJuego += (p.enJuego||0); totalCasa += (p.casa||0); totalPagado += (p.totalPaid||0);
                     return `<tr>
                         <td style="padding:4px">${p.id}</td>
-                        <td style"padding:4px">${escapeHtml(p.playerName)}<br><span style="color:#777">${escapeHtml(p.cell||'—')}</span></td>
+                        <td style="padding:4px">${escapeHtml(p.playerName)}<br><span style="color:#777">${escapeHtml(p.cell||'—')}</span></td>
                         <td style="padding:4px;text-align:center">${p.modality}</td>
                         <td style="padding:4px;text-align:center">${p.gamesLeft||0}</td>
                         <td style="padding:4px;text-align:center">${formatMoney(p.enJuego||0)}</td>

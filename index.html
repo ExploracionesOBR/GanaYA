@@ -32,6 +32,7 @@ body{
   overflow-x: hidden; 
   margin:0; 
   padding:0;
+  /* CORRECCIÓN 3: Eliminado min-height */
 }
 
 /* CONTENEDOR PRINCIPAL CENTRADO */
@@ -202,6 +203,7 @@ body{
 .card-thumb.drawn { filter:grayscale(1) opacity(0.6); }
 .card-thumb.drawn .sticker { filter: grayscale(0) opacity(1); }
 
+
 .sticker{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
 .sticker img{ width:70%; height:70%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 
@@ -246,10 +248,28 @@ body{
 /* CORRECCIÓN 9: Centrar inputs de admin */
 .admin-col.mex-frame-small .input { text-align: center; }
 .admin-col.mex-frame-small label { display: block; text-align: center; }
-/* CORRECCIÓN 5 y 9: Centrar helpers */
-#calc-info, #budget-helper { text-align: center !important; }
+/* CORRECCIÓN 5: Estilo para Costo Total */
+#calc-info { 
+    font-size: 16px; 
+    color: var(--azul); 
+    margin-top:12px; 
+    min-height:20px; 
+    text-align: center; 
+    font-weight: bold; 
+    border-top: 2px dashed var(--accent1);
+    padding-top: 10px;
+}
 /* CORRECCIÓN 8: Hint de CLABE */
-#clabe-hint { font-size: 11px; color: var(--verde); font-weight: 600; text-align: center; margin-top: -8px; min-height: 16px;}
+#clabe-hint { 
+    font-size: 11px; 
+    color: var(--verde); 
+    font-weight: 600; 
+    text-align: center; 
+    margin-top: -8px; 
+    min-height: 16px;
+}
+#clabe-hint.neutral { color: #888; }
+#clabe-hint.invalid { color: var(--rojo); }
 
 
 .table-wrap{ overflow-x:auto; background: #fff; border-radius: 8px; border: 1px solid #eee; }
@@ -281,6 +301,8 @@ tr:hover { background: #f9f9f9; }
     gap: 10px;
     margin-top: 20px;
 }
+.modal-confirm .modal-footer { justify-content: space-between; }
+
 
 /* WINNER ANIMATIONS */
 @keyframes mexicanGlow {
@@ -484,7 +506,7 @@ tr:hover { background: #f9f9f9; }
         <input id="input-name" placeholder="Nombre Completo" class="input">
         <div style="display:flex; gap:10px;">
             <input id="input-cell" placeholder="Celular (10 dígitos)" class="input" style="flex:1" type="tel" maxlength="10">
-            <input id="input-clabe" placeholder="CLABE / Cuenta Destino" class="input" style="flex:1" type="tel">
+            <input id="input-clabe" placeholder="CLABE / Cuenta Destino" class="input" style="flex:1" type="tel" maxlength="18">
         </div>
         <div id="clabe-hint"></div>
         
@@ -622,7 +644,7 @@ let drawnInGame = load(Kdig) || [];
 let currentMode = Number(localStorage.getItem(Kmod) || 4);
 if(currentMode===8) currentMode=4; 
 let currentIdCounter = Number(localStorage.getItem(Kid) || 233); 
-let adminSearch = ''; // CORRECCIÓN 4: Variable de estado para búsqueda
+let adminSearch = '';
 
 let isAuto=false, autoInterval=null, animShuffling=false;
 let audioCtx=null;
@@ -680,8 +702,14 @@ function playShuffleSound(){
 
 // --- CORRECCIÓN 1: Nuevos Modales Personalizados ---
 function showAlert(message) {
-    $q('#modal-alert-body').innerHTML = message;
-    $q('#modal-alert').classList.remove('hidden');
+    return new Promise((resolve) => {
+        $q('#modal-alert-body').innerHTML = message;
+        $q('#modal-alert').classList.remove('hidden');
+        $q('#modal-alert-ok').onclick = () => {
+            $q('#modal-alert').classList.add('hidden');
+            resolve(true);
+        };
+    });
 }
 
 function showConfirm(message, confirmText = "Confirmar") {
@@ -690,6 +718,7 @@ function showConfirm(message, confirmText = "Confirmar") {
     const modal = $q('#modal-confirm');
     modal.classList.remove('hidden');
 
+    // Retornar una promesa que se resuelve con 'true' o 'false'
     return new Promise((resolve) => {
         $q('#modal-confirm-ok').onclick = () => {
             modal.classList.add('hidden');
@@ -741,6 +770,7 @@ function startAuto(){
 }
 
 function disableControls(disable){
+    // Esta función es SOLO para animaciones (como barajear)
     $q('#btn-shuffle').disabled = disable;
     $q('#btn-draw').disabled = disable;
     if (!isAuto) {
@@ -792,6 +822,7 @@ function renderAll(){
         potAmount = totalHouseProfit;
         potLabelText = '🏦 CASA TOTAL';
     } else {
+        // CORRECCIÓN 7: 'gamesLeft > 0' ya no es relevante aquí
         const activeForPot = purchases.filter(p=> (p.state==='JUGANDO' || p.state==='POR PAGAR') && p.modality === currentMode );
         const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
         potAmount = totalEnJuego;
@@ -806,6 +837,7 @@ function renderAll(){
     if(deckCount) deckCount.textContent=game.deck.length;
     
     const area=$q('#players-area');
+    // CORRECCIÓN 7: Lógica de 'activos' simplificada
     const active = purchases.filter(p=> (p.state==='JUGANDO' || p.state==='POR PAGAR') && p.modality===currentMode);
     const hasActivePlayers = active.length > 0;
     
@@ -875,7 +907,7 @@ function renderWinnersList(){
         const paidText = w.paid ? 'PAGADO' : 'PENDIENTE';
         const paidColor = w.paid ? 'var(--verde)' : 'var(--rojo)';
         const isNew = index === 0 ? 'new' : '';
-        // CORRECCIÓN 3 y 5:
+        
         const cardNameText = cardName(w.cardId).toUpperCase();
         const modalityText = `Modalidad: ${w.modality} cartas`;
 
@@ -901,21 +933,18 @@ function renderPlayersTable(filter){
     const tbody=$q('#players-table');
     let list = purchases.slice();
     
-    // CORRECCIÓN 4: Filtrar por búsqueda
     if (adminSearch) {
         list = list.filter(p => 
             p.playerName.toLowerCase().includes(adminSearch) || 
             p.id.toLowerCase().includes(adminSearch)
         );
     }
-    // Filtrar por modalidad (4 o 6)
     if (filter) {
         list = list.filter(p => p.modality === filter);
     }
     
     list.forEach(p => initializePurchaseData(p));
     
-    // CORRECCIÓN 5: Ordenar tabla
     const stateOrder = { 'POR PAGAR': 1, 'JUGANDO': 2, 'PAGADO': 3, 'FINALIZADO': 4 };
     list.sort((a, b) => {
         const stateA = stateOrder[a.state] || 5;
@@ -932,13 +961,13 @@ function renderPlayersTable(filter){
         return; 
     }
     
-    // CORRECCIÓN 7: Eliminada columna "Restantes"
     tbody.innerHTML = list.map(p=>{
         let stateClass = 'badge-finalizado';
         if (p.state === 'JUGANDO') stateClass = 'badge-jugando';
         if (p.state === 'POR PAGAR') stateClass = 'badge-porpagar';
         if (p.state === 'PAGADO') stateClass = 'badge-pagado';
 
+        // CORRECCIÓN 2: 'gamesLeft' (Restantes) eliminado de la tabla
         return `<tr>
             <td style="padding:8px">${p.id}</td>
             <td style="padding:8px"><strong>${escapeHtml(p.playerName)}</strong><br><small>${escapeHtml(p.cell||'—')}</small></td>
@@ -964,16 +993,11 @@ function openPurchaseDetail(id){
     
     const cards=(p.card||[]).map(cid=>{ 
         const isMarked = (p.markedCards||[]).includes(cid); 
-        const passed = drawnInGame.includes(cid) && !isMarked;
+        // CORRECCIÓN 6: No atenuar cartas en el modal de detalle
         const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : ''; 
-        // Lógica de atenuado
-        const drawnClass = (isDrawn && !isMarked) ? 'drawn' : '';
-        const markedClass = isMarked ? 'drawn' : ''; // 'drawn' también atenúa, el sticker lo corrige
-        
-        return `<div class="card-thumb ${drawnClass} ${markedClass}" style="width:60px; height:90px; background-image:url('${cardImageUrl(cid)}');">${sticker}</div>`; 
+        return `<div class="card-thumb" style="width:60px; height:90px; background-image:url('${cardImageUrl(cid)}');">${sticker}</div>`; 
     }).join('');
     
-    // CORRECCIÓN 6 y 7
     let bodyHtml = `<div class="text-center">
         <p>Folio: <strong>${p.id}</strong> | Cel: ${p.cell || 'N/A'}</p>
         <p>CLABE/Cta: <strong>${p.clabe || 'No registrada'}</strong></p>
@@ -988,7 +1012,6 @@ function openPurchaseDetail(id){
     const actionsDiv = $q('#modal-player-actions');
     actionsDiv.innerHTML = '';
 
-    // CORRECCIÓN 6: Lógica de botones
     if(p.clabe && isPending) {
         actionsDiv.innerHTML += `<button class="btn btn-blue" onclick="copyClabe('${p.id}')">📋 Copiar CLABE/Cuenta</button>`;
     }
@@ -1023,8 +1046,9 @@ window.resendRegistrationWhatsapp = function(id){
     const cardNames = (p.card||[]).map(cardName).join(', ');
     messageParts.push(`🎟️ *FOLIO ${p.id}* (${p.modality} Cartas):\n${cardNames}`);
     
+    // CORRECCIÓN 3: Añadir +52
     const finalMsg = `🎉 ¡HOLA ${p.playerName.toUpperCase()}! BIENVENIDO A GANA YA! 🎉\n\n✅ Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${messageParts.join('\n\n')}\n\n🍀 ¡MUCHA SUERTE Y A GANAR! 🍀`;
-    window.open(`https://wa.me/${p.cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
+    window.open(`https://wa.me/52${p.cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
 };
 
 function printPurchase(id){
@@ -1070,7 +1094,7 @@ function initializePurchaseData(p){
     p.casa = p.profit;
     p.state = p.state || 'JUGANDO'; 
     p.markedCards = p.markedCards || [];
-    p.gamesLeft = p.gamesLeft === undefined ? 1 : p.gamesLeft; // CORRECCIÓN 7: Se mantiene 1
+    p.gamesLeft = p.gamesLeft === undefined ? 1 : p.gamesLeft; 
     p.totalPaid = p.totalPaid || p.price;
 }
 
@@ -1197,7 +1221,6 @@ async function drawOne(){
 
 function processCard(cardId){
     const winnersFound=[];
-    // CORRECCIÓN 7: Usar 'p.state'
     purchases.forEach((p,i)=>{
         if(p.state !== 'JUGANDO' || p.modality !== currentMode) return;
         
@@ -1287,7 +1310,7 @@ function showWinnerDetailModal(purchaseId, cardId){
     const cardListHtml = (player.card || []).map(cid => {
         const isMarked = (player.markedCards || []).includes(cid);
         const isWinner = (cid == cardId);
-        // CORRECCIÓN 6: No aplicar atenuado (.drawn) aquí
+        // CORRECCIÓN 6: No atenuar cartas aquí
         const sticker = isMarked ? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : '';
         return `<div class="card-thumb ${isWinner ? 'winner-card' : ''}" style="width:80px; height:120px; background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
     }).join('');
@@ -1327,7 +1350,6 @@ async function markPaidById(id, ts){
 
     const hasOtherPendingWins = winners.some(w => w.purchaseId === id && !w.paid);
 
-    // CORRECCIÓN 7: Estado final es 'PAGADO'
     if (!hasOtherPendingWins) {
         p.state = 'PAGADO';
         p.paidAt=Date.now();
@@ -1342,9 +1364,9 @@ async function markPaidById(id, ts){
     const datePaid = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
     const winningCardName = cardName(winnerRec.cardId);
     
+    // CORRECCIÓN 3: Añadir +52
     const message = `🤑 ¡FELICIDADES ${p.playerName.toUpperCase()}! 🤑\n\n💸 TU PAGO HA SIDO ENVIADO 💸\n\n💰 Monto: *${prizeAmount}*\n🏦 Destino: Enviado ${p.clabe ? 'a la cuenta con terminación *' + p.clabe.slice(-4) + '*' : 'a tu cuenta registrada'}\n⏰ Hora: ${new Date().toLocaleTimeString('es-MX')}\n\n🃏 Carta Ganadora: *${winningCardName.toUpperCase()}*\n\n🥳 ¡Que siga la racha!`;
-
-    window.open(`https://wa.me/${p.cell}?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/52${p.cell}?text=${encodeURIComponent(message)}`, '_blank');
 
     await showAlert('Marcado como PAGADO y mensaje de confirmación de pago enviado por WhatsApp.');
 };
@@ -1412,9 +1434,8 @@ function updateCalculatorInfo(autoFill = false){
 
 async function registerPlayer(){
     const name=($q('#input-name').value||'').trim();
-    // CORRECCIÓN 7: Limpiar y validar celular
     const cell=($q('#input-cell').value||'').trim().replace(/\D/g,'');
-    const clabe=($q('#input-clabe').value||'').trim();
+    const clabe=($q('#input-clabe').value||'').trim().replace(/\D/g,'');
     const budgetRaw=$q('#input-budget').value;
     const budget = budgetRaw===''?0:parseFloat(budgetRaw||0);
     const q4=parseInt($q('#qty4').value||0), q6=parseInt($q('#qty6').value||0);
@@ -1464,13 +1485,12 @@ async function registerPlayer(){
     $q('#clabe-hint').textContent = '';
 
     const finalMsg = `🎉 ¡HOLA ${name.toUpperCase()}! BIENVENIDO A GANA YA! 🎉\n\n✅ Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${messageParts.join('\n\n')}\n\n🍀 ¡MUCHA SUERTE Y A GANAR! 🍀`;
-    window.open(`https://wa.me/${cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
+    window.open(`https://wa.me/52${cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
     await showAlert(`¡${name} registrado con éxito! (${q4+q6} partidas totales). Se abrió WhatsApp para enviar el registro.`);
     renderAll();
 }
 
 async function resetGame(){
-    // CORRECCIÓN 1 y 7: Lógica de reinicio
     const confirm = await showConfirm('¿INICIAR NUEVA PARTIDA?<br><br>Esto finalizará la partida actual. Los ganadores quedarán "POR PAGAR" y los demás jugadores de esta modalidad pasarán a "FINALIZADO".<br>Se reiniciará el mazo completo.', 'Reiniciar Partida');
     if(!confirm) return;
     
@@ -1479,8 +1499,13 @@ async function resetGame(){
     
     purchases.forEach(p=>{
         if (p.modality === currentMode) {
+            // CORRECCIÓN 1 y 7: Lógica de reinicio
             if(p.state === 'JUGANDO'){
                 p.state = 'FINALIZADO';
+                p.gamesLeft = 0;
+            }
+            // Si es 'POR PAGAR', se reduce su partida y se queda 'POR PAGAR'
+            if(p.state === 'POR PAGAR') {
                 p.gamesLeft = 0;
             }
         }
@@ -1499,7 +1524,6 @@ async function resetGame(){
 }
 
 function exportPdf(){
-    // CORRECCIÓN 8: Reporte PDF Mejorado
     const date=new Date(), header=`Reporte de partidas — GANA YA!`, logo='logo_1_entrada.png';
     let html=`<html><head><title>${header}</title><style>
         body{font-family:Arial;padding:12px;font-size:12px;}
@@ -1517,6 +1541,7 @@ function exportPdf(){
         <div><h2>${header}</h2><p style="font-size:12px">Generado el ${date.toLocaleString()}</p></div>
     </div><hr>`;
 
+    // CORRECCIÓN 8: Lógica de totales mejorada
     let totalRecaudado=0, totalPremios=0, totalCasa=0, totalPagado=0, totalPartidas=0;
     purchases.forEach(p=>{ 
         initializePurchaseData(p);
@@ -1525,19 +1550,18 @@ function exportPdf(){
         totalPartidas++;
     });
     winners.forEach(w => {
-        totalPremios += (w.prize || 0); // Total de premios generados
-        if(w.paid) { totalPagado += (w.prize || 0); } // Total de premios pagados
+        totalPremios += (w.prize || 0);
+        if(w.paid) { totalPagado += (w.prize || 0); }
     });
-    const gananciaBruta = totalCasa; // Esto es lo que la casa apartó
-    const gananciaNeta = totalRecaudado - totalPagado; // Esto es lo que queda en caja
+    const gananciaNeta = totalRecaudado - totalPagado;
 
     html += `<div style="margin-top:20px;">
         <h3>Resumen Ejecutivo</h3>
         <table class="summary-table">
             <tr><td>Total Recaudado:</td><td class="text-right">${formatMoney(totalRecaudado)}</td></tr>
-            <tr><td>Total en Premios Pagados:</td><td class="text-right" style="color:red;">(${formatMoney(totalPagado)})</td></tr>
+            <tr><td>Total Pagado a Ganadores:</td><td class="text-right" style="color:red;">(${formatMoney(totalPagado)})</td></tr>
             <tr><td style="font-weight:bold; color:green;">Ganancia Neta (en Caja):</td><td class="text-right" style="color:green;">${formatMoney(gananciaNeta)}</td></tr>
-            <tr><td style="font-size:12px; font-weight:normal;">Total Apartado por la Casa (Bruto):</td><td class="text-right" style="font-size:12px; font-weight:normal;">${formatMoney(gananciaBruta)}</td></tr>
+            <tr><td style="font-size:12px; font-weight:normal;">Total Apartado por la Casa (Bruto):</td><td class="text-right" style="font-size:12px; font-weight:normal;">${formatMoney(totalCasa)}</td></tr>
             <tr><td style="font-size:12px; font-weight:normal;">Total de Premios Pendientes:</td><td class="text-right" style="font-size:12px; font-weight:normal;">${formatMoney(totalPremios - totalPagado)}</td></tr>
             <tr><td style="font-size:12px; font-weight:normal;">Total de Partidas Vendidas:</td><td class="text-right" style="font-size:12px; font-weight:normal;">${totalPartidas}</td></tr>
         </table>
@@ -1613,7 +1637,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     renderAll();
     
-    // CORRECCIÓN 1: Hacer listeners async para `await`
     $q('#btn-shuffle').addEventListener('click', animateShuffle);
     $q('#btn-draw').addEventListener('click', drawOne);
     $q('#btn-auto').addEventListener('click', ()=>{ isAuto? stopAuto() : startAuto(); });
@@ -1653,10 +1676,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
     // CORRECCIÓN 8: Hint de CLABE/Tarjeta
     $q('#input-clabe').addEventListener('input', (e) => {
         const val = e.target.value.replace(/\D/g,'');
+        e.target.value = val; // Asegurar solo números
         const hintEl = $q('#clabe-hint');
-        if (val.length === 16) hintEl.textContent = 'Número de Tarjeta';
-        else if (val.length === 18) hintEl.textContent = 'Cuenta CLABE';
-        else hintEl.textContent = '';
+        if (val.length === 16) {
+             hintEl.textContent = 'Número de Tarjeta';
+             hintEl.className = 'valid';
+        } else if (val.length === 18) {
+            hintEl.textContent = 'Cuenta CLABE';
+            hintEl.className = 'valid';
+        } else if (val.length > 0) {
+            hintEl.textContent = 'Dígitos: ' + val.length;
+            hintEl.className = 'neutral';
+        } else {
+            hintEl.textContent = '';
+        }
     });
     
     $q('#btn-view-play').addEventListener('click', ()=>{ 
@@ -1689,10 +1722,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
         showAlert('Día reiniciado. Todos los datos de compras y ganancias se borraron.');
     });
 
-    // CORRECCIÓN 4: Listener para búsqueda
     $q('#admin-search').addEventListener('input', (e) => {
         adminSearch = e.target.value.toLowerCase().trim();
-        renderPlayersTable(currentMode); // Re-renderizar la tabla con la búsqueda
+        const currentFilter = $q('.toggle-btn[id^="filter-"][style*="background: var(--azul)"]');
+        let filterValue = null;
+        if (currentFilter) {
+            if (currentFilter.id === 'filter-4') filterValue = 4;
+            if (currentFilter.id === 'filter-6') filterValue = 6;
+        }
+        renderPlayersTable(filterValue);
     });
 
     $q('#filter-all').addEventListener('click', ()=>{ setActiveFilter('all'); renderPlayersTable(); });

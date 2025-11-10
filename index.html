@@ -1,11 +1,12 @@
-<!doctype html>
-<html lang="es">
+<!doctype html><html lang="es">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎴 GANA YA! - Lotería Interactiva Mexicana (v9.14)</title>
+<title>🎴 GANA YA! - Lotería Interactiva (v11.0)</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ff6bcb'/%3E%3Ctext x='50%25' y='55%25' font-size='18' font-family='Arial' fill='white' text-anchor='middle' font-weight='700'%3EG%3C/text%3E%3C/svg%3E">
 <style>
+/* --- INICIO DE ESTILO (Tomado de v9.14) --- */
+
 /* VARIABLES DE COLOR */
 :root{ 
     --rojo:#e63946; 
@@ -151,8 +152,6 @@ body{
   grid-template-columns: repeat(5, 1fr); /* 5 Columnas FIJAS */
   gap:6px; /* Gap más pequeño */
 }
-/* En móviles muy pequeños, quizás quieras bajar a 3 o 4 para que no se rompa, 
-   pero pediste fijo a 5. Si se ve muy mal en cel, descomenta la linea de abajo */
 /* @media(max-width:600px){ .players-grid{ grid-template-columns: repeat(3, 1fr) !important; } } */
 
 .player-card{ 
@@ -160,6 +159,9 @@ body{
   box-shadow: 0 2px 5px rgba(0,0,0,0.08); cursor:pointer; transition:all .2s ease;
   border: 1px solid #eee;
   min-height: 110px; /* Altura mínima reducida */
+  display: flex; /* Añadido para mejor alineación */
+  flex-direction: column; /* Añadido */
+  justify-content: flex-start; /* Añadido */
 }
 .player-card:hover{ transform:translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.12); border-color: var(--accent1); }
 .player-name{ 
@@ -183,6 +185,20 @@ body{
 .sticker{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
 .sticker img{ width:70%; height:70%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 
+/* Efecto Shine (de v9.6b para anim. barajeo) */
+.card-thumb.shine::before{
+    content:'';
+    position:absolute;
+    top:0;left:-80%;
+    width:60%;height:100%;
+    background:linear-gradient(120deg, rgba(255,200,80,0.95), rgba(255,200,80,0.0));
+    transform:skewX(-20deg);
+    z-index:3;
+    animation:shineMove .9s linear 0s 2
+}
+@keyframes shineMove{100%{left:140%}}
+
+
 /* CONTROLES JUEGO */
 #control-partida h3 { color: var(--rojo); text-align: center; margin-top: 0; }
 .controls { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:10px; }
@@ -195,7 +211,7 @@ body{
 
 .current-card{ 
   height:240px; border-radius:12px; display:flex; align-items:center; justify-content:center; 
-  background: #fff url('logo_1_entrada.png') no-repeat center center; background-size: 80px;
+  background: #fff; 
   border: 2px dashed #ddd; margin-top: 10px; overflow: hidden;
 }
 .current-card-img { width: 100%; height: 100%; background-size: contain; background-position: center; background-repeat: no-repeat; }
@@ -213,30 +229,67 @@ td { border-bottom: 1px solid #eee; padding: 8px; }
 tr:hover { background: #f9f9f9; }
 
 /* MODALES */
-.modal-back{ position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter: blur(3px); display:flex; align-items:center; justify-content:center; z-index:9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-.modal-back.active { opacity: 1; pointer-events: all; }
-.modal{ background:#fff; border-radius:15px; padding:20px; width:90%; max-width:500px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); position: relative; transform: translateY(20px); transition: transform 0.3s ease; max-height: 90vh; overflow-y: auto; }
-.modal-back.active .modal { transform: translateY(0); }
+.modal-back{ position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter: blur(3px); display:flex; align-items:center; justify-content:center; z-index:9999; opacity: 1; pointer-events: all; transition: opacity 0.3s ease; }
+.modal{ background:#fff; border-radius:15px; padding:20px; width:90%; max-width:500px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); position: relative; transform: translateY(0); transition: transform 0.3s ease; max-height: 90vh; overflow-y: auto; }
+
+/* Ocultar modales */
+.modal-back.hidden { opacity: 0; pointer-events: none; }
+.modal-back.hidden .modal { transform: translateY(20px); }
 
 .close-modal-x { position: absolute; top: 10px; right: 15px; font-size: 24px; background: none; border: none; cursor: pointer; color: #999; }
 .close-modal-x:hover { color: var(--rojo); }
 
 /* WINNER ANIMATIONS */
 @keyframes mexicanGlow {
-    0% { box-shadow: 0 0 5px var(--verde), 0 0 10px var(--blanco), 0 0 15px var(--rojo); }
+    0% { box-shadow: 0 0 5px var(--verde), 0 0 10px var(--crema), 0 0 15px var(--rojo); }
     50% { box-shadow: 0 0 20px var(--verde), 0 0 30px var(--accent1), 0 0 40px var(--rojo); transform: scale(1.18); }
-    100% { box-shadow: 0 0 5px var(--verde), 0 0 10px var(--blanco), 0 0 15px var(--rojo); }
+    100% { box-shadow: 0 0 5px var(--verde), 0 0 10px var(--crema), 0 0 15px var(--rojo); }
 }
 .winner-card {
     animation: mexicanGlow 1.5s infinite ease-in-out;
     z-index: 10;
 }
 
-/* SHUFFLE OVERLAY */
-.shuffle-overlay{ position:fixed; inset:0; z-index:2000; background:rgba(255,248,240,0.95); display:none; align-items:center; justify-content:center; flex-direction: column; }
-.shuffle-overlay.visible{ display:flex; }
+/* --- SHUFFLE OVERLAY (de v9.6b) --- */
+#shuffle-overlay{
+  position:fixed; 
+  inset:0; 
+  display:none; 
+  align-items:center; 
+  justify-content:center; 
+  background:rgba(0,0,0,0.45); 
+  z-index:9998;
+  backdrop-filter: blur(3px);
+}
+.shuffle-center{
+  position:relative;
+  width:880px;
+  height:520px;
+  /* Ajuste para pantallas pequeñas */
+  max-width: 95vw;
+  max-height: 90vh;
+  transform: scale(0.8); /* Ajuste de escala para que quepa en el layout */
+}
+.shuffle-card{
+  position:absolute;
+  width:120px; 
+  height:180px; 
+  border-radius:10px; 
+  background-size:cover; 
+  background-position:center; 
+  box-shadow:0 12px 28px rgba(0,0,0,0.28); 
+  transform-origin:center center;
+}
+.shuffle-card.flip{
+  transform:rotateY(180deg) scale(.98); 
+  transition:transform .6s;
+}
+.shuffle-card.wave-move{
+  transition:transform .9s,opacity .9s;
+}
+/* --- FIN SHUFFLE OVERLAY --- */
 
-#confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 9998; }
+#confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 9998; display: none; }
 .hidden { display: none !important; }
 
 /* UTILS */
@@ -246,133 +299,135 @@ tr:hover { background: #f9f9f9; }
 .w-full { width: 100%; }
 .font-bold { font-weight: 700; }
 .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; }
-.badge-play { background-color: var(--verde); }
-.badge-win { background-color: var(--accent1); color: #333; animation: pulse 1s infinite; }
-.badge-paid { background-color: var(--azul); }
-.badge-end { background-color: #999; }
+
+/* Badges de Estado (Adaptados de v9.14 a lógica v9.10) */
+.badge-jugando { background-color: var(--verde); } /* 'JUGANDO' */
+.badge-porpagar { background-color: var(--accent1); color: #333; animation: pulse 1s infinite; } /* 'POR PAGAR' */
+.badge-pagado { background-color: var(--azul); } /* 'PAGADO' */
+.badge-finalizado { background-color: #999; } /* 'FINALIZADO' */
 
 @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
+/* --- FIN DE ESTILO --- */
 </style>
 </head>
 <body>
 
-<!-- SONIDOS (Requieren archivos locales) -->
-<audio id="snd-flip" src="flip.mp3" preload="auto"></audio>
-<audio id="snd-win" src="APLAUSOS_GANADOR.mp3" preload="auto"></audio>
-
 <div class="container">
 
   <header class="main-header">
+      
       <div class="logo-box-wrapper">
-          <div class="logo-box"><img id="logo-img" src="logo_1_entrada.png" alt="Logo Lotería"></div>
+          <div class="logo-box"><img id="logo-img" src="logo_1_entrada.png" alt="logo"></div>
       </div>
+
       <div class="title-container">
           <div class="title">🎉 GANA YA!</div>
           <div class="subtitle">Lotería Interactiva Mexicana</div>
       </div>
+      
       <div class="header-controls-wrapper">
-          <div class="bolsa-compact">
-              <span class="label" id="bolsa-label">💰 Bolsa</span>
-              <span class="amount" id="bolsa-amount">$0.00</span>
+          <div class="header-controls">
+              <div class="bolsa-compact">
+                  <span class="label" id="bolsa-label">💰 Bolsa</span>
+                  <span class="amount" id="bolsa-amount">$0.00</span>
+              </div>
+              <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
+              <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
           </div>
-          <button id="btn-view-play" class="toggle-btn toggle-play" title="Vista de Juego">Jugar</button>
-          <button id="btn-view-admin" class="toggle-btn toggle-admin" title="Vista de Administración">⚙️</button>
       </div>
   </header>
   
-  <!-- VISTA DE JUEGO -->
   <div class="main-grid" id="main-grid">
 
-    <!-- PANEL IZQUIERDO: GANADORES -->
-    <aside class="mex-frame-small winners" id="winners-panel">
+    <aside class="mex-frame-small winners" id="winners-panel" aria-label="Últimos Ganadores">
       <h3 class="text-center" style="color: var(--verde); margin-top:0;">🏆 Ganadores Recientes</h3>
-      <div id="winners-list" style="min-height: 100px;">
-          <div class="text-center small-muted" style="padding: 20px; opacity: 0.6;">Esperando ganadores...</div>
-      </div>
+      <div class="winners-list" id="winners-list" style="margin-top:4px"><div class="small-muted" style="text-align:center">Aún no hay ganadores.</div></div>
     </aside>
 
-    <!-- PANEL CENTRAL: JUGADORES -->
     <section class="mex-frame" id="players-section">
       <h2 class="text-center" style="color: var(--azul); margin-top:0;">JUGADORES ACTIVOS</h2>
-      <div class="players-grid" id="players-area">
-          <!-- Se llena con JS -->
+   
+      <div class="players-grid" id="players-area" style="margin-top:8px">
+        <div class="small-muted" style="padding:18px; text-align:center">Aún no hay jugadores.</div>
       </div>
     </section>
 
-    <!-- PANEL DERECHO: CONTROLES -->
     <aside class="controls-panel mex-frame-small" id="controls-panel">
-        <div id="control-partida"> 
-            <h3>🎮 CONTROL DE JUEGO</h3>
-            
-            <div style="margin-bottom: 15px;">
-                <label for="select-modality" style="display:block; text-align:center; font-size:12px; color:#666; margin-bottom:5px;">Modalidad Actual:</label>
-                <select id="select-modality" class="input" style="text-align:center; font-weight:bold; font-size:16px;">
-                    <option value="4">4 Cartas</option>
-                    <option value="6">6 Cartas</option>
-                </select>
-            </div>
+      
+      <div id="control-partida">
+ 
+        <h3>🎮 CONTROL DE JUEGO</h3>
 
-            <!-- CONTROLES NORMALES -->
-            <div id="game-controls-group" class="controls">
-                <button id="btn-shuffle" class="btn btn-blue w-full">🔀 BARAJEAR</button>
-                <div style="display:flex; gap:8px; width:100%;">
-                    <button id="btn-draw" class="btn btn-red" style="flex:1;">🃏 TIRAR</button>
-                    <button id="btn-auto" class="btn btn-green" style="flex:1;">🤖 AUTO</button>
-                </div>
-            </div>
+        <div style="margin-bottom: 15px;">
+            <label for="select-modality" style="display:block; text-align:center; font-size:12px; color:#666; margin-bottom:5px;">Modalidad Actual:</label>
+            <select id="select-modality" class="input" style="text-align:center; font-weight:bold; font-size:16px;">
+                <option value="4">4 cartas</option>
+                <option value="6">6 cartas</option>
+            </select>
+        </div>
 
-            <!-- BOTÓN DE REINICIO (SOLO AL GANAR) -->
-            <button id="btn-reset-win" class="btn btn-verde w-full hidden" style="background: var(--verde); padding: 15px; font-size: 18px; animation: pulse 2s infinite;">🔄 REINICIAR PARTIDA</button>
-
-            <div class="text-center mt-2" style="color:#666; font-size:13px;">
-                Cartas restantes: <strong id="deck-count" style="color:var(--rojo)">54</strong>
+        <div id="game-controls" class="controls">
+            <button id="btn-shuffle" class="btn btn-blue w-full">🔀 BARAJEAR</button>
+            <div style="display:flex; gap:8px; width:100%;">
+                <button id="btn-draw" class="btn btn-red" style="flex:1;">🃏 TIRAR</button>
+                <button id="btn-auto" class="btn btn-green" style="flex:1;">🤖 AUTO</button>
             </div>
         </div>
 
-        <div style="margin-top:20px">
-            <h3 class="text-center" style="margin-bottom:10px; color:var(--azul)">CARTA EN JUEGO</h3>
-            <div id="current-card" class="current-card">
-                <!-- Carta actual -->
-            </div>
-        </div>
+        <button id="btn-reset-win" class="btn btn-red w-full hidden" style="background: var(--verde); padding: 15px; font-size: 18px; animation: pulse 2s infinite;">🔄 REINICIAR PARTIDA</button>
 
-        <div style="margin-top:20px">
-            <h4 class="text-center" style="margin:0 0 10px 0; color:#999; font-size:14px;">ANTERIORES</h4>
-            <div id="last-cards" style="display:flex; gap:5px; justify-content:center; min-height:60px;"></div>
+        <div class="text-center mt-2" style="color:#666; font-size:13px;">
+            Cartas restantes: <strong id="deck-count" style="color:var(--rojo)">54</strong>
         </div>
+      </div>
+
+      <div style="margin-top:20px">
+        <h3 class="text-center" style="margin-bottom:10px; color:var(--azul)">CARTA EN JUEGO</h3>
+        <div id="current-card" class="current-card">
+            <div class="small-muted">Esperando barajeo...</div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px">
+        <h4 class="text-center" style="margin:0 0 10px 0; color:#999; font-size:14px;">ANTERIORES</h4>
+        <div id="last-cards" style="display:flex; gap:5px; justify-content:center; min-height:60px;"></div>
+      </div>
+
     </aside>
 
   </div> 
   
-  <!-- VISTA DE ADMINISTRACIÓN -->
   <section id="view-admin" class="mex-frame hidden" style="margin-top:10px;">
     <h2 style="color:var(--azul); margin-top:0; border-bottom:2px solid #eee; padding-bottom:10px;">⚙️ Administración de Caja</h2>
     
     <div class="admin-row">
-      <!-- CONFIG PRECIOS -->
       <div class="admin-col mex-frame-small">
-        <h3 style="margin-top:0; color:var(--verde)">💲 Configuración de Precios</h3>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div>
-                <label class="font-bold">4 Cartas:</label>
-                <div style="display:flex; gap:5px; align-items:center">
-                    <input id="price4" class="input" type="number" placeholder="Precio" title="Precio al público">
-                    <input id="profit4" class="input" type="number" placeholder="Ganancia" title="Ganancia de la casa">
-                </div>
+        <h3 style="margin:0 0 8px 0">Modalidades - Precio & Ganancia</h3>
+        <div class="price-grid" style="margin-top:4px; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+          <div class="price-box" style="padding:10px; border:1px solid #eee; border-radius:8px;">
+            <div style="font-size:16px">4 Cartas</div>
+            <div style="display:flex; gap:6px; margin-top:6px;">
+              <input id="price4" class="input" type="number" value="10" min="1" title="Precio">
+              <input id="profit4" class="input" type="number" value="2" min="0" title="Ganancia">
             </div>
-            <div>
-                <label class="font-bold">6 Cartas:</label>
-                <div style="display:flex; gap:5px; align-items:center">
-                    <input id="price6" class="input" type="number" placeholder="Precio">
-                    <input id="profit6" class="input" type="number" placeholder="Ganancia">
-                </div>
+            <div class="small-muted" style="margin-top:4px">Precio • Ganancia</div>
+          </div>
+          <div class="price-box" style="padding:10px; border:1px solid #eee; border-radius:8px;">
+            <div style="font-size:16px">6 Cartas</div>
+            <div style="display:flex; gap:6px; margin-top:6px;">
+              <input id="price6" class="input" type="number" value="12" min="1" title="Precio">
+              <input id="profit6" class="input" type="number" value="3" min="0" title="Ganancia">
             </div>
+            <div class="small-muted" style="margin-top:4px">Precio • Ganancia</div>
+          </div>
         </div>
-        <button id="save-prices" class="btn btn-blue w-full mt-2">Guardar Precios</button>
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button id="save-prices" class="btn btn-green">Guardar</button>
+          <button id="reset-prices" class="btn btn-muted">Reset</button>
+        </div>
       </div>
 
-      <!-- REGISTRO JUGADOR -->
       <div class="admin-col mex-frame-small">
         <h3 style="margin-top:0; color:var(--rojo)">📝 Registrar Jugador</h3>
         <input id="input-name" placeholder="Nombre Completo" class="input">
@@ -401,7 +456,6 @@ tr:hover { background: #f9f9f9; }
       </div>
     </div>
 
-    <!-- TABLA DE JUGADORES -->
     <div class="mex-frame-small" style="margin-top:15px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
             <div style="display:flex; gap:5px; align-items:center;">
@@ -416,518 +470,1026 @@ tr:hover { background: #f9f9f9; }
             </div>
         </div>
         <div class="table-wrap">
-            <table id="players-table-el">
+            <table id="players-table-el" style="width:100%; border-collapse:collapse;">
                 <thead>
                     <tr><th>Folio</th><th>Jugador</th><th>Mod.</th><th>Restantes</th><th>En Juego</th><th>Casa</th><th>Estado</th><th>Acción</th></tr>
                 </thead>
-                <tbody id="players-table-body">
-                    <!-- Llenado con JS -->
-                </tbody>
+                <tbody id="players-table">
+                    </tbody>
             </table>
         </div>
     </div>
   </section>
   
-</div> <!-- Fin Container -->
-
-<!-- MODALES -->
-<div class="modal-back" id="modal-player">
+  <footer style="text-align:center; margin-top:12px; padding: 10px; font-size: 13px; color: #777;" class="small-muted">
+      Coloca <strong>logo_1_entrada.png</strong> en la raíz y la carpeta <strong>Cartas_baraja_loteria/</strong> con las 54 imágenes.
+  </footer>
+</div> <div class="modal-back hidden" id="modal-player">
     <div class="modal">
-        <button class="close-modal-x" id="close-player-modal">×</button>
-        <h3 id="modal-player-title" style="color:var(--azul); margin-top:0;">Detalle de Jugador</h3>
-        <div id="modal-player-body"></div>
+        <button class="close-modal-x" id="modal-close-x">×</button>
+        <h3 id="modal-player-name" style="color:var(--azul); margin-top:0;">Detalle de Jugador</h3>
+        <div id="modal-body"></div>
         <div id="modal-player-actions" class="mt-2" style="display:flex; flex-direction:column; gap:8px;">
-            <!-- Acciones dinámicas (copiar clabe, marcar pagado, etc) -->
-        </div>
+            </div>
+        <button id="modal-close" class="btn btn-muted mt-2 w-full">Cerrar</button>
     </div>
 </div>
 
-<div class="modal-back" id="modal-winner">
+<div class="modal-back hidden" id="modal-winner">
     <div class="modal text-center" style="border: 5px solid var(--accent1);">
-        <h1 style="color:var(--rojo); font-size: 36px; margin:10px 0;">🎉 ¡LOTERÍA! 🎉</h1>
-        <div id="winner-body" style="font-size:20px; margin-bottom:20px;"></div>
-        <button id="btn-winner-ok" class="btn btn-green" style="font-size:20px; padding:15px 30px;">¡VER GANADORES!</button>
+        <button class="close-modal-x" id="winner-close">×</button>
+        <h1 id="winner-title" style="color:var(--rojo); font-size: 36px; margin:10px 0;">🎉 ¡LOTERÍA! 🎉</h1>
+        <div id="winner-body" style="font-size:20px; margin-bottom:10px;"></div>
+        <div id="winner-sub" style="font-size:16px; margin-bottom:20px; color: var(--verde); font-weight: bold;"></div>
+        <button id="winner-ok" class="btn btn-green" style="font-size:20px; padding:15px 30px;">¡VER GANADOR!</button>
     </div>
 </div>
 
-<div class="modal-back" id="modal-winner-detail">
+<div class="modal-back hidden" id="modal-winner-detail">
     <div class="modal text-center">
-        <button class="close-modal-x" id="close-winner-detail">×</button>
+        <button class="close-modal-x" id="winner-detail-close-x">×</button>
         <h2 style="color:var(--verde); margin-top:0;">👑 ¡TENEMOS GANADOR!</h2>
-        <h3 id="wd-player-name" style="color:var(--azul)"></h3>
-        <div id="wd-cards" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:20px 0;"></div>
-        <button id="btn-wd-close" class="btn btn-blue">Cerrar y Continuar</button>
+        <h3 id="winner-detail-player-name" style="color:var(--azul)"></h3>
+        <div id="winner-detail-card-name" style="font-weight:700; color:var(--rojo); margin-bottom: 15px;"></div>
+        <div id="winner-detail-player-cards" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:20px 0;">
+          </div>
+        <button id="winner-detail-ok" class="btn btn-blue">Cerrar y Continuar</button>
     </div>
 </div>
 
-<!-- OVERLAYS -->
-<div id="shuffle-overlay" class="shuffle-overlay">
-    <div style="font-size: 40px; color:var(--rojo); font-weight:900; margin-bottom:20px;">¡BARAJEANDO!</div>
-    <!-- Aquí se inyectan cartas animadas -->
-</div>
+
+<div id="shuffle-overlay" aria-hidden="true">
+    </div>
 <canvas id="confetti-canvas"></canvas>
 
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <script>
-/*** GANA YA! v9.14 Core Logic ***/
+/* index_v11.0_definitiva - code block */
+const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
+const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg",49:"49 el pino-min.jpg"};
+const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
 
-// CONFIG & CONSTANTS
-const CARD_PATH = 'Cartas_baraja_loteria/'; 
-const CARD_MAP = {1:"1 el gallo",2:"2 el diablito",3:"3 la dama",4:"4 el catrin",5:"5 el paraguas",6:"6 la sirena",7:"7 la escalera",8:"8 la botella",9:"9 el barril",10:"10 arbol",11:"11 melon",12:"12 el valiente",13:"13 el gorrito",14:"14 la muerte",15:"15 la pera",16:"16 la bandera",17:"17 el bandolon",18:"18 el violoncello",19:"19 la garza",20:"20 el pajaro",21:"21 la mano",22:"22 la bota",23:"23 la luna",24:"24 el cotorro",25:"25 el borracho",26:"26 el negrito",27:"27 el corazon",28:"28 la sandia",29:"29 el tambor",30:"30 el camaron",31:"31 las jaras",32:"32 el musico",33:"33 la araña",34:"34 el soldado",35:"35 la estrella",36:"36 el cazo",37:"37 el mundo",38:"38 el apache",39:"39 el nopal",40:"40 el alacran",41:"41 la rosa",42:"42 la calavera",43:"43 la campana",44:"44 el cantarito",45:"45 el venado",46:"46 el sol",47:"47 la corona",48:"48 la chalupa",49:"49 el pino",50:"50 el pescado",51:"51 la palma",52:"52 la maceta",53:"53 el arpa",54:"54 la rana"};
-const getCardUrl = id => `${CARD_PATH}${CARD_MAP[id] || id}.jpg`;
-const getCardName = id => (CARD_MAP[id] || `Carta ${id}`).replace(/^\d+\s*/, '').toUpperCase();
+const Kp='ganya_v90_prices', Kg='ganya_v90_game', Kpu='ganya_v90_purchases', Ktx='ganya_v90_tx', Kw='ganya_v90_winners', Kdig='ganya_v90_dig', Kmod='ganya_v90_mod';
+const Kid='ganya_v90_id_counter'; 
+const defaultsPrices=()=>({price4:10,profit4:2,price6:12,profit6:3});
+const defaultsGame=()=>({deck:Array.from({length:54},(_,i)=>i+1),drawn:[],current:0,pending:[]});
 
-// STATE MANAGEMENT
-const LS_KEYS = { PRICES:'gy_prices', GAME:'gy_game', PURCHASES:'gy_purchases', WINNERS:'gy_winners', ID:'gy_id_ctr', MODE:'gy_mode' };
-let APP = {
-    prices: load(LS_KEYS.PRICES) || {p4:10, g4:2, p6:12, g6:3},
-    game: load(LS_KEYS.GAME) || {deck:createDeck(), drawn:[], current:null, state:'READY'}, 
-    purchases: load(LS_KEYS.PURCHASES) || [],
-    winners: load(LS_KEYS.WINNERS) || [],
-    mode: parseInt(localStorage.getItem(LS_KEYS.MODE) || 4),
-    idCounter: parseInt(localStorage.getItem(LS_KEYS.ID) || 100),
-    autoInterval: null
-};
+let prices = load(Kp) || defaultsPrices();
+let game = load(Kg) || defaultsGame();
+let purchases = load(Kpu) || [];
+let tx = load(Ktx) || [];
+let winners = load(Kw) || [];
+let drawnInGame = load(Kdig) || [];
+let currentMode = Number(localStorage.getItem(Kmod) || 4);
+if(currentMode===8) currentMode=4; 
+let currentIdCounter = Number(localStorage.getItem(Kid) || 233); 
 
-// UTILS
-function load(k){ try{return JSON.parse(localStorage.getItem(k))}catch(e){return null} }
-function save(){ 
-    localStorage.setItem(LS_KEYS.PRICES, JSON.stringify(APP.prices));
-    localStorage.setItem(LS_KEYS.GAME, JSON.stringify(APP.game));
-    localStorage.setItem(LS_KEYS.PURCHASES, JSON.stringify(APP.purchases));
-    localStorage.setItem(LS_KEYS.WINNERS, JSON.stringify(APP.winners));
-    localStorage.setItem(LS_KEYS.MODE, APP.mode);
-    localStorage.setItem(LS_KEYS.ID, APP.idCounter);
-}
-function createDeck(){ return Array.from({length:54},(_,i)=>i+1); }
-function shuffle(arr){ for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]} return arr; }
-function fmtMoney(n){ return '$'+Number(n||0).toFixed(2); }
-function playSound(id) { const el = document.getElementById(id); if(el) { el.currentTime = 0; el.play().catch(e=>console.log('Audio error:',e)); } }
+let isAuto=false, autoInterval=null, animShuffling=false;
+let audioCtx=null;
+try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ audioCtx=null; }
 
-// CORE GAME FUNCTIONS
-function drawCard() {
-    if(APP.game.state === 'WINNER') return;
-    if(APP.game.deck.length === 0) { alert('¡Se acabaron las cartas! Barajea de nuevo.'); stopAuto(); return; }
-    
-    playSound('snd-flip');
-    const card = APP.game.deck.shift();
-    APP.game.drawn.push(card);
-    APP.game.current = card;
-    APP.game.state = 'PLAYING';
-    
-    checkWinners(card);
-    save();
-    renderUI();
+// --- Helpers --- 
+function $q(sel){return document.querySelector(sel)}
+function $qa(sel){return Array.from(document.querySelectorAll(sel))}
+function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+function load(k){ try{ const v=localStorage.getItem(k); return v? JSON.parse(v): null;}catch(e){return null;} }
+function saveAll(){ save(Kp,prices); save(Kg,game); save(Kpu,purchases); save(Ktx,tx); save(Kw,winners); save(Kdig,drawnInGame); localStorage.setItem(Kmod,String(currentMode)); localStorage.setItem(Kid,String(currentIdCounter)); }
+
+function getNextPurchaseId() {
+    currentIdCounter += 1;
+    localStorage.setItem(Kid, String(currentIdCounter));
+    return `GanaYA!-` + String(currentIdCounter).padStart(4, '0');
 }
 
-function checkWinners(lastCard) {
-    let winnersFound = [];
-    APP.purchases.forEach(p => {
-        if(p.state !== 'JUGANDO' || p.gamesLeft < 1) return;
-        if(p.cards.includes(lastCard) && !p.marked.includes(lastCard)) {
-            p.marked.push(lastCard);
-        }
-        if(p.marked.length === p.modality) {
-            winnersFound.push(p);
-        }
+function uuid(){ return 'id-'+Math.random().toString(36).slice(2,10); } 
+function shuffle(a){ const arr=a.slice();
+for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]] } return arr; }
+function formatMoney(n){ return '$'+Number(n||0).toFixed(2); }
+function cardName(id){ 
+    let baseName = CARD_NAME_MAP[id] ? CARD_NAME_MAP[id].replace(/^\d+\s*/,'').replace(/-min\.jpg$/,'').replace(/\.min\.jpg$/,'') : ('Carta '+id);
+    return baseName.replace(/_/g, ' ').replace(/\.jpg/i, '').trim(); 
+}
+
+// --- Sonido de Ganador --- 
+function playWinSound(){ if(!audioCtx) return; const now=audioCtx.currentTime; const osc=audioCtx.createOscillator(); osc.type='triangle'; const gain=audioCtx.createGain(); gain.gain.setValueAtTime(0.0,now); gain.gain.linearRampToValueAtTime(0.3,now+0.05); gain.gain.exponentialRampToValueAtTime(0.0001,now+1.2); osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(500,now); osc.frequency.exponentialRampToValueAtTime(800,now+0.3); osc.frequency.exponentialRampToValueAtTime(1000,now+0.8); osc.start(now); osc.stop(now+1.2); }
+
+// --- Confetti --- 
+let confettiInstance = null;
+function startConfettiFullScreen(){
+    const canvas=$q('#confetti-canvas');
+    if(!canvas) return;
+    canvas.style.display='block';
+    if(confettiInstance){ confettiInstance.clear(); }
+    confettiInstance=confetti.create(canvas,{ resize:true, useWorker:true });
+    const defaults = { origin: { y: 0.7 }, zIndex: 9998 };
+    confettiInstance({ ...defaults, particleCount: 50, spread: 150, startVelocity: 40, scalar: 0.8 });
+    confettiInstance({ ...defaults, particleCount: 40, spread: 90, startVelocity: 60, scalar: 1.0 });
+}
+function stopConfettiFullScreen(){
+    const canvas=$q('#confetti-canvas');
+    if(canvas) canvas.style.display='none';
+    if(confettiInstance){ confettiInstance.clear(); confettiInstance=null; }
+}
+
+// --- Control de Juego --- 
+function stopAuto(){
+    if(autoInterval){ clearInterval(autoInterval); autoInterval=null; }
+    isAuto=false;
+    const btn=$q('#btn-auto');
+    if(btn){ btn.textContent='🤖 AUTO'; btn.classList.remove('btn-muted'); btn.classList.add('btn-green'); }
+    disableControls(false); 
+}
+function startAuto(){
+    if(animShuffling || game.winnerPending) return;
+    isAuto=true;
+    const btn=$q('#btn-auto');
+    if(btn){ btn.textContent='⏹ DETENER'; btn.classList.remove('btn-green'); btn.classList.add('btn-muted'); }
+    autoInterval=setInterval(drawOne, 2500);
+    disableControls(true);
+    $q('#btn-auto').disabled = false;
+}
+
+function disableControls(disable){
+    $q('#btn-shuffle').disabled = disable;
+    $q('#btn-draw').disabled = disable;
+    $q('#select-modality').disabled = disable;
+    $q('#btn-reset-win').disabled = disable;
+    if(disable){ $q('#btn-auto').disabled = true; }
+}
+
+// --- Renderizado --- 
+function renderPlayerCard(p){
+    let html=`<div class="player-card" tabindex="0" data-player-id="${p.id}">`;
+    html+=`<div class="player-name" title="${escapeHtml(p.playerName)}">${escapeHtml(p.playerName)}</div>`;
+    html+=`<div class="player-info">Partidas: <strong>${p.gamesLeft||0}</strong></div>`;
+    html+=`<div class="player-cards" style="display:grid;grid-template-columns:repeat(${p.modality===4?2:3},1fr);gap:3px;justify-items:center;">`;
+    (p.card||[]).forEach(cid=>{ 
+        const isMarked = (p.markedCards||[]).includes(cid);
+        const passed = drawnInGame.includes(cid) && !isMarked; 
+        const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : '';
+        html+=`<div class="card-thumb ${passed?'passed':''}" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
     });
-
-    if(winnersFound.length > 0) {
-        APP.game.state = 'WINNER';
-        stopAuto();
-        
-        const winMod = winnersFound[0].modality;
-        const activePot = APP.purchases.filter(p => p.modality === winMod && p.state === 'JUGANDO' && p.gamesLeft > 0)
-                                       .reduce((sum, p) => sum + (p.price - p.profit), 0);
-        const prizePerWinner = activePot / winnersFound.length;
-
-        winnersFound.forEach(p => {
-            p.state = 'GANADOR'; 
-            APP.winners.unshift({
-                ts: Date.now(), pid: p.id, name: p.name, mod: p.modality, 
-                card: lastCard, prize: prizePerWinner, paid: false
-            });
-        });
-
-        save();
-        showWinnerModal(winnersFound, lastCard, prizePerWinner);
-    }
+    html+='</div></div>';
+    return html;
 }
 
-function resetGame() {
-    if(!confirm('¿INICIAR NUEVA PARTIDA?\n\nSe descontará 1 partida a los jugadores activos de la modalidad actual ('+APP.mode+' cartas).')) return;
+function renderAll(){
+    const isAdminView = !$q('#view-admin').classList.contains('hidden');
+    const mainGridEl = $q('#main-grid');
     
-    APP.purchases.forEach(p => {
-        if(p.modality === APP.mode && (p.state === 'JUGANDO' || p.state === 'GANADOR')) {
-            if(p.state === 'GANADOR') p.state = 'JUGANDO'; 
-            p.gamesLeft--;
-            if(p.gamesLeft <= 0) p.state = 'FINALIZADO';
-        }
-        p.marked = []; 
-    });
+    if (isAdminView) {
+        if (mainGridEl) mainGridEl.style.display = 'none';
+        $q('#btn-view-admin').classList.add('toggle-play');
+        $q('#btn-view-admin').classList.remove('toggle-admin');
+        $q('#btn-view-play').classList.remove('toggle-play');
+        $q('#btn-view-play').classList.add('toggle-admin');
+    } else {
+        if (mainGridEl) mainGridEl.style.display = 'grid';
+        $q('#btn-view-play').classList.add('toggle-play');
+        $q('#btn-view-play').classList.remove('toggle-admin');
+        $q('#btn-view-admin').classList.remove('toggle-play');
+        $q('#btn-view-admin').classList.add('toggle-admin');
+    }
 
-    APP.game.deck = shuffle(createDeck());
-    APP.game.drawn = [];
-    APP.game.current = null;
-    APP.game.state = 'READY';
+    let potAmount = 0;
+    let potLabelText = '💰 Bolsa';
+    purchases.forEach(p => initializePurchaseData(p));
     
-    save();
-    renderUI();
+    if (isAdminView) {
+        const totalHouseProfit = purchases.reduce((s, p) => s + (p.casa || 0), 0);
+        potAmount = totalHouseProfit;
+        potLabelText = '🏦 CASA TOTAL';
+    } else {
+        const activeForPot = purchases.filter(p=> (p.state==='JUGANDO' || p.state==='POR PAGAR') && (p.gamesLeft||0)>0 && p.modality === currentMode );
+        const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
+        potAmount = totalEnJuego;
+        potLabelText = `💰 BOLSA (${currentMode} CARTAS)`;
+    }
+
+    animateBolsa(potAmount);
+    const bolsaLabelEl = $q('#bolsa-label');
+    if(bolsaLabelEl) bolsaLabelEl.textContent = potLabelText;
     
-    const overlay = document.getElementById('shuffle-overlay');
-    overlay.classList.add('visible');
-    setTimeout(() => { overlay.classList.remove('visible'); }, 2000);
+    const deckCount=$q('#deck-count');
+    if(deckCount) deckCount.textContent=game.deck.length;
+    
+    const area=$q('#players-area');
+    const active = purchases.filter(p=> (p.gamesLeft||0)>0 && (p.state==='JUGANDO' || p.state==='POR PAGAR') && p.modality===currentMode);
+    
+    let finalHtml = active.map(p=> renderPlayerCard(p)).join('');
+    
+    if (active.length === 0) {
+        area.innerHTML = '<div class="text-center small-muted" style="grid-column:1/-1; padding:30px; opacity:0.5;">No hay jugadores activos para '+currentMode+' cartas.</div>';
+    } else {
+        area.innerHTML = finalHtml;
+    }
+    
+    const cur=$q('#current-card');
+    if(game.current && cur) {
+        cur.innerHTML=`<div class="current-card-img" style="background-image:url('${cardImageUrl(game.current)}')"></div>`; 
+    } else if(cur) {
+        cur.innerHTML='<div style="opacity:0.4; font-weight:bold; color:#999;">LISTO PARA JUGAR</div>';
+    }
+    
+    const last=(game.drawn||[]).slice(-4, -1).reverse();
+    const lastEl=$q('#last-cards'); 
+    if(lastEl) lastEl.innerHTML = last.length? 
+        last.map(id=> `<div class="card-thumb" style="width:40px;height:55px;background-image:url('${cardImageUrl(id)}')"></div>`).join('') : '<div class="small-muted">...</div>';
+
+    const winnerPending = game.winnerPending;
+    $q('#game-controls').classList.toggle('hidden', winnerPending);
+    $q('#btn-reset-win').classList.toggle('hidden', !winnerPending);
+    $q('#select-modality').disabled = (isAuto || winnerPending || (game.drawn && game.drawn.length > 0));
+
+    const currentFilter = $q('.toggle-btn[id^="filter-"][style*="background: var(--azul)"]');
+    let filterValue = null;
+    if (currentFilter) {
+        if (currentFilter.id === 'filter-4') filterValue = 4;
+        if (currentFilter.id === 'filter-6') filterValue = 6;
+    }
+    renderPlayersTable(filterValue);
+    renderWinnersList();
+    updateCalculatorInfo();
 }
 
-// UI RENDERING
-function renderUI() {
-    const isPlayView = document.getElementById('view-admin').classList.contains('hidden');
-    let totalPot = 0;
-    if(isPlayView) {
-        totalPot = APP.purchases.filter(p => p.modality === APP.mode && p.state === 'JUGANDO' && p.gamesLeft > 0)
-                     .reduce((sum, p) => sum + (p.price - p.profit), 0);
-        document.getElementById('bolsa-label').textContent = `💰 BOLSA (${APP.mode} CARTAS)`;
-    } else {
-         totalPot = APP.purchases.reduce((sum,p) => sum + (p.profit * p.initialGames), 0);
-         document.getElementById('bolsa-label').textContent = `🏦 CASA TOTAL`;
-    }
-    document.getElementById('bolsa-amount').textContent = fmtMoney(totalPot);
+function renderWinnersList(){
+    const listEl=$q('#winners-list');
+    const sortedWinners = winners.slice().sort((a,b)=> b.ts-a.ts).slice(0,5);
+    if(!listEl) return;
+    if(!sortedWinners.length){ listEl.innerHTML='<div class="text-center small-muted" style="padding: 20px; opacity: 0.6;">Sin ganadores hoy.</div>'; return; }
 
-    const grid = document.getElementById('players-area');
-    const activePlayers = APP.purchases.filter(p => p.modality === APP.mode && (p.state === 'JUGANDO' || p.state === 'GANADOR') && p.gamesLeft > 0);
-    
-    if(activePlayers.length === 0) {
-        grid.innerHTML = '<div class="text-center small-muted" style="grid-column:1/-1; padding:30px; opacity:0.5;">No hay jugadores activos para '+APP.mode+' cartas.</div>';
-    } else {
-        grid.innerHTML = activePlayers.map(p => {
-            let cardsHtml = p.cards.map(cid => {
-                const isMarked = p.marked.includes(cid);
-                const isPassed = !isMarked && APP.game.drawn.includes(cid);
-                return `<div class="card-thumb ${isPassed?'passed':''}" style="background-image:url('${getCardUrl(cid)}')">
-                    ${isMarked ? '<div class="sticker"><img src="logo_1_entrada.png"></div>' : ''}
-                </div>`;
-            }).join('');
-            
-            return `<div class="player-card" onclick="showPlayerDetail('${p.id}')">
-                <div class="player-name" title="${p.name}">${p.name}</div>
-                <div class="player-info">Partidas: <strong>${p.gamesLeft}</strong></div>
-                <div class="player-cards" style="display:grid; grid-template-columns:repeat(${APP.mode===4?2:3}, 1fr); gap:3px;">
-                    ${cardsHtml}
-                </div>
-            </div>`;
-        }).join('');
-    }
-
-    const winnerPending = APP.game.state === 'WINNER';
-    document.getElementById('game-controls-group').classList.toggle('hidden', winnerPending);
-    document.getElementById('btn-reset-win').classList.toggle('hidden', !winnerPending);
-    document.getElementById('deck-count').textContent = APP.game.deck.length;
-    document.getElementById('select-modality').value = APP.mode;
-    document.getElementById('select-modality').disabled = APP.game.state === 'PLAYING' || winnerPending;
-
-    const curCardEl = document.getElementById('current-card');
-    if(APP.game.current) {
-        curCardEl.innerHTML = `<div class="current-card-img" style="background-image:url('${getCardUrl(APP.game.current)}')"></div>`;
-    } else {
-        curCardEl.innerHTML = '<div style="opacity:0.4; font-weight:bold; color:#999;">LISTO PARA JUGAR</div>';
-    }
-    
-    const lastEl = document.getElementById('last-cards');
-    lastEl.innerHTML = APP.game.drawn.slice(-4, -1).reverse().map(cid => 
-        `<div class="card-thumb" style="width:40px;height:55px;background-image:url('${getCardUrl(cid)}')"></div>`
-    ).join('');
-
-    renderWinnersPanel();
-    renderAdminTable();
-}
-
-function renderWinnersPanel() {
-    const list = document.getElementById('winners-list');
-    if(APP.winners.length === 0) {
-        list.innerHTML = '<div class="text-center small-muted" style="padding:20px; opacity:0.6;">Sin ganadores hoy.</div>';
-        return;
-    }
-    list.innerHTML = APP.winners.slice(0,5).map(w => `
-        <div style="padding:8px; border-bottom:1px solid #eee; font-size:13px;">
-            <div style="font-weight:bold; color:var(--azul)">${w.name}</div>
+    listEl.innerHTML=sortedWinners.map(w=>{ 
+        const player=purchases.find(p=>p.id===w.purchaseId);
+        if(!player) return ''; 
+        const paidText = w.paid ? 'PAGADO' : 'PENDIENTE';
+        const paidColor = w.paid ? 'var(--verde)' : 'var(--rojo)';
+        return `<div style="padding:8px; border-bottom:1px solid #eee; font-size:13px; cursor:pointer;" onclick="showWinnerDetailModal('${w.purchaseId}','${w.cardId}')">
+            <div style="font-weight:bold; color:var(--azul)">${escapeHtml(player.playerName)}</div>
             <div style="display:flex; justify-content:space-between; color:#666;">
-                <span>${fmtMoney(w.prize)} (${w.mod} CARTAS)</span>
-                <span style="color:${w.paid?'var(--verde)':'var(--rojo)'}">${w.paid?'PAGADO':'PENDIENTE'}</span>
+                <span>${formatMoney(w.prize)} (${w.modality} CARTAS)</span>
+                <span style="color:${paidColor}">${paidText}</span>
             </div>
-        </div>
-    `).join('');
-}
-
-// ADMIN FUNCTIONS
-function registerPlayer() {
-    const name = document.getElementById('input-name').value.trim();
-    const cell = document.getElementById('input-cell').value.trim();
-    const clabe = document.getElementById('input-clabe').value.trim();
-    const q4 = parseInt(document.getElementById('qty4').value) || 0;
-    const q6 = parseInt(document.getElementById('qty6').value) || 0;
-    
-    if(!name || (q4+q6) === 0) { alert('Faltan datos (Nombre, Cantidad de Partidas).'); return; }
-    // CLABE es opcional pero recomendada.
-
-    const batch = [];
-    for(let i=0; i<q4; i++) batch.push(createPurchase(name, cell, clabe, 4));
-    for(let i=0; i<q6; i++) batch.push(createPurchase(name, cell, clabe, 6));
-    
-    APP.purchases.push(...batch);
-    save();
-    renderUI();
-    
-    alert(`¡${name} registrado con éxito! (${q4+q6} partidas totales)`);
-    
-    // Limpiar todos los campos tras registro exitoso
-    document.getElementById('input-name').value = '';
-    document.getElementById('input-cell').value = '';
-    document.getElementById('input-clabe').value = '';
-    document.getElementById('qty4').value = 0;
-    document.getElementById('qty6').value = 0;
-    document.getElementById('input-budget').value = '';
-    document.getElementById('calc-info').textContent = 'Ingresa un presupuesto para ver opciones.';
-    
-    // Enviar WhatsApp de bienvenida (toma el primer ID del batch para referencia)
-    if(cell && batch.length > 0) sendWelcomeWhatsapp(batch[0].id, batch);
-}
-
-function createPurchase(name, cell, clabe, mod) {
-    APP.idCounter++;
-    const cards = generateUniqueCards(mod);
-    // NUEVO FORMATO DE FOLIO: GanaYA!-XXXX
-    const newId = `GanaYA!-` + String(APP.idCounter).padStart(4, '0');
-    
-    return {
-        id: newId, name, cell, clabe, modality: mod, cards, marked: [],
-        gamesLeft: 1, initialGames: 1, state: 'JUGANDO',
-        price: mod===4 ? APP.prices.p4 : APP.prices.p6,
-        profit: mod===4 ? APP.prices.g4 : APP.prices.g6,
-        ts: Date.now()
-    };
-}
-
-function generateUniqueCards(qty) {
-    return shuffle(createDeck()).slice(0, qty);
-}
-
-function renderAdminTable() {
-    const tbody = document.getElementById('players-table-body');
-    tbody.innerHTML = APP.purchases.slice().reverse().map(p => `
-        <tr>
-            <td>${p.id}</td>
-            <td><strong>${p.name}</strong><br><small>${p.cell || 'Sin Cel'}</small></td>
-            <td class="text-center">${p.modality} Cartas</td>
-            <td class="text-center">${p.gamesLeft}</td>
-            <td class="text-center">${fmtMoney(p.price - p.profit)}</td>
-            <td class="text-center">${fmtMoney(p.profit)}</td>
-            <td class="text-center"><span class="badge ${p.state==='JUGANDO'?'badge-play':p.state==='GANADOR'?'badge-win':p.state==='PAGADO'?'badge-paid':'badge-end'}">${p.state}</span></td>
-            <td class="text-center"><button class="btn btn-blue" style="padding:4px 8px; font-size:11px;" onclick="showPlayerDetail('${p.id}')">VER</button></td>
-        </tr>
-    `).join('');
-}
-
-// WHATSAPP MESSAGES
-function sendWelcomeWhatsapp(pid, batch = []) {
-    const p = APP.purchases.find(x => x.id === pid);
-    if(!p || !p.cell) return;
-
-    // Si es un lote, mandamos todas las cartas juntas
-    const purchasesToSend = batch.length > 0 ? batch : [p];
-    let cardsMsg = "";
-    purchasesToSend.forEach(pur => {
-         cardsMsg += `🎟️ *FOLIO ${pur.id}* (${pur.modality} Cartas):\n${pur.cards.map(id => getCardName(id)).join(', ')}\n\n`;
-    });
-
-    const msg = `🎉 ¡HOLA ${p.name.toUpperCase()}! BIENVENIDO A GANA YA! 🎉\n\n✅ Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${cardsMsg}🍀 ¡MUCHA SUERTE Y A GANAR! 🍀`;
-    window.open(`https://wa.me/${p.cell}?text=${encodeURIComponent(msg)}`, '_blank');
-}
-
-function sendPaymentWhatsapp(winRec) {
-    const p = APP.purchases.find(x => x.id === winRec.pid);
-    if(!p || !p.cell) { alert('No hay celular registrado para enviar confirmación.'); return; }
-    
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString('es-MX', {hour: '2-digit', minute:'2-digit'});
-    const accountStr = p.clabe ? `a la cuenta con terminación *${p.clabe.slice(-4)}*` : 'a tu cuenta registrada';
-
-    const msg = `🤑 ¡FELICIDADES ${p.name.toUpperCase()}! 🤑\n\n💸 TU PAGO HA SIDO ENVIADO 💸\n\n💰 Monto: *${fmtMoney(winRec.prize)}*\n🏦 Destino: Enviado ${accountStr}\n⏰ Hora: ${timeStr}\n\n🃏 Carta Ganadora: *${getCardName(winRec.card)}*\n\n🥳 ¡Que siga la racha! ¿Listo para la próxima ronda? ¡VAMOS POR MÁS! 💪🔥`;
-    window.open(`https://wa.me/${p.cell}?text=${encodeURIComponent(msg)}`, '_blank');
-}
-
-// MODALS & INTERACTION
-function showWinnerModal(winnersList, winningCard, prize) {
-    playSound('snd-win');
-    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 9999 });
-
-    const winModal = document.getElementById('modal-winner');
-    winModal.classList.add('active');
-    
-    let html = `Ganador(es) con la carta <strong>${getCardName(winningCard)}</strong>:<br><br>`;
-    winnersList.forEach(w => {
-        html += `<div style="color:var(--azul); font-weight:900; font-size:24px;">${w.name}</div>`;
-    });
-    html += `<br>Premio por jugador: <strong style="color:var(--verde);">${fmtMoney(prize)}</strong>`;
-    document.getElementById('winner-body').innerHTML = html;
-    document.getElementById('btn-winner-ok').onclick = () => { winModal.classList.remove('active'); showWinnerDetail(winnersList[0]); };
-}
-
-function showWinnerDetail(player) {
-    const modal = document.getElementById('modal-winner-detail');
-    modal.classList.add('active');
-    document.getElementById('wd-player-name').textContent = player.name;
-    const lastDrawn = APP.game.current;
-    document.getElementById('wd-cards').innerHTML = player.cards.map(cid => {
-        const isWinnerCard = (cid === lastDrawn);
-        const isMarked = player.marked.includes(cid);
-        return `<div class="card-thumb ${isWinnerCard ? 'winner-card' : ''}" style="width:80px; height:120px; background-image:url('${getCardUrl(cid)}')">
-            ${isMarked ? '<div class="sticker"><img src="logo_1_entrada.png"></div>' : ''}
         </div>`;
     }).join('');
 }
 
-function showPlayerDetail(pid) {
-    const p = APP.purchases.find(x => x.id === pid);
-    if(!p) return;
+function renderPlayersTable(filter){
+    const tbody=$q('#players-table');
+    const list = purchases.slice().reverse().filter(p=> !filter || p.modality===filter);
+    list.forEach(p => initializePurchaseData(p));
+    if(!tbody) return;
+    if(!list.length){ tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td></tr>'; return; }
     
-    document.getElementById('modal-player').classList.add('active');
-    document.getElementById('modal-player-title').textContent = p.name;
-    
-    // Detectar si tiene premio pendiente
-    const winRec = APP.winners.find(w => w.pid === pid && !w.paid);
+    tbody.innerHTML = list.map(p=>{
+        let stateClass = 'badge-finalizado';
+        if (p.state === 'JUGANDO') stateClass = 'badge-jugando';
+        if (p.state === 'POR PAGAR') stateClass = 'badge-porpagar';
+        if (p.state === 'PAGADO') stateClass = 'badge-pagado';
 
-    let html = `<div class="text-center">
+        return `<tr>
+            <td style="padding:8px">${p.id}</td>
+            <td style="padding:8px"><strong>${escapeHtml(p.playerName)}</strong><br><small>${escapeHtml(p.cell||'—')}</small></td>
+            <td style="padding:8px;text-align:center">${p.modality}</td>
+            <td style="padding:8px;text-align:center">${p.gamesLeft||0}</td>
+            <td style="padding:8px;text-align:center">${formatMoney(p.enJuego||0)}</td>
+            <td style="padding:8px;text-align:center">${formatMoney(p.casa||0)}</td>
+            <td style="padding:8px;text-align:center"><span class="badge ${stateClass}">${p.state||'JUGANDO'}</span></td>
+            <td style="padding:8px;text-align:center"><button class="btn btn-blue" style="padding:4px 8px; font-size:11px;" onclick="openPurchaseDetail('${p.id}')">VER</button></td>
+        </tr>`
+    }).join('');
+}
+
+// --- Modales --- 
+function openPurchaseDetail(id){
+    const p=purchases.find(x=>x.id===id);
+    if(!p) return alert('No encontrado');
+    initializePurchaseData(p);
+    const modal=$q('#modal-player');
+    $q('#modal-player-name').textContent=`${p.playerName}`;
+    
+    const pendingWin = winners.find(w => w.purchaseId === id && !w.paid);
+
+    const cards=(p.card||[]).map(cid=>{ 
+        const isMarked = (p.markedCards||[]).includes(cid); 
+        const passed = drawnInGame.includes(cid) && !isMarked;
+        const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : ''; 
+        return `<div class="card-thumb" style="width:60px; height:90px; background-image:url('${cardImageUrl(cid)}');">${sticker}</div>`; 
+    }).join('');
+    
+    let bodyHtml = `<div class="text-center">
         <p>Folio: <strong>${p.id}</strong> | Cel: ${p.cell || 'N/A'}</p>
         <p>CLABE/Cta: <strong>${p.clabe || 'No registrada'}</strong></p>
         <p>Modalidad: ${p.modality} Cartas | Restantes: ${p.gamesLeft}</p>
         <hr>
         <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin:15px 0;">
-             ${p.cards.map(cid => `<div class="card-thumb" style="width:60px; height:90px; background-image:url('${getCardUrl(cid)}')"></div>`).join('')}
+             ${cards}
         </div>
     </div>`;
-    document.getElementById('modal-player-body').innerHTML = html;
+    $q('#modal-body').innerHTML = bodyHtml;
 
-    // Botones de acción dinámicos
-    const actionsDiv = document.getElementById('modal-player-actions');
+    const actionsDiv = $q('#modal-player-actions');
     actionsDiv.innerHTML = '';
 
     if(p.clabe) {
-        actionsDiv.innerHTML += `<button class="btn btn-blue" onclick="copyToClipboard('${p.clabe}')">📋 Copiar CLABE/Cuenta</button>`;
+        actionsDiv.innerHTML += `<button class="btn btn-blue" onclick="copyClabe('${p.id}')">📋 Copiar CLABE/Cuenta</button>`;
     }
-    if(winRec) {
-        actionsDiv.innerHTML += `<button class="btn btn-green" onclick="markAsPaid('${winRec.pid}', ${winRec.ts})">💸 Marcar como PAGADO y Notificar</button>`;
+    if(pendingWin) {
+        actionsDiv.innerHTML += `<button class="btn btn-green" onclick="markPaidById('${p.id}', ${pendingWin.ts})">💸 Marcar como PAGADO y Notificar</button>`;
     }
-    actionsDiv.innerHTML += `<button class="btn btn-muted" onclick="sendWelcomeWhatsapp('${p.id}')">📱 Reenviar Cartas (WhatsApp)</button>`;
-    actionsDiv.innerHTML += `<button class="btn btn-muted" onclick="document.getElementById('modal-player').classList.remove('active')">Cerrar</button>`;
+    actionsDiv.innerHTML += `<button class="btn btn-muted" onclick="resendRegistrationWhatsapp('${p.id}')">📱 Reenviar Cartas (WhatsApp)</button>`;
+
+    modal.classList.remove('hidden');
+    $q('#modal-close').onclick=closeGroupModal;
+    $q('#modal-close-x').onclick=closeGroupModal;
 }
 
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => alert('CLABE copiada al portapapeles'));
+function copyClabe(id){
+    const p=purchases.find(x=>x.id===id);
+    if(!p) return; 
+    const text = p.clabe||'';
+    if(!text) return alert('No hay CLABE registrada');
+    navigator.clipboard.writeText(text).then(()=>alert('CLABE copiada al portapapeles.'));
 }
 
-function markAsPaid(pid, ts) {
-    const winIdx = APP.winners.findIndex(w => w.pid === pid && w.ts === ts);
-    if(winIdx === -1) return;
+window.resendRegistrationWhatsapp = function(id){
+    const p=purchases.find(x=>x.id===id);
+    if(!p) return; 
+
+    const messageParts = [];
+    const cardNames = (p.card||[]).map(cardName).join(', ');
+    messageParts.push(`🎟️ *FOLIO ${p.id}* (${p.modality} Cartas):\n${cardNames}`);
     
-    APP.winners[winIdx].paid = true;
-    const p = APP.purchases.find(x => x.id === pid);
-    if(p) p.state = 'PAGADO'; // Opcional, si quieres rastrear el estado final de esa "compra"
-    
-    save(); renderUI();
-    document.getElementById('modal-player').classList.remove('active');
-    
-    if(confirm('Marcado como PAGADO. ¿Enviar confirmación por WhatsApp ahora?')) {
-        sendPaymentWhatsapp(APP.winners[winIdx]);
+    const finalMsg = `🎉 ¡HOLA ${p.playerName.toUpperCase()}! BIENVENIDO A GANA YA! 🎉\n\n✅ Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${messageParts.join('\n\n')}\n\n🍀 ¡MUCHA SUERTE Y A GANAR! 🍀`;
+    window.open(`https://wa.me/${p.cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
+};
+
+function printPurchase(id){
+    const p=purchases.find(x=>x.id===id);
+    if(!p) return alert('No encontrado');
+    const html = `<html><head><title>Ticket ${p.id}</title><style>
+                body{ font-family:sans-serif; padding:12px; }
+                .card-thumb{ width:74px; height:106px; border-radius:8px; background-size:cover; background-position:center; position:relative; display:inline-block; margin:4px;}
+                .sticker{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+                .sticker img{ width:42px; height:42px; filter:none; }
+                .card-thumb.passed{ filter:grayscale(1) brightness(0.6); } 
+            </style></head><body>
+            <div style="text-align:center;">
+                <img src="logo_1_entrada.png" style="width:80px;height:80px;object-fit:contain"/>
+                <h2>¡GANA YA!</h2><p><strong>Lotería Interactiva Mexicana</strong></p>
+            </div><hr>
+            <h3>Detalle de Compra #${p.id}</h3>
+            <p><strong>Jugador:</strong> ${escapeHtml(p.playerName)} (${escapeHtml(p.cell||'—')})</p>
+            <p><strong>Modalidad:</strong> ${p.modality} cartas</p>
+            <p><strong>Partidas:</strong> ${p.gamesLeft || 0}</p>
+            <p><strong>Total Pagado:</strong> ${formatMoney(p.totalPaid)}</p>
+            <p><strong>En Juego:</strong> ${formatMoney(p.enJuego || 0)}</p>
+            <p><strong>Ganancia Casa:</strong> ${formatMoney(p.casa || 0)}</p>
+            <hr><h4>Cartas Asignadas (${p.card.length})</h4>
+            <div style="text-align:center;">
+            ${(p.card||[]).map(cid=>{ 
+                const isMarked = (p.markedCards||[]).includes(cid);
+                const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : ''; 
+                return `<div class="card-thumb" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
+            }).join('')}
+            </div><hr>
+            <p style="text-align:center; font-size:10px;">ID de registro: ${p.id}<br>Fecha: ${new Date(p.createdAt).toLocaleString()}</p>
+        </body></html>`;
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.print();
+}
+
+function initializePurchaseData(p){
+    p.price = p.price || (p.modality === 4 ? prices.price4 : prices.price6);
+    p.profit = p.profit || (p.modality === 4 ? prices.profit4 : prices.profit6);
+    p.enJuego = p.price - p.profit;
+    p.casa = p.profit;
+    p.state = p.state || 'JUGANDO'; 
+    p.markedCards = p.markedCards || [];
+    p.gamesLeft = p.gamesLeft === undefined ? 1 : p.gamesLeft;
+    p.totalPaid = p.totalPaid || p.price;
+}
+
+function animateBolsa(targetAmount){
+    const el=$q('#bolsa-amount');
+    if(!el) return;
+    let currentAmount=parseFloat(el.textContent.replace('$', '') || 0);
+    const duration=800;
+    let start=null;
+    function step(timestamp){
+        if(!start) start=timestamp;
+        const progress=timestamp-start;
+        const percentage=Math.min(progress/duration, 1);
+        const nextAmount=currentAmount+(targetAmount-currentAmount)*percentage;
+        el.textContent=formatMoney(nextAmount);
+        if(percentage<1){ window.requestAnimationFrame(step); }
     }
+    window.requestAnimationFrame(step);
 }
 
-// AUTO PLAY
-function toggleAuto() {
-    if(APP.autoInterval) {
+// --- FUNCIÓN DE ANIMACIÓN DE BARAJEO (de v9.6b, ADAPTADA) ---
+function animateShuffle(){
+  if(window.animShuffling) return; 
+  window.animShuffling=true;
+  stopAuto();
+  disableControls(true);
+  
+  const overlay = $q('#shuffle-overlay'); 
+  overlay.style.display='flex'; 
+  overlay.innerHTML='<div class="shuffle-center"></div>';
+  const center = overlay.querySelector('.shuffle-center');
+  
+  // *** MODIFICACIÓN IMPORTANTE ***
+  // Usar el mazo restante (game.deck) en lugar de un mazo nuevo
+  const pending = shuffle(game.deck.slice()); // Tomar copia barajada del mazo RESTANTE
+  const sample = pending.slice(0, 20); // Tomar 20 cartas de muestra para la anim-visual
+  
+  const cards = sample.map((cid,i)=>{
+    const el=document.createElement('div'); 
+    el.className='shuffle-card shuffle-wave'; 
+    // Usar la función 'cardImageUrl' de v10.0
+    el.style.backgroundImage='url("' + cardImageUrl(cid) + '")'; 
+    el.style.left='50%'; 
+    el.style.top='50%'; 
+    el.style.transform='translate(-50%,-50%)'; 
+    el.style.zIndex=100+i; 
+    center.appendChild(el); 
+    return {el,cid};
+  });
+  
+  // Wave 1
+  cards.forEach((c,idx)=> setTimeout(()=>{ 
+    const tx=(idx-cards.length/2)*18+(Math.random()*40-20); 
+    const ty=-160+Math.random()*100; 
+    const rot=(Math.random()*40-20);
+    c.el.style.transition='transform 1.2s cubic-bezier(.22,.9,.32,1),opacity 1.2s'; 
+    c.el.style.transform=`translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(1)`;
+    if(Math.random()>0.6) c.el.classList.add('flip');
+  }, idx*60));
+  
+  // Wave 2
+  setTimeout(()=>{ 
+      cards.forEach((c,idx)=> setTimeout(()=>{ 
+          const tx=(Math.random()*700-350); 
+          const ty=(Math.random()*260-130); 
+          const rot=(Math.random()*720-360); 
+          c.el.classList.remove('flip'); 
+          c.el.classList.add('wave-move'); 
+          c.el.style.transform=`translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(.94)`; 
+      }, idx*50)); 
+  }, 1600);
+  
+  // Wave 3 final gather
+  setTimeout(()=>{ 
+      cards.forEach((c,idx)=>{ 
+          c.el.style.transition='transform .6s ease, opacity .6s ease'; 
+          c.el.style.transform=`translate(${(idx-cards.length/2)*10}px, -30px) rotate(${Math.random()*18-9}deg) scale(.96)`; 
+          c.el.innerHTML='<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><img src="logo_1_entrada.png" style="width:80px;height:80px;opacity:.95"></div>'; 
+          c.el.style.backgroundImage='linear-gradient(#ddd,#bbb)'; 
+      }); 
+  }, 3200);
+  
+  // finalize
+  setTimeout(()=>{
+    $qa('#players-grid .card-thumb').forEach(c=>{ c.classList.add('shine'); setTimeout(()=>c.classList.remove('shine'),2600); });
+    overlay.style.display='none'; 
+    overlay.innerHTML=''; 
+    window.animShuffling=false; 
+    
+    // *** MODIFICACIÓN IMPORTANTE ***
+    // Ejecutar la lógica de barajeo del estado (game.deck)
+    shufflePending(); 
+    
+    disableControls(false); 
+    renderAll();
+  }, 5200); // Duración total de 5.2s
+}
+
+function shufflePending(){
+    // Esta es la lógica de 'barajear' (de v10.0)
+    // Solo barajea el mazo restante.
+    game.deck = shuffle(game.deck);
+    tx.push({id:uuid(),type:'shuffle_remaining',ts:Date.now()});
+    saveAll();
+}
+// --- FIN ANIMACIÓN BARAJEO ---
+
+function drawOne(){
+    if(animShuffling || game.winnerPending) return;
+
+    if(game.deck.length === 0){
+        alert('El mazo está vacío. ¡Reinicia la partida para barajear de nuevo!');
         stopAuto();
-    } else {
-        document.getElementById('btn-auto').textContent = '⏹ DETENER';
-        document.getElementById('btn-auto').classList.replace('btn-green','btn-muted');
-        drawCard(); // Primera carta inmediata
-        APP.autoInterval = setInterval(drawCard, 3000); // Cada 3 seg
+        return;
     }
-}
-function stopAuto() {
-    clearInterval(APP.autoInterval);
-    APP.autoInterval = null;
-    const btn = document.getElementById('btn-auto');
-    if(btn) {
-        btn.textContent = '🤖 AUTO';
-        btn.classList.replace('btn-muted','btn-green');
-    }
+    
+    const card = game.deck.shift(); 
+    game.drawn.push(card);
+    game.current=card;
+    drawnInGame.push(card); 
+    
+    tx.push({id:uuid(),type:'draw',card:card,ts:Date.now()});
+    saveAll();
+    processCard(card);
+    renderAll();
 }
 
-// EVENT LISTENERS & INIT
-document.addEventListener('DOMContentLoaded', () => {
-    renderUI();
-
-    // View Toggles
-    document.getElementById('btn-view-play').onclick = () => {
-        document.getElementById('view-admin').classList.add('hidden');
-        document.getElementById('main-grid').classList.remove('hidden');
-    };
-    document.getElementById('btn-view-admin').onclick = () => {
-        document.getElementById('view-admin').classList.remove('hidden');
-        document.getElementById('main-grid').classList.add('hidden');
-    };
-
-    // Game Actions
-    document.getElementById('btn-draw').onclick = drawCard;
-    document.getElementById('btn-shuffle').onclick = resetGame; 
-    document.getElementById('btn-reset-win').onclick = resetGame;
-    document.getElementById('btn-auto').onclick = toggleAuto;
-    document.getElementById('select-modality').onchange = (e) => {
-        APP.mode = parseInt(e.target.value);
-        APP.game.state = 'READY'; 
-        save(); renderUI();
-    };
-
-    // Admin Actions
-    document.getElementById('btn-register').onclick = registerPlayer;
-    document.getElementById('save-prices').onclick = () => {
-        APP.prices.p4 = parseFloat(document.getElementById('price4').value) || APP.prices.p4;
-        APP.prices.g4 = parseFloat(document.getElementById('profit4').value) || APP.prices.g4;
-        APP.prices.p6 = parseFloat(document.getElementById('price6').value) || APP.prices.p6;
-        APP.prices.g6 = parseFloat(document.getElementById('profit6').value) || APP.prices.g6;
-        save(); alert('Precios guardados');
-    };
-    document.getElementById('btn-reset-day').onclick = () => {
-        if(confirm('¿BORRAR TODAS LAS COMPRAS Y GANADORES DEL DÍA?')) {
-            APP.purchases = []; APP.winners = []; APP.game = {deck:createDeck(), drawn:[], current:null, state:'READY'};
-            save(); renderUI();
+function processCard(cardId){
+    const winnersFound=[];
+    purchases.forEach((p,i)=>{
+        if(!(p.gamesLeft>0 && p.state==='JUGANDO')) return;
+        
+        if(p.card && p.card.includes(cardId) && !(p.markedCards||[]).includes(cardId)){
+            p.markedCards = [...(p.markedCards||[]), cardId];
         }
-    };
 
-    // Calculator
-    document.getElementById('input-budget').addEventListener('input', (e) => {
-        const budget = parseFloat(e.target.value) || 0;
-        const p4 = APP.prices.p4 || 1;
-        const p6 = APP.prices.p6 || 1;
+        if((p.markedCards||[]).length === p.modality){
+            winnersFound.push({idx:i,purchaseId:p.id});
+        }
+    });
+
+    if(winnersFound.length){
+        stopAuto();
+        game.winnerPending = true;
+        disableControls(true);
+        
+        const winningModality = purchases.find(p => p.id === winnersFound[0].purchaseId)?.modality || currentMode;
+        
+        const activeForPot = purchases.filter(p=> p.state==='JUGANDO' && (p.gamesLeft||0)>0 && p.modality === winningModality );
+        activeForPot.forEach(p => initializePurchaseData(p));
+        const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
+        
+        const share = totalEnJuego / winnersFound.length;
+
+        const recs=[];
+
+        winnersFound.forEach(w=>{
+            const p=purchases[w.idx];
+            p.wins=(p.wins||0)+1;
+            p.state='POR PAGAR';
+            p.prize=share;
+            
+            const rec = {
+                id: uuid(),
+                purchaseId: p.id,
+                playerName: p.playerName,
+                modality: p.modality,
+                cardId: cardId, 
+                prize: share,
+                paid: false,
+                ts: Date.now()
+            };
+            winners.push(rec);
+            recs.push(rec);
+            tx.push({id:uuid(),type:'win',player:p.playerName,modality:p.modality,amount:share,card:cardId,purchaseId:p.id,ts:Date.now()});
+        });
+
+        saveAll();
+        window._tempWinnerRecs = recs; 
+
+        const modal = $q('#modal-winner');
+        $q('#winner-title').textContent = `🎉 ¡LOTERÍA!`;
+        const winnerNames = winnersFound.map(w=> purchases[w.idx].playerName).join(' y ');
+        $q('#winner-body').innerHTML = `Ganador(es) con la carta <strong>${cardName(cardId)}</strong>:<br><br><div style="color:var(--azul); font-weight:900; font-size:24px;">${escapeHtml(winnerNames)}</div>`;
+        $q('#winner-sub').innerHTML = `Premio por jugador: <strong style="color:var(--verde);">${formatMoney(share)}</strong>`;
+        modal.classList.remove('hidden');
+        
+        playWinSound();
+        startConfettiFullScreen();
+
+        renderAll();
+    }
+}
+
+function showWinnerDetailModal(purchaseId, cardId){
+    if(!purchaseId){
+        if(!window._tempWinnerRecs || window._tempWinnerRecs.length === 0) return;
+        purchaseId = window._tempWinnerRecs[0].purchaseId;
+        cardId = window._tempWinnerRecs[0].cardId;
+    }
+    
+    if(!cardId) {
+        const winnerRec = winners.find(w => w.purchaseId === purchaseId && !w.paid);
+        if(!winnerRec) return;
+        cardId = winnerRec.cardId;
+    }
+
+    const player = purchases.find(p=>p.id===purchaseId);
+    if(!player) return;
+
+    $q('#modal-winner').classList.add('hidden');
+    
+    const detailPlayerName = $q('#winner-detail-player-name');
+    const detailCardName = $q('#winner-detail-card-name');
+    const detailCardsContainer = $q('#winner-detail-player-cards');
+
+    detailPlayerName.textContent = escapeHtml(player.playerName);
+    detailCardName.textContent = 'Carta Ganadora: ' + cardName(cardId);
+
+    const cardListHtml = (player.card || []).map(cid => {
+        const isMarked = (player.markedCards || []).includes(cid);
+        const isWinner = (cid == cardId);
+        const passed = drawnInGame.includes(cid) && !isMarked; 
+        const sticker = isMarked ? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : '';
+        return `<div class="card-thumb ${isWinner ? 'winner-card' : ''} ${passed ? 'passed' : ''}" style="width:80px; height:120px; background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
+    }).join('');
+    detailCardsContainer.innerHTML = cardListHtml;
+
+    const modalDetail = $q('#modal-winner-detail');
+    modalDetail.classList.remove('hidden');
+}
+
+function closeWinnerDetailModal(){
+    const modalDetail = $q('#modal-winner-detail');
+    modalDetail.classList.add('hidden');
+    delete window._tempWinnerRecs;
+    stopConfettiFullScreen(); 
+    renderAll(); 
+}
+
+function escapeHtml(s){ return String(s||'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m])); }
+
+window.markPaidById = function(id, ts){
+    const p=purchases.find(x=>x.id===id);
+    if(!p) return alert('No encontrado');
+
+    let winnerRec;
+    if (ts) {
+        winnerRec = winners.find(w => w.purchaseId === id && w.ts === ts && !w.paid);
+    } else {
+        winnerRec = winners.find(w => w.purchaseId === id && !w.paid); 
+    }
+    
+    if(!winnerRec) return alert('No se encontró registro de premio pendiente de pago para esta compra.');
+
+    let winIndex = winners.findIndex(w => w.id === winnerRec.id);
+    if (winIndex !== -1) {
+        winners[winIndex].paid = true;
+    }
+
+    const hasOtherPendingWins = winners.some(w => w.purchaseId === id && !w.paid);
+
+    if (!hasOtherPendingWins) {
+        p.state='PAGADO';
+        p.paidAt=Date.now();
+    }
+    
+    tx.push({id:uuid(),type:'mark_paid',purchaseId:id, winnerId: winnerRec.id, ts:Date.now()});
+    saveAll();
+    renderAll();
+    closeGroupModal();
+
+    const prizeAmount = formatMoney(winnerRec.prize);
+    const datePaid = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
+    const winningCardName = cardName(winnerRec.cardId);
+    
+    const message = `🤑 ¡FELICIDADES ${p.playerName.toUpperCase()}! 🤑\n\n💸 TU PAGO HA SIDO ENVIADO 💸\n\n💰 Monto: *${prizeAmount}*\n🏦 Destino: Enviado ${p.clabe ? 'a la cuenta con terminación *' + p.clabe.slice(-4) + '*' : 'a tu cuenta registrada'}\n⏰ Hora: ${new Date().toLocaleTimeString('es-MX')}\n\n🃏 Carta Ganadora: *${winningCardName}*\n\n🥳 ¡Que siga la racha!`;
+
+    window.open(`https://wa.me/${p.cell}?text=${encodeURIComponent(message)}`, '_blank');
+
+    alert('Marcado como PAGADO y mensaje de confirmación de pago enviado por WhatsApp.');
+};
+
+function closeGroupModal(){
+    const modal=$q('#modal-player');
+    modal.classList.add('hidden');
+}
+
+function setActiveFilter(f){
+    $qa('#filter-all, #filter-4, #filter-6').forEach(b=>{
+        b.style.background = '#eee';
+        b.style.color = '#333';
+    });
+    let activeBtnId = 'filter-all';
+    if(f===4) activeBtnId = 'filter-4';
+    if(f===6) activeBtnId = 'filter-6';
+    
+    const activeBtn = $q('#' + activeBtnId);
+    activeBtn.style.background = 'var(--azul)';
+    activeBtn.style.color = 'white';
+}
+
+function generateCardForPurchase(modality){
+    let cards = Array.from({length:54},(_,i)=>i+1);
+    const usedCards = purchases.filter(p => p.modality === modality && p.card).flatMap(p => p.card);
+    const availableCards = cards.filter(c => !usedCards.includes(c));
+    
+    if (availableCards.length < modality) {
+        cards = shuffle(cards);
+    } else {
+        cards = shuffle(availableCards);
+    }
+    return cards.slice(0, modality);
+}
+
+function calculateMaxGames(budget, p4, p6) {
+    let q4 = 0, q6 = 0, remaining = budget;
+    const price6 = p6 > 0 ? p6 : 999999; 
+    const price4 = p4 > 0 ? p4 : 999999;
+    if (price6 <= remaining) { q6 = Math.floor(remaining / price6); remaining -= q6 * price6; }
+    if (price4 <= remaining) { q4 = Math.floor(remaining / price4); remaining -= q4 * price4; }
+    return { q4, q6 };
+}
+
+function updateCalculatorInfo(autoFill = false){
+    const p4=prices.price4, p6=prices.price6;
+    const budgetRaw=$q('#input-budget').value;
+    const budget = budgetRaw===''?0:parseFloat(budgetRaw||0);
+
+    let q4=parseInt($q('#qty4').value||0);
+    let q6=parseInt($q('#qty6').value||0);
+    
+    if(autoFill && budget > 0) {
         const max4 = Math.floor(budget / p4);
         const max6 = Math.floor(budget / p6);
-        
-        document.getElementById('calc-info').innerHTML = 
-            (budget > 0) 
+        $q('#calc-info').innerHTML = (budget > 0) 
             ? `Opciones: <strong style="color:var(--azul)">${max4}</strong> de 4 Cartas ó <strong style="color:var(--azul)">${max6}</strong> de 6 Cartas.`
             : 'Ingresa un presupuesto para ver opciones.';
+        return;
+    }
+    
+    const cost4 = q4*p4, cost6 = q6*p6, totalCost = cost4 + cost6;
+    let msg = `Costo Total: <strong>${formatMoney(totalCost)}</strong>`;
+    if(totalCost > budget && budget > 0){ msg += ` <span style="color:var(--rojo);font-weight:700;">(Faltan: ${formatMoney(totalCost - budget)})</span>`; }
+    else if (budget > totalCost && totalCost > 0){ msg += ` <span style="color:var(--verde);font-weight:700;">(Sobrante: ${formatMoney(budget - totalCost)})</span>`; }
+    $q('#calc-info').innerHTML = msg;
+}
+
+function registerPlayer(){
+    const name=($q('#input-name').value||'').trim();
+    const cell=($q('#input-cell').value||'').trim();
+    const clabe=($q('#input-clabe').value||'').trim();
+    const budgetRaw=$q('#input-budget').value;
+    const budget = budgetRaw===''?0:parseFloat(budgetRaw||0);
+    const q4=parseInt($q('#qty4').value||0), q6=parseInt($q('#qty6').value||0);
+
+    if(!name) return alert('Captura el nombre');
+    if(!cell) return alert('Captura el celular');
+    if(q4+q6<=0) return alert('Selecciona al menos una partida (cantidad)');
+    
+    const needed = q4*prices.price4 + q6*prices.price6;
+    
+    if(budget > 0 && budget < needed){
+        alert(`El presupuesto de ${formatMoney(budget)} no es suficiente. Se requiere ${formatMoney(needed)}.`);
+        return;
+    }
+
+    const parts=[];
+    if(q4>0) parts.push({modality:4,qty:q4,price:prices.price4,profit:prices.profit4});
+    if(q6>0) parts.push({modality:6,qty:q6,price:prices.price6,profit:prices.profit6});
+
+    const messageParts = []; 
+    
+    parts.forEach(pt=>{
+        const ptPrice = pt.price, ptProfit = pt.profit, ptEnJuego = ptPrice - ptProfit;
+        for(let i=0;i<pt.qty;i++){
+            const id = getNextPurchaseId(); 
+            const p={
+                id:id,playerName:name,cell:cell,clabe:clabe,
+                modality:pt.modality, initialGames:1,gamesLeft:1,
+                totalPaid:ptPrice, wins:0,state:'JUGANDO',card:[],markedCards:[],
+                createdAt:Date.now(), price: ptPrice, profit: ptProfit, 
+                enJuego: ptEnJuego, casa: ptProfit
+            };
+            p.card=generateCardForPurchase(pt.modality);
+            purchases.push(p);
+            const cardNames = p.card.map(cardName).join(', ');
+            messageParts.push(`🎟️ *FOLIO ${p.id}* (${p.modality} Cartas):\n${cardNames}`);
+            tx.push({id:uuid(),type:'purchase',player:name,modality:pt.modality,amount:ptPrice,purchaseId:p.id,ts:Date.now()});
+        }
     });
 
-    // Modals
-    document.querySelectorAll('.close-modal-x, #btn-wd-close').forEach(el => {
-        el.onclick = () => document.querySelectorAll('.modal-back').forEach(m => m.classList.remove('active'));
+    saveAll();
+    
+    $q('#input-name').value=''; $q('#input-cell').value=''; $q('#input-clabe').value='';
+    $q('#input-budget').value=''; $q('#qty4').value='0'; $q('#qty6').value='0';
+    $q('#calc-info').textContent = 'Ingresa un presupuesto para ver opciones.';
+
+    const finalMsg = `🎉 ¡HOLA ${name.toUpperCase()}! BIENVENIDO A GANA YA! 🎉\n\n✅ Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${messageParts.join('\n\n')}\n\n🍀 ¡MUCHA SUERTE Y A GANAR! 🍀`;
+    window.open(`https://wa.me/${cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
+    alert(`¡${name} registrado con éxito! (${q4+q6} partidas totales). Se abrió WhatsApp para enviar el registro.`);
+    renderAll();
+}
+
+function resetGame(){
+    if(!confirm('¿INICIAR NUEVA PARTIDA?\n\nSe descontará 1 partida a los jugadores activos de la modalidad actual ('+currentMode+' cartas).\nSe reiniciará el mazo completo.')) return;
+    
+    stopAuto();
+    
+    purchases.forEach(p=>{
+        if (p.modality === currentMode) {
+            if(p.state==='JUGANDO' || p.state==='POR PAGAR'){
+                p.gamesLeft = Math.max(0,(p.gamesLeft||0)-1);
+                if(p.gamesLeft<=0 && p.state==='JUGANDO') p.state='FINALIZADO';
+                if(p.state==='POR PAGAR') p.state='JUGANDO';
+            }
+        }
+        p.markedCards=[];
     });
 
-    // Init inputs with current prices
-    document.getElementById('price4').value = APP.prices.p4;
-    document.getElementById('profit4').value = APP.prices.g4;
-    document.getElementById('price6').value = APP.prices.p6;
-    document.getElementById('profit6').value = APP.prices.g6;
+    game.deck = shuffle(Array.from({length:54},(_,i)=>i+1));
+    game.drawn=[]; game.current=0; drawnInGame=[];
+    game.winnerPending = false;
+    $q('#shuffle-overlay').classList.remove('visible');
+    $q('#shuffle-overlay').style.display='none';
+    tx.push({id:uuid(),type:'reset_full_deck',ts:Date.now()});
+    saveAll();
+    renderAll();
+    alert('Juego reiniciado, mazo completo y partidas descontadas.');
+    disableControls(false);
+}
+
+function exportPdf(){
+    const date=new Date(), header=`Reporte de partidas — GANA YA!`, logo='logo_1_entrada.png';
+    let html=`<html><head><title>${header}</title></head><body style="font-family:Arial;padding:12px">`;
+    html+=`<div style="display:flex;gap:12px;align-items:center">
+        <img src="${logo}" style="width:80px;height:80px;object-fit:contain"/>
+        <div><h2>${header}</h2><p style="font-size:12px">Generado el ${date.toLocaleString()}</p></div>
+    </div><hr>`;
+    const pricesHtml = `<div style="margin-top:20px;">
+        <h3>Precios y Ganancias</h3>
+        <table border="1" style="width:100%; border-collapse: collapse; font-size:14px;">
+            <tr><th>Modalidad</th><th>Precio</th><th>Ganancia Casa</th><th>Monto en Juego</th></tr>
+            <tr><td style="padding:4px; text-align:center;">4 Cartas</td><td style="padding:4px; text-align:center;">${formatMoney(prices.price4)}</td><td style="padding:4px; text-align:center;">${formatMoney(prices.profit4)}</td><td style="padding:4px; text-align:center;">${formatMoney(prices.price4 - prices.profit4)}</td></tr>
+            <tr><td style="padding:4px; text-align:center;">6 Cartas</td><td style="padding:4px; text-align:center;">${formatMoney(prices.price6)}</td><td style="padding:4px; text-align:center;">${formatMoney(prices.profit6)}</td><td style="padding:4px; text-align:center;">${formatMoney(prices.price6 - prices.profit6)}</td></tr>
+        </table>
+    </div>`;
+    let totalEnJuego=0, totalCasa=0, totalPagado=0;
+    const playersHtml = `<div style="margin-top:20px;">
+        <h3>Jugadores y Compras</h3>
+        <table border="1" style="width:100%; border-collapse: collapse; font-size:12px;">
+            <thead><tr><th>ID</th><th>Jugador</th><th>Mod</th><th>Partidas</th><th>En Juego</th><th>Casa</th><th>Estado</th></tr></thead>
+            <tbody>
+                ${purchases.map(p=>{ 
+                    initializePurchaseData(p);
+                    totalEnJuego += (p.enJuego||0); totalCasa += (p.casa||0); totalPagado += (p.totalPaid||0);
+                    return `<tr>
+                        <td style="padding:4px">${p.id}</td>
+                        <td style="padding:4px">${escapeHtml(p.playerName)}<br><span style="color:#777">${escapeHtml(p.cell||'—')}</span></td>
+                        <td style="padding:4px;text-align:center">${p.modality}</td>
+                        <td style="padding:4px;text-align:center">${p.gamesLeft||0}</td>
+                        <td style="padding:4px;text-align:center">${formatMoney(p.enJuego||0)}</td>
+                        <td style="padding:4px;text-align:center">${formatMoney(p.casa||0)}</td>
+                        <td style="padding:4px;text-align:center">${p.state||'JUGANDO'}</td>
+                    </tr>`;
+                }).join('')}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" style="text-align:right; padding:4px; font-weight:bold;">TOTALES:</td>
+                    <td style="text-align:center; padding:4px; font-weight:bold;">${formatMoney(totalEnJuego)}</td>
+                    <td style="text-align:center; padding:4px; font-weight:bold;">${formatMoney(totalCasa)}</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+        <p style="font-size:12px; margin-top:10px;">Total Pagado por Jugadores: <strong>${formatMoney(totalPagado)}</strong></p>
+    </div>`;
+    const winnersHtml = `<div style="margin-top:20px;">
+        <h3>Ganadores</h3>
+        <table border="1" style="width:100%; border-collapse: collapse; font-size:12px;">
+            <thead><tr><th>Fecha</th><th>Jugador</th><th>Modalidad</th><th>Carta Ganadora</th><th>Premio</th><th>Estado</th></tr></thead>
+            <tbody>
+                ${winners.slice().sort((a,b)=>b.ts-a.ts).map(w=>{ 
+                    return `<tr>
+                        <td style="padding:4px">${new Date(w.ts).toLocaleString()}</td>
+                        <td style="padding:4px">${escapeHtml(w.playerName)}</td>
+                        <td style="padding:4px;text-align:center">${w.modality}</td>
+                        <td style="padding:4px;text-align:center">${cardName(w.cardId)}</td>
+                        <td style="padding:4px;text-align:center">${formatMoney(w.prize)}</td>
+                        <td style="padding:4px;text-align:center">${w.paid?'PAGADO':'POR PAGAR'}</td>
+                    </tr>`;
+                }).join('')}
+            </tbody>
+        </table>
+    </div>`;
+    html+=pricesHtml+playersHtml+winnersHtml;
+    html+='<hr><p style="text-align:center; font-size:10px;">Fin del Reporte</p></body></html>';
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.print();
+}
+
+// --- INICIALIZACIÓN Y EVENT LISTENERS --- 
+document.addEventListener('DOMContentLoaded', ()=>{
+    
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
+    document.head.appendChild(script);
+
+    $q('#price4').value = prices.price4;
+    $q('#profit4').value = prices.profit4;
+    $q('#price6').value = prices.price6;
+    $q('#profit6').value = prices.profit6;
+    $q('#select-modality').value = currentMode;
+
+    renderAll();
+    
+    $q('#btn-shuffle').addEventListener('click', animateShuffle);
+    $q('#btn-draw').addEventListener('click', drawOne);
+    $q('#btn-auto').addEventListener('click', ()=>{ isAuto? stopAuto() : startAuto(); });
+    $q('#btn-reset-win').addEventListener('click', resetGame);
+    
+    $q('#save-prices').addEventListener('click', ()=>{
+        prices.price4=parseFloat($q('#price4').value||0);
+        prices.profit4=parseFloat($q('#profit4').value||0);
+        prices.price6=parseFloat($q('#price6').value||0);
+        prices.profit6=parseFloat($q('#profit6').value||0);
+        saveAll();
+        renderAll();
+        alert('Precios guardados.');
+    });
+    $q('#reset-prices').addEventListener('click', ()=>{
+        prices=defaultsPrices();
+        $q('#price4').value=prices.price4;
+        $q('#profit4').value=prices.profit4;
+        $q('#price6').value=prices.price6;
+        $q('#profit6').value=prices.profit6;
+        saveAll();
+        renderAll();
+        alert('Precios reseteados a los valores por defecto.');
+    });
+
+    $q('#btn-register').addEventListener('click', registerPlayer);
+    
+    $q('#input-budget').addEventListener('input', (e) => updateCalculatorInfo(true)); 
+    $q('#qty4').addEventListener('input', (e) => updateCalculatorInfo(false));
+    $q('#qty6').addEventListener('input', (e) => updateCalculatorInfo(false));
+    
+    $q('#btn-view-play').addEventListener('click', ()=>{ 
+        $q('#view-admin').classList.add('hidden'); 
+        renderAll(); 
+    });
+    $q('#btn-view-admin').addEventListener('click', ()=>{ 
+        $q('#view-admin').classList.remove('hidden'); 
+        renderAll(); 
+    });
+    
+    $q('#select-modality').addEventListener('change', (e)=>{ 
+        currentMode = Number(e.target.value); 
+        localStorage.setItem(Kmod,String(currentMode)); 
+        renderAll(); 
+    });
+
+    $q('#btn-export').addEventListener('click', exportPdf);
+    $q('#btn-reset-day').addEventListener('click', ()=>{ 
+        if(!confirm('¿BORRAR TODAS LAS COMPRAS Y GANADORES DEL DÍA?')) return;
+        purchases=[];
+        tx.push({id:uuid(),type:'clear',ts:Date.now()});
+        game=defaultsGame();
+        winners=[];
+        drawnInGame=[];
+        saveAll();
+        renderAll();
+        alert('Día reiniciado. Todos los datos de compras y ganancias se borraron.');
+    });
+
+    $q('#filter-all').addEventListener('click', ()=>{ setActiveFilter('all'); renderPlayersTable(); });
+    $q('#filter-4').addEventListener('click', ()=>{ setActiveFilter(4); renderPlayersTable(4); });
+    $q('#filter-6').addEventListener('click', ()=>{ setActiveFilter(6); renderPlayersTable(6); });
+
+    $qa('.modal-back').forEach(modalBack => {
+        modalBack.addEventListener('click', (e) => {
+            if (e.target === modalBack) {
+                modalBack.classList.add('hidden');
+                if (modalBack.id === 'modal-winner' || modalBack.id === 'modal-winner-detail') {
+                    stopConfettiFullScreen();
+                }
+            }
+        });
+    });
+    
+    $q('#modal-close').addEventListener('click', closeGroupModal);
+    $q('#modal-close-x').addEventListener('click', closeGroupModal);
+    $q('#winner-ok').addEventListener('click', () => showWinnerDetailModal()); 
+    $q('#winner-close').addEventListener('click', ()=>{ $q('#modal-winner').classList.add('hidden'); stopConfettiFullScreen(); });
+    $q('#winner-detail-ok').addEventListener('click', closeWinnerDetailModal);
+    $q('#winner-detail-close-x').addEventListener('click', closeWinnerDetailModal);
+    
+    document.addEventListener('keydown', (e)=>{
+        if(e.key==='Escape'){ 
+            $qa('.modal-back').forEach(m => m.classList.add('hidden'));
+            stopConfettiFullScreen();
+        }
+    });
+
+    const playersAreaEl = $q('#players-area');
+    if (playersAreaEl) {
+        playersAreaEl.addEventListener('click', (e) => {
+            let target = e.target.closest('.player-card');
+            if (target && !target.classList.contains('simulated')) {
+                const playerId = target.getAttribute('data-player-id');
+                if (playerId) {
+                    openPurchaseDetail(playerId);
+                }
+            } 
+        });
+    }
+
 });
+
 </script>
 </body>
 </html>

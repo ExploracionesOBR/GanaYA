@@ -198,7 +198,6 @@ body{
     min-width: 25px; 
 } 
 
-/* Lógica de cartas 'drawn' (pasadas) y 'marked' (marcadas) */
 #players-area .card-thumb.drawn { filter:grayscale(1) opacity(0.6); }
 #players-area .card-thumb.drawn .sticker { filter: grayscale(0) opacity(1); }
 
@@ -635,7 +634,7 @@ tr:hover { background: #f9f9f9; }
 
 
 <script>
-/* index_v11.7_pulido - code block */
+/* index_v11.8_pulido - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
 const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg",49:"49 el pino-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
@@ -829,7 +828,8 @@ function renderAll(){
         potAmount = totalHouseProfit;
         potLabelText = '🏦 CASA TOTAL';
     } else {
-        const activeForPot = purchases.filter(p=> (p.state==='JUGANDO' || p.state==='POR PAGAR') && p.modality === currentMode );
+        // CORRECCIÓN 2: El pozo solo incluye jugadores JUGANDO
+        const activeForPot = purchases.filter(p=> p.state==='JUGANDO' && p.modality === currentMode );
         const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
         potAmount = totalEnJuego;
         potLabelText = `💰 BOLSA (${currentMode} CARTAS)`;
@@ -843,7 +843,8 @@ function renderAll(){
     if(deckCount) deckCount.textContent=game.deck.length;
     
     const area=$q('#players-area');
-    const active = purchases.filter(p=> (p.state==='JUGANDO' || p.state==='POR PAGAR') && p.modality===currentMode);
+    // CORRECCIÓN 2: El grid solo muestra jugadores JUGANDO
+    const active = purchases.filter(p=> p.state==='JUGANDO' && p.modality===currentMode);
     const hasActivePlayers = active.length > 0;
     
     let finalHtml = active.map(p=> renderPlayerCard(p)).join('');
@@ -1250,7 +1251,7 @@ function processCard(cardId){
         p.wins=(p.wins||0)+1;
         p.state='POR PAGAR'; 
         p.prize=totalEnJuego;
-        p.gamesLeft = 0; // CORRECCIÓN 4: Consumir la partida al ganar
+        p.gamesLeft = 0; // CORRECCIÓN 2: Consumir la partida al ganar
         
         const rec = {
             id: uuid(),
@@ -1291,7 +1292,6 @@ function showWinnerDetailModal(purchaseId, cardId){
     }
     
     if(!cardId) {
-        // CORRECCIÓN 2: Lógica para 'VER'
         const winnerRec = winners.find(w => w.purchaseId === purchaseId && !w.paid);
         if(!winnerRec) {
              const anyWinnerRec = winners.find(w => w.purchaseId === purchaseId);
@@ -1318,7 +1318,6 @@ function showWinnerDetailModal(purchaseId, cardId){
         const isMarked = (player.markedCards || []).includes(cid);
         const isWinner = (cid == cardId);
         const sticker = isMarked ? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : '';
-        // CORRECCIÓN 6: No atenuar cartas aquí
         return `<div class="card-thumb ${isWinner ? 'winner-card' : ''}" style="width:80px; height:120px; background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
     }).join('');
     detailCardsContainer.innerHTML = cardListHtml;
@@ -1511,9 +1510,7 @@ async function resetGame(){
                 p.state = 'FINALIZADO';
                 p.gamesLeft = 0; 
             }
-            if(p.state === 'POR PAGAR') {
-                // p.gamesLeft ya fue puesto a 0 al ganar
-            }
+            // (El 'gamesLeft' del ganador 'POR PAGAR' ya se puso a 0 al ganar)
         }
         p.markedCards=[]; 
     });
@@ -1777,28 +1774,25 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     // CORRECCIÓN 1: Flujo de 'ESC'
     document.addEventListener('keydown', (e)=>{
-        if(e.key==='Escape'){ 
-            const winnerModal = $q('#modal-winner');
-            const detailModal = $q('#modal-winner-detail');
-            const playerModal = $q('#modal-player');
-            const alertModal = $q('#modal-alert');
-            const confirmModal = $q('#modal-confirm');
+        if(e.key !== 'Escape') return;
 
-            if (!confirmModal.classList.contains('hidden')) {
-                confirmModal.classList.add('hidden');
-                // Simula un 'resolve(false)' para la promesa de confirmación
-                // (La promesa se resolverá en el handler de 'cancel')
-                $q('#modal-confirm-cancel').click();
-            } else if (!alertModal.classList.contains('hidden')) {
-                alertModal.classList.add('hidden');
-            } else if (!playerModal.classList.contains('hidden')) {
-                closeGroupModal();
-            } else if (!detailModal.classList.contains('hidden')) {
-                closeWinnerDetailModal();
-            } else if (!winnerModal.classList.contains('hidden')) {
-                // ESC en "FELICIDADES" abre el detalle
-                showWinnerDetailModal(); 
-            }
+        const winnerModal = $q('#modal-winner');
+        const detailModal = $q('#modal-winner-detail');
+        const playerModal = $q('#modal-player');
+        const alertModal = $q('#modal-alert');
+        const confirmModal = $q('#modal-confirm');
+
+        if (!confirmModal.classList.contains('hidden')) {
+            $q('#modal-confirm-cancel').click();
+        } else if (!alertModal.classList.contains('hidden')) {
+            $q('#modal-alert-ok').click();
+        } else if (!playerModal.classList.contains('hidden')) {
+            closeGroupModal();
+        } else if (!detailModal.classList.contains('hidden')) {
+            closeWinnerDetailModal();
+        } else if (!winnerModal.classList.contains('hidden')) {
+            // ESC en "FELICIDADES" abre el detalle
+            showWinnerDetailModal(); 
         }
     });
 

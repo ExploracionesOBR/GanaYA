@@ -1544,42 +1544,41 @@ function calculateMaxGames(budget, p4, p6) {
 }
 
 
-function updateCalculatorInfo() {
-  const p4 = prices.price4;
-  const p6 = prices.price6;
-  const budgetRaw = document.getElementById('input-budget').value;
-  const budget = budgetRaw === '' ? 0 : parseFloat(budgetRaw || 0);
+function updateCalculatorInfo(autoFill = false){
+    const p4=prices.price4, p6=prices.price6;
+    const budgetRaw=document.getElementById('input-budget').value;
+    const budget = budgetRaw===''?0:parseFloat(budgetRaw||0);
 
-  // Cálculo de cuántas partidas puede costear
-  const maxQ4 = Math.floor(budget / p4);
-  const maxQ6 = Math.floor(budget / p6);
-
-  let msg = '';
-
-  if (budget <= 0) {
-    msg = `<span style="color:#666;">Ingresa un presupuesto para calcular las partidas disponibles.</span>`;
-  } else {
-    if (maxQ4 > 0 && maxQ6 > 0) {
-      msg += `Puedes elegir entre <strong>${maxQ4}</strong> partidas de <strong>4 cartas</strong> o <strong>${maxQ6}</strong> partidas de <strong>6 cartas</strong>`;
-    } else if (maxQ4 > 0) {
-      msg += `Puedes adquirir <strong>${maxQ4}</strong> partidas de <strong>4 cartas</strong>`;
-    } else if (maxQ6 > 0) {
-      msg += `Puedes adquirir <strong>${maxQ6}</strong> partidas de <strong>6 cartas</strong>`;
-    } else {
-      msg += `<span style="color:var(--rojo);font-weight:700;">El presupuesto no alcanza para ninguna partida.</span>`;
+    let q4=parseInt(document.getElementById('qty4').value||0);
+    let q6=parseInt(document.getElementById('qty6').value||0);
+    
+    if(autoFill && budget > 0) {
+        const { q4: maxQ4, q6: maxQ6 } = calculateMaxGames(budget, p4, p6);
+        document.getElementById('qty4').value = maxQ4;
+        document.getElementById('qty6').value = maxQ6;
+        q4 = maxQ4;
+        q6 = maxQ6;
+    }
+    
+    const cost4 = q4*p4;
+    const cost6 = q6*p6;
+    const totalCost = cost4 + cost6;
+    
+    let msg = `Costo 4C (${q4}): ${formatMoney(cost4)} • Costo 6C (${q6}): ${formatMoney(cost6)} • <strong>Total: ${formatMoney(totalCost)}</strong>`;
+    
+    if(totalCost > budget && budget > 0){
+        msg += `<br><span style="color:var(--rojo);font-weight:700;">Faltan: ${formatMoney(totalCost - budget)}</span>`;
+    } else if (budget > totalCost && totalCost > 0){
+        msg += `<br><span style="color:var(--verde);font-weight:700;">Sobrante: ${formatMoney(budget - totalCost)}</span>`;
+    } else if (budget > 0 && totalCost === 0) {
+        msg += `<br><span style="color:var(--azul);font-weight:700;">Presupuesto de ${formatMoney(budget)} sin asignar.</span>`;
     }
 
-    const totalCost = 0; // no se asigna automáticamente
-    const sobra = budget - (Math.min(p4 * maxQ4, p6 * maxQ6) || 0);
-
-    msg += `<br>💰 <strong>Total: ${formatMoney(budget - sobra)}</strong>`;
-    if (sobra > 0)
-      msg += ` | <span style="color:var(--verde);font-weight:700;">Sobrante: ${formatMoney(sobra)}</span>`;
-  }
-
-  document.getElementById('calc-info').innerHTML = msg;
+    document.getElementById('calc-info').innerHTML = msg;
+    
+    document.getElementById('qty4').parentElement.style.display = budget>=p4? 'block':'none';
+    document.getElementById('qty6').parentElement.style.display = budget>=p6? 'block':'none';
 }
-
 
 function registerPlayer(){
     const name=(document.getElementById('input-name').value||'').trim();
@@ -2057,3 +2056,8 @@ $q('#btn-shuffle')?.addEventListener('click', () => {
 
 </body>
 </html>
+
+<!-- Nota: Este archivo es la versión estable "index.html" lista para despliegue. -->
+
+
+<!-- Fin de mejoras v9.10 - versión estable integrada -->

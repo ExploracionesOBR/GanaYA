@@ -32,7 +32,7 @@ body{
   overflow-x: hidden; 
   margin:0; 
   padding:0;
-  /* CORRECCIÓN 3: Eliminado min-height: 100vh */
+  /* CORRECCIÓN 1 (Punto 3): Eliminado min-height: 100vh */
 }
 
 /* CONTENEDOR PRINCIPAL CENTRADO */
@@ -43,6 +43,7 @@ body{
   padding: 10px; 
   display: flex;
   flex-direction: column;
+  min-height: 95vh; /* Asegura que el footer no se suba en pantallas vacías */
 }
 
 /* ENCABEZADO */
@@ -134,14 +135,29 @@ body{
   align-items: center;
 }
 
-/* CORRECCIÓN 4: Bolsa más grande */
+/* CORRECCIÓN 2 y 4: Bolsa más grande y centrada */
 .bolsa-compact{ 
-  display:flex; flex-direction: column; align-items:flex-end;
-  padding: 8px 14px; /* Aumentado */
-  background: var(--crema); border-radius: 8px; border: 1px solid var(--accent1);
+  display:flex; 
+  flex-direction: column; 
+  align-items: center; /* Centrado */
+  justify-content: center; /* Centrado vertical */
+  padding: 8px 16px; /* Más padding */
+  background: var(--crema); 
+  border-radius: 8px; 
+  border: 2px solid var(--accent1); /* Borde más grueso */
 }
-.bolsa-compact .label{ font-size:14px; font-weight:800; color:var(--verde); text-transform: uppercase; }
-.bolsa-compact .amount{ font-weight:900; color:var(--rojo); font-size:22px; line-height: 1; }
+.bolsa-compact .label{ 
+  font-size:14px; 
+  font-weight:800; 
+  color:var(--verde); 
+  text-transform: uppercase; 
+}
+.bolsa-compact .amount{ 
+  font-weight:900; 
+  color:var(--rojo); 
+  font-size:24px; /* Más grande */
+  line-height: 1.1; 
+}
 
 .toggle-btn{ 
   padding:8px 12px; border-radius:8px; border:none; font-weight:700; cursor:pointer; 
@@ -173,7 +189,8 @@ body{
     color: var(--azul); margin-bottom: 2px; 
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
 }
-.player-info { font-size: 10px; color:#777; margin-bottom:4px; }
+/* CORRECCIÓN 7: 'player-info' eliminado de la tarjeta principal */
+.player-info { display: none; }
 
 .card-thumb{ 
   width:48px; height:70px; border-radius:5px; background-size:cover; background-position:center; 
@@ -390,7 +407,7 @@ tr:hover { background: #f9f9f9; }
 
         <button id="btn-reset-win" class="btn btn-red w-full hidden" style="background: var(--verde); padding: 15px; font-size: 18px; animation: pulse 2s infinite;">🔄 REINICIAR PARTIDA</button>
 
-        <div class="text-center mt-2" style="color:#666; font-size:13px;">
+        <div class="text-center mt-2" style="color:#666; font-size:13px; display: none;">
             Cartas restantes: <strong id="deck-count" style="color:var(--rojo)">54</strong>
         </div>
       </div>
@@ -452,6 +469,7 @@ tr:hover { background: #f9f9f9; }
         <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin:10px 0;">
             <label style="font-size:13px; font-weight:bold; color:var(--azul)">🔢 Calculadora Rápida:</label>
             <input id="input-budget" placeholder="Ingresa Presupuesto MXN" class="input" type="number" min="0">
+            <div style="font-size:13px; color:#555; margin-bottom:8px; min-height:20px;">Ingresa un presupuesto para ver opciones.</div>
         </div>
 
         <div style="display:flex; gap:10px; align-items: flex-end;">
@@ -466,8 +484,8 @@ tr:hover { background: #f9f9f9; }
             <button id="btn-register" class="btn btn-green" style="flex:1.5; height: 42px;">✅ REGISTRAR</button>
         </div>
         
-        <div id="calc-info" style="font-size:13px; color:#555; margin-top:10px; min-height:20px; text-align: right; font-weight: bold;">
-            Ingresa un presupuesto para ver opciones.
+        <div id="calc-info" style="font-size:14px; color:#333; margin-top:12px; min-height:20px; text-align: right; font-weight: bold;">
+            Costo Total: $0.00
         </div>
       </div>
     </div>
@@ -488,7 +506,7 @@ tr:hover { background: #f9f9f9; }
         <div class="table-wrap">
             <table id="players-table-el" style="width:100%; border-collapse:collapse;">
                 <thead>
-                    <tr><th>Folio</th><th>Jugador</th><th>Mod.</th><th>Restantes</th><th>En Juego</th><th>Casa</th><th>Estado</th><th>Acción</th></tr>
+                    <tr><th>Folio</th><th>Jugador</th><th>Mod.</th><th>En Juego</th><th>Casa</th><th>Estado</th><th>Acción</th></tr>
                 </thead>
                 <tbody id="players-table">
                     </tbody>
@@ -505,7 +523,7 @@ tr:hover { background: #f9f9f9; }
     <div class="modal">
         <button class="close-modal-x" id="modal-close-x">×</button>
         <h3 id="modal-player-name" style="color:var(--azul); margin-top:0;">Detalle de Jugador</h3>
-        <div id="modal-body"></div>
+        <div id="modal-body" class="text-center"></div>
         <div id="modal-player-actions" class="mt-2" style="display:flex; flex-direction:column; gap:8px;">
         </div>
         <button id="modal-close" class="btn btn-muted mt-2 w-full">Cerrar</button>
@@ -640,7 +658,7 @@ function stopAuto(){
     isAuto=false;
     const btn=$q('#btn-auto');
     if(btn){ btn.textContent='🤖 AUTO'; btn.classList.remove('btn-muted'); btn.classList.add('btn-green'); }
-    renderAll(); // CORRECCIÓN 1: Dejar que renderAll decida el estado de los botones
+    renderAll();
 }
 function startAuto(){
     if(animShuffling || game.winnerPending) return;
@@ -648,9 +666,9 @@ function startAuto(){
     const btn=$q('#btn-auto');
     if(btn){ btn.textContent='⏹ DETENER'; btn.classList.remove('btn-green'); btn.classList.add('btn-muted'); }
     
-    // CORRECCIÓN 2: Velocidad aumentada
+    // CORRECCIÓN 2: Velocidad aumentada a 1.5s
     autoInterval=setInterval(drawOne, 1500); 
-    renderAll(); // CORRECCIÓN 1: Dejar que renderAll decida el estado de los botones
+    renderAll();
 }
 
 function disableControls(disable){
@@ -666,7 +684,7 @@ function disableControls(disable){
 function renderPlayerCard(p){
     let html=`<div class="player-card" tabindex="0" data-player-id="${p.id}">`;
     html+=`<div class="player-name" title="${escapeHtml(p.playerName)}">${escapeHtml(p.playerName)}</div>`;
-    html+=`<div class="player-info">Partidas: <strong>${p.gamesLeft||0}</strong></div>`;
+    // CORRECCIÓN 7: Eliminado 'player-info' (partidas restantes)
     html+=`<div class="player-cards" style="display:grid;grid-template-columns:repeat(${p.modality===4?2:3},1fr);gap:3px;justify-items:center;">`;
     (p.card||[]).forEach(cid=>{ 
         const isMarked = (p.markedCards||[]).includes(cid);
@@ -705,7 +723,7 @@ function renderAll(){
         potAmount = totalHouseProfit;
         potLabelText = '🏦 CASA TOTAL';
     } else {
-        const activeForPot = purchases.filter(p=> (p.state==='JUGANDO' || p.state==='POR PAGAR') && (p.gamesLeft||0)>0 && p.modality === currentMode );
+        const activeForPot = purchases.filter(p=> (p.state==='JUGANDO' || p.state==='POR PAGAR') && p.modality === currentMode );
         const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
         potAmount = totalEnJuego;
         potLabelText = `💰 BOLSA (${currentMode} CARTAS)`;
@@ -719,7 +737,7 @@ function renderAll(){
     if(deckCount) deckCount.textContent=game.deck.length;
     
     const area=$q('#players-area');
-    const active = purchases.filter(p=> (p.gamesLeft||0)>0 && (p.state==='JUGANDO' || p.state==='POR PAGAR') && p.modality===currentMode);
+    const active = purchases.filter(p=> (p.state==='JUGANDO' || p.state==='POR PAGAR') && p.modality===currentMode);
     const hasActivePlayers = active.length > 0;
     
     let finalHtml = active.map(p=> renderPlayerCard(p)).join('');
@@ -751,11 +769,10 @@ function renderAll(){
     
     $q('#select-modality').disabled = (isAuto || winnerPending || gameInProgress);
     
-    // CORRECCIÓN 1 y 2: Botones deshabilitados por estado, no manualmente
     $q('#btn-draw').disabled = !hasActivePlayers || isAuto || animShuffling || winnerPending;
     $q('#btn-shuffle').disabled = !hasActivePlayers || isAuto || animShuffling || winnerPending;
     $q('#btn-auto').disabled = !hasActivePlayers || animShuffling || winnerPending;
-    // Si 'auto' está corriendo, deshabilitar todo menos 'auto' (para detenerlo)
+    
     if (isAuto) {
         $q('#btn-draw').disabled = true;
         $q('#btn-shuffle').disabled = true;
@@ -771,7 +788,7 @@ function renderAll(){
     }
     renderPlayersTable(filterValue);
     renderWinnersList();
-    updateCalculatorInfo(false); // No auto-fill por defecto
+    updateCalculatorInfo(false);
 }
 
 function renderWinnersList(){
@@ -789,8 +806,9 @@ function renderWinnersList(){
         const paidText = w.paid ? 'PAGADO' : 'PENDIENTE';
         const paidColor = w.paid ? 'var(--verde)' : 'var(--rojo)';
         const isNew = index === 0 ? 'new' : '';
-        // CORRECCIÓN 5: Añadir carta ganadora
-        const cardNameText = cardName(w.cardId);
+        // CORRECCIÓN 3 y 5:
+        const cardNameText = cardName(w.cardId).toUpperCase();
+        const modalityText = `Modalidad: ${w.modality} cartas`;
 
         return `<div class="winner-item ${isNew}" style="padding:8px; border-bottom:1px solid #eee; font-size:13px; cursor:pointer;" onclick="showWinnerDetailModal('${w.purchaseId}','${w.cardId}')">
             <div style="font-weight:bold; color:var(--azul); display:flex; justify-content:space-between; align-items: center;">
@@ -798,9 +816,12 @@ function renderWinnersList(){
                 <span style="color:${paidColor}; font-size: 11px; font-weight: 700;">${paidText}</span>
             </div>
             <div style="display:flex; justify-content:space-between; color:#666; margin-top: 4px; align-items: center;">
-                <span>${formatMoney(w.prize)} (${w.modality}c)</span>
-                <span style="font-size: 11px; color: var(--rojo); font-weight: 600;">Ganó con: ${cardNameText}</span>
+                <span>${formatMoney(w.prize)}</span>
+                <span style="font-size: 11px; color: #555;">${modalityText}</span>
             </div>
+             <div style="text-align: right; font-size: 11px; color: var(--rojo); font-weight: 600; margin-top: 2px;">
+                Ganó con: ${cardNameText}
+             </div>
         </div>`;
     }).join('');
 
@@ -809,10 +830,22 @@ function renderWinnersList(){
 
 function renderPlayersTable(filter){
     const tbody=$q('#players-table');
-    const list = purchases.slice().reverse().filter(p=> !filter || p.modality===filter);
+    let list = purchases.slice().filter(p=> !filter || p.modality===filter);
     list.forEach(p => initializePurchaseData(p));
+    
+    // CORRECCIÓN 5: Ordenar tabla
+    const stateOrder = { 'POR PAGAR': 1, 'JUGANDO': 2, 'PAGADO': 3, 'FINALIZADO': 4 };
+    list.sort((a, b) => {
+        const stateA = stateOrder[a.state] || 5;
+        const stateB = stateOrder[b.state] || 5;
+        if (stateA !== stateB) {
+            return stateA - stateB; // Ordenar por prioridad de estado
+        }
+        return b.createdAt - a.createdAt; // Luego por fecha de registro
+    });
+
     if(!tbody) return;
-    if(!list.length){ tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td></tr>'; return; }
+    if(!list.length){ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td></tr>'; return; }
     
     tbody.innerHTML = list.map(p=>{
         let stateClass = 'badge-finalizado';
@@ -824,7 +857,6 @@ function renderPlayersTable(filter){
             <td style="padding:8px">${p.id}</td>
             <td style="padding:8px"><strong>${escapeHtml(p.playerName)}</strong><br><small>${escapeHtml(p.cell||'—')}</small></td>
             <td style="padding:8px;text-align:center">${p.modality}</td>
-            <td style="padding:8px;text-align:center">${p.gamesLeft||0}</td>
             <td style="padding:8px;text-align:center">${formatMoney(p.enJuego||0)}</td>
             <td style="padding:8px;text-align:center">${formatMoney(p.casa||0)}</td>
             <td style="padding:8px;text-align:center"><span class="badge ${stateClass}">${p.state||'JUGANDO'}</span></td>
@@ -841,8 +873,10 @@ function openPurchaseDetail(id){
     const modal=$q('#modal-player');
     $q('#modal-player-name').textContent=`${p.playerName}`;
     
-    const pendingWin = winners.find(w => w.purchaseId === id && !w.paid);
-
+    // CORRECCIÓN 6: Lógica de botones
+    const isPending = p.state === 'POR PAGAR';
+    const isPlaying = p.state === 'JUGANDO';
+    
     const cards=(p.card||[]).map(cid=>{ 
         const isMarked = (p.markedCards||[]).includes(cid); 
         const passed = drawnInGame.includes(cid) && !isMarked;
@@ -850,10 +884,11 @@ function openPurchaseDetail(id){
         return `<div class="card-thumb ${passed?'passed':''}" style="width:60px; height:90px; background-image:url('${cardImageUrl(cid)}');">${sticker}</div>`; 
     }).join('');
     
+    // CORRECCIÓN 7: Eliminado "Restantes"
     let bodyHtml = `<div class="text-center">
         <p>Folio: <strong>${p.id}</strong> | Cel: ${p.cell || 'N/A'}</p>
         <p>CLABE/Cta: <strong>${p.clabe || 'No registrada'}</strong></p>
-        <p>Modalidad: ${p.modality} Cartas | Restantes: ${p.gamesLeft}</p>
+        <p>Modalidad: ${p.modality} Cartas</p>
         <hr>
         <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin:15px 0;">
              ${cards}
@@ -864,13 +899,20 @@ function openPurchaseDetail(id){
     const actionsDiv = $q('#modal-player-actions');
     actionsDiv.innerHTML = '';
 
-    if(p.clabe) {
+    // CORRECCIÓN 6: Lógica de botones
+    if(p.clabe && isPending) {
         actionsDiv.innerHTML += `<button class="btn btn-blue" onclick="copyClabe('${p.id}')">📋 Copiar CLABE/Cuenta</button>`;
     }
-    if(pendingWin) {
-        actionsDiv.innerHTML += `<button class="btn btn-green" onclick="markPaidById('${p.id}', ${pendingWin.ts})">💸 Marcar como PAGADO y Notificar</button>`;
+    if(isPending) {
+        // Encontrar el registro de ganador específico no pagado
+        const pendingWin = winners.find(w => w.purchaseId === id && !w.paid);
+        if (pendingWin) {
+            actionsDiv.innerHTML += `<button class="btn btn-green" onclick="markPaidById('${p.id}', ${pendingWin.ts})">💸 Marcar como PAGADO y Notificar</button>`;
+        }
     }
-    actionsDiv.innerHTML += `<button class="btn btn-muted" onclick="resendRegistrationWhatsapp('${p.id}')">📱 Reenviar Cartas (WhatsApp)</button>`;
+    if(isPlaying || isPending) {
+        actionsDiv.innerHTML += `<button class="btn btn-muted" onclick="resendRegistrationWhatsapp('${p.id}')">📱 Reenviar Cartas (WhatsApp)</button>`;
+    }
 
     modal.classList.remove('hidden');
     $q('#modal-close').onclick=closeGroupModal;
@@ -914,7 +956,6 @@ function printPurchase(id){
             <h3>Detalle de Compra #${p.id}</h3>
             <p><strong>Jugador:</strong> ${escapeHtml(p.playerName)} (${escapeHtml(p.cell||'—')})</p>
             <p><strong>Modalidad:</strong> ${p.modality} cartas</p>
-            <p><strong>Partidas:</strong> ${p.gamesLeft || 0}</p>
             <p><strong>Total Pagado:</strong> ${formatMoney(p.totalPaid)}</p>
             <p><strong>En Juego:</strong> ${formatMoney(p.enJuego || 0)}</p>
             <p><strong>Ganancia Casa:</strong> ${formatMoney(p.casa || 0)}</p>
@@ -941,6 +982,7 @@ function initializePurchaseData(p){
     p.casa = p.profit;
     p.state = p.state || 'JUGANDO'; 
     p.markedCards = p.markedCards || [];
+    // CORRECCIÓN 7: gamesLeft ya no se usa para partidas múltiples
     p.gamesLeft = p.gamesLeft === undefined ? 1 : p.gamesLeft;
     p.totalPaid = p.totalPaid || p.price;
 }
@@ -1088,7 +1130,8 @@ function processCard(cardId){
         const firstWinner = winnersFound[0]; // Tomar SOLO el primer ganador
         const winningModality = purchases[firstWinner.idx].modality;
         
-        const activeForPot = purchases.filter(p=> (p.state==='JUGANDO' || p.state === 'POR PAGAR') && (p.gamesLeft||0)>0 && p.modality === winningModality );
+        // El pozo incluye a todos los que ESTABAN jugando
+        const activeForPot = purchases.filter(p=> (p.state==='JUGANDO' || p.state === 'POR PAGAR') && p.modality === winningModality );
         activeForPot.forEach(p => initializePurchaseData(p));
         const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
         
@@ -1097,7 +1140,7 @@ function processCard(cardId){
         const p = purchases[firstWinner.idx];
         p.wins=(p.wins||0)+1;
         p.state='POR PAGAR'; 
-        p.prize=totalEnJuego; // Se lleva el pozo completo
+        p.prize=totalEnJuego;
         
         const rec = {
             id: uuid(),
@@ -1105,7 +1148,7 @@ function processCard(cardId){
             playerName: p.playerName,
             modality: p.modality,
             cardId: cardId, 
-            prize: totalEnJuego, // Premio completo
+            prize: totalEnJuego,
             paid: false,
             ts: Date.now()
         };
@@ -1119,7 +1162,6 @@ function processCard(cardId){
         const modal = $q('#modal-winner');
         $q('#winner-title').textContent = `🎉 ¡LOTERÍA!`;
         const winnerName = purchases[firstWinner.idx].playerName;
-        // CORRECCIÓN 6: Mostrar solo 1 ganador y carta en mayúsculas
         $q('#winner-body').innerHTML = `¡Ganador con la carta <strong>${cardName(cardId).toUpperCase()}</strong>!:<br><br><div style="color:var(--azul); font-weight:900; font-size:24px;">${escapeHtml(winnerName)}</div>`;
         $q('#winner-sub').innerHTML = `Premio: <strong style="color:var(--verde);">${formatMoney(totalEnJuego)}</strong>`;
         modal.classList.remove('hidden');
@@ -1154,7 +1196,6 @@ function showWinnerDetailModal(purchaseId, cardId){
     const detailCardsContainer = $q('#winner-detail-player-cards');
 
     detailPlayerName.textContent = escapeHtml(player.playerName);
-    // CORRECCIÓN 6: Carta en mayúsculas
     detailCardName.textContent = 'Carta Ganadora: ' + cardName(cardId).toUpperCase();
 
     const cardListHtml = (player.card || []).map(cid => {
@@ -1200,8 +1241,9 @@ window.markPaidById = function(id, ts){
 
     const hasOtherPendingWins = winners.some(w => w.purchaseId === id && !w.paid);
 
+    // CORRECCIÓN 7: Simplificado. Si no hay más ganancias pendientes, el estado es PAGADO.
     if (!hasOtherPendingWins) {
-        p.state = p.gamesLeft > 0 ? 'JUGANDO' : 'PAGADO';
+        p.state = 'PAGADO';
         p.paidAt=Date.now();
     }
     
@@ -1253,15 +1295,6 @@ function generateCardForPurchase(modality){
     return cards.slice(0, modality);
 }
 
-function calculateMaxGames(budget, p4, p6) {
-    let q4 = 0, q6 = 0, remaining = budget;
-    const price6 = p6 > 0 ? p6 : 999999; 
-    const price4 = p4 > 0 ? p4 : 999999;
-    if (price6 <= remaining) { q6 = Math.floor(remaining / price6); remaining -= q6 * price6; }
-    if (price4 <= remaining) { q4 = Math.floor(remaining / price4); remaining -= q4 * price4; }
-    return { q4, q6 };
-}
-
 function updateCalculatorInfo(autoFill = false){
     const p4=prices.price4, p6=prices.price6;
     const budgetRaw=$q('#input-budget').value;
@@ -1271,17 +1304,16 @@ function updateCalculatorInfo(autoFill = false){
     let q6=parseInt($q('#qty6').value||0);
     
     const calcInfoEl = $q('#calc-info');
+    const budgetInfoEl = $q('#input-budget').nextElementSibling;
     
     if(autoFill && budget > 0) {
         const max4 = Math.floor(budget / p4);
         const max6 = Math.floor(budget / p6);
-        // Mover esta lógica al div de la calculadora
-        $q('#input-budget').nextElementSibling.innerHTML = (budget > 0) 
+        budgetInfoEl.innerHTML = (budget > 0) 
             ? `Opciones: <strong style="color:var(--azul)">${max4}</strong> de 4 Cartas ó <strong style="color:var(--azul)">${max6}</strong> de 6 Cartas.`
             : 'Ingresa un presupuesto para ver opciones.';
-        return; // No actualizar el 'Costo Total'
     } else if (autoFill) {
-         $q('#input-budget').nextElementSibling.innerHTML = 'Ingresa un presupuesto para ver opciones.';
+         budgetInfoEl.innerHTML = 'Ingresa un presupuesto para ver opciones.';
     }
     
     const cost4 = q4*p4, cost6 = q6*p6, totalCost = cost4 + cost6;
@@ -1289,7 +1321,6 @@ function updateCalculatorInfo(autoFill = false){
     if(totalCost > budget && budget > 0){ msg += ` <span style="color:var(--rojo);font-weight:700;">(Faltan: ${formatMoney(totalCost - budget)})</span>`; }
     else if (budget > totalCost && totalCost > 0){ msg += ` <span style="color:var(--verde);font-weight:700;">(Sobrante: ${formatMoney(budget - totalCost)})</span>`; }
     
-    // Actualizar solo el div de 'Costo Total'
     calcInfoEl.innerHTML = msg;
 }
 
@@ -1324,7 +1355,8 @@ function registerPlayer(){
             const id = getNextPurchaseId(); 
             const p={
                 id:id,playerName:name,cell:cell,clabe:clabe,
-                modality:pt.modality, initialGames:1,gamesLeft:1,
+                modality:pt.modality, 
+                initialGames:1, gamesLeft:1, // CORRECCIÓN 7: Se mantiene 1 para la lógica de estado
                 totalPaid:ptPrice, wins:0,state:'JUGANDO',card:[],markedCards:[],
                 createdAt:Date.now(), price: ptPrice, profit: ptProfit, 
                 enJuego: ptEnJuego, casa: ptProfit
@@ -1342,7 +1374,7 @@ function registerPlayer(){
     $q('#input-name').value=''; $q('#input-cell').value=''; $q('#input-clabe').value='';
     $q('#input-budget').value=''; $q('#qty4').value='0'; $q('#qty6').value='0';
     $q('#input-budget').nextElementSibling.textContent = 'Ingresa un presupuesto para ver opciones.';
-    $q('#calc-info').textContent = '';
+    $q('#calc-info').textContent = 'Costo Total: $0.00';
 
     const finalMsg = `🎉 ¡HOLA ${name.toUpperCase()}! BIENVENIDO A GANA YA! 🎉\n\n✅ Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${messageParts.join('\n\n')}\n\n🍀 ¡MUCHA SUERTE Y A GANAR! 🍀`;
     window.open(`https://wa.me/${cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
@@ -1351,105 +1383,127 @@ function registerPlayer(){
 }
 
 function resetGame(){
-    if(!confirm('¿INICIAR NUEVA PARTIDA?\n\nSe descontará 1 partida a los jugadores activos de la modalidad actual ('+currentMode+' cartas).\nSe reiniciará el mazo completo.')) return;
+    // CORRECCIÓN 1 y 7: Lógica de reinicio
+    if(!confirm('¿INICIAR NUEVA PARTIDA?\n\nEsto finalizará la partida actual. Los ganadores quedarán pendientes de pago y los demás jugadores de esta modalidad pasarán a "FINALIZADO".\nSe reiniciará el mazo completo.')) return;
     
-    // CORRECCIÓN 1: Establecer estado ANTES de llamar a stopAuto
-    game.winnerPending = false; 
+    game.winnerPending = false; // <-- CRUCIAL: Establecer estado ANTES de llamar a stopAuto
     stopAuto();
     
     purchases.forEach(p=>{
         if (p.modality === currentMode) {
-            if(p.state==='JUGANDO' || p.state==='POR PAGAR'){
-                p.gamesLeft = Math.max(0,(p.gamesLeft||0)-1);
-                
-                if(p.state==='POR PAGAR' && p.gamesLeft > 0) {
-                    p.state='JUGANDO';
-                }
-                if(p.state==='JUGANDO' && p.gamesLeft<=0) {
-                    p.state='FINALIZADO';
-                }
+            if(p.state === 'JUGANDO'){
+                p.state = 'FINALIZADO'; // Partida perdida
             }
+            // Si es 'POR PAGAR', se queda 'POR PAGAR'.
         }
-        p.markedCards=[]; 
+        p.markedCards=[]; // Limpiar cartas marcadas para todos
     });
 
     game.deck = shuffle(Array.from({length:54},(_,i)=>i+1));
     game.drawn=[]; game.current=0; drawnInGame=[];
-    // game.winnerPending = false; // <-- Movido al inicio de la función
+    
     $q('#shuffle-overlay').classList.remove('visible');
     $q('#shuffle-overlay').style.display='none';
     tx.push({id:uuid(),type:'reset_full_deck',ts:Date.now()});
     saveAll();
     renderAll(); 
-    alert('Juego reiniciado, mazo completo y partidas descontadas.');
+    alert('Partida anterior finalizada. Mazo reiniciado. ¡Listo para una nueva partida!');
 }
 
 function exportPdf(){
+    // CORRECCIÓN 8: Reporte PDF Mejorado
     const date=new Date(), header=`Reporte de partidas — GANA YA!`, logo='logo_1_entrada.png';
-    let html=`<html><head><title>${header}</title></head><body style="font-family:Arial;padding:12px">`;
+    let html=`<html><head><title>${header}</title><style>
+        body{font-family:Arial;padding:12px;font-size:12px;}
+        table{width:100%; border-collapse: collapse; margin-top: 10px;}
+        th, td{padding:4px 6px; border: 1px solid #ccc; text-align:left;}
+        th{background:#f0f0f0; text-align:center;}
+        .text-center{text-align:center;}
+        .text-right{text-align:right;}
+        .summary-table td{font-size: 14px; font-weight: bold;}
+    </style></head><body>`;
+    
     html+=`<div style="display:flex;gap:12px;align-items:center">
         <img src="${logo}" style="width:80px;height:80px;object-fit:contain"/>
         <div><h2>${header}</h2><p style="font-size:12px">Generado el ${date.toLocaleString()}</p></div>
     </div><hr>`;
-    const pricesHtml = `<div style="margin-top:20px;">
-        <h3>Precios y Ganancias</h3>
-        <table border="1" style="width:100%; border-collapse: collapse; font-size:14px;">
-            <tr><th>Modalidad</th><th>Precio</th><th>Ganancia Casa</th><th>Monto en Juego</th></tr>
-            <tr><td style="padding:4px; text-align:center;">4 Cartas</td><td style="padding:4px; text-align:center;">${formatMoney(prices.price4)}</td><td style="padding:4px; text-align:center;">${formatMoney(prices.profit4)}</td><td style="padding:4px; text-align:center;">${formatMoney(prices.price4 - prices.profit4)}</td></tr>
-            <tr><td style="padding:4px; text-align:center;">6 Cartas</td><td style="padding:4px; text-align:center;">${formatMoney(prices.price6)}</td><td style="padding:4px; text-align:center;">${formatMoney(prices.profit6)}</td><td style="padding:4px; text-align:center;">${formatMoney(prices.price6 - prices.profit6)}</td></tr>
+
+    // Calcular totales
+    let totalRecaudado=0, totalCasa=0, totalPagado=0, totalPartidas=0;
+    purchases.forEach(p=>{ 
+        initializePurchaseData(p);
+        totalRecaudado += (p.totalPaid||0); 
+        totalCasa += (p.casa||0);
+        totalPartidas++;
+    });
+    winners.forEach(w => {
+        if(w.paid) { totalPagado += (w.prize || 0); }
+    });
+    const gananciaNeta = totalCasa - totalPagado;
+
+    // --- Resumen Ejecutivo ---
+    html += `<div style="margin-top:20px;">
+        <h3>Resumen Ejecutivo</h3>
+        <table class="summary-table">
+            <tr><td>Total Recaudado:</td><td class="text-right">${formatMoney(totalRecaudado)}</td></tr>
+            <tr><td>Total Pagado a Ganadores:</td><td class="text-right" style="color:red;">(${formatMoney(totalPagado)})</td></tr>
+            <tr><td>Total Ganancia (Casa):</td><td class="text-right" style="color:green;">${formatMoney(gananciaNeta)}</td></tr>
+            <tr><td>Total de Partidas Vendidas:</td><td class="text-right">${totalPartidas}</td></tr>
         </table>
     </div>`;
-    let totalEnJuego=0, totalCasa=0, totalPagado=0;
+
+    // --- Precios ---
+    const pricesHtml = `<div style="margin-top:20px;">
+        <h3>Configuración de Precios</h3>
+        <table>
+            <tr><th>Modalidad</th><th>Precio</th><th>Ganancia Casa</th><th>Monto en Juego</th></tr>
+            <tr><td class="text-center">4 Cartas</td><td class="text-center">${formatMoney(prices.price4)}</td><td class="text-center">${formatMoney(prices.profit4)}</td><td class="text-center">${formatMoney(prices.price4 - prices.profit4)}</td></tr>
+            <tr><td class="text-center">6 Cartas</td><td class="text-center">${formatMoney(prices.price6)}</td><td class="text-center">${formatMoney(prices.profit6)}</td><td class="text-center">${formatMoney(prices.price6 - prices.profit6)}</td></tr>
+        </table>
+    </div>`;
+
+    // --- Jugadores ---
     const playersHtml = `<div style="margin-top:20px;">
-        <h3>Jugadores y Compras</h3>
-        <table border="1" style="width:100%; border-collapse: collapse; font-size:12px;">
-            <thead><tr><th>ID</th><th>Jugador</th><th>Mod</th><th>Partidas</th><th>En Juego</th><th>Casa</th><th>Estado</th></tr></thead>
+        <h3>Detalle de Jugadores y Compras</h3>
+        <table>
+            <thead><tr><th>ID</th><th>Jugador</th><th>Mod</th><th>En Juego</th><th>Casa</th><th>Estado</th></tr></thead>
             <tbody>
                 ${purchases.map(p=>{ 
-                    initializePurchaseData(p);
-                    totalEnJuego += (p.enJuego||0); totalCasa += (p.casa||0); totalPagado += (p.totalPaid||0);
                     return `<tr>
                         <td style="padding:4px">${p.id}</td>
                         <td style="padding:4px">${escapeHtml(p.playerName)}<br><span style="color:#777">${escapeHtml(p.cell||'—')}</span></td>
-                        <td style="padding:4px;text-align:center">${p.modality}</td>
-                        <td style="padding:4px;text-align:center">${p.gamesLeft||0}</td>
-                        <td style="padding:4px;text-align:center">${formatMoney(p.enJuego||0)}</td>
-                        <td style="padding:4px;text-align:center">${formatMoney(p.casa||0)}</td>
-                        <td style="padding:4px;text-align:center">${p.state||'JUGANDO'}</td>
+                        <td class="text-center">${p.modality}</td>
+                        <td class="text-center">${formatMoney(p.enJuego||0)}</td>
+                        <td class="text-center">${formatMoney(p.casa||0)}</td>
+                        <td class="text-center">${p.state||'JUGANDO'}</td>
                     </tr>`;
                 }).join('')}
             </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="4" style="text-align:right; padding:4px; font-weight:bold;">TOTALES:</td>
-                    <td style="text-align:center; padding:4px; font-weight:bold;">${formatMoney(totalEnJuego)}</td>
-                    <td style="text-align:center; padding:4px; font-weight:bold;">${formatMoney(totalCasa)}</td>
-                    <td></td>
-                </tr>
-            </tfoot>
         </table>
-        <p style="font-size:12px; margin-top:10px;">Total Pagado por Jugadores: <strong>${formatMoney(totalPagado)}</strong></p>
     </div>`;
+
+    // --- Ganadores ---
     const winnersHtml = `<div style="margin-top:20px;">
-        <h3>Ganadores</h3>
-        <table border="1" style="width:100%; border-collapse: collapse; font-size:12px;">
-            <thead><tr><th>Fecha</th><th>Jugador</th><th>Modalidad</th><th>Carta Ganadora</th><th>Premio</th><th>Estado</th></tr></thead>
+        <h3>Detalle de Ganadores</h3>
+        <table>
+            <thead><tr><th>Fecha</th><th>Jugador</th><th>Carta Ganadora</th><th>Premio</th><th>Estado</th></tr></thead>
             <tbody>
                 ${winners.slice().sort((a,b)=>b.ts-a.ts).map(w=>{ 
                     return `<tr>
                         <td style="padding:4px">${new Date(w.ts).toLocaleString()}</td>
                         <td style="padding:4px">${escapeHtml(w.playerName)}</td>
-                        <td style="padding:4px;text-align:center">${w.modality}</td>
-                        <td style="padding:4px;text-align:center">${cardName(w.cardId)}</td>
-                        <td style="padding:4px;text-align:center">${formatMoney(w.prize)}</td>
-                        <td style="padding:4px;text-align:center">${w.paid?'PAGADO':'POR PAGAR'}</td>
+                        <td class="text-center">${cardName(w.cardId)}</td>
+                        <td class="text-center">${formatMoney(w.prize)}</td>
+                        <td class="text-center">${w.paid?'PAGADO':'POR PAGAR'}</td>
                     </tr>`;
                 }).join('')}
             </tbody>
         </table>
     </div>`;
+    
     html+=pricesHtml+playersHtml+winnersHtml;
     html+='<hr><p style="text-align:center; font-size:10px;">Fin del Reporte</p></body></html>';
+
     const printWindow = window.open('', '_blank');
     printWindow.document.write(html);
     printWindow.document.close();

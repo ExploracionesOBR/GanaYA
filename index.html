@@ -2,7 +2,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎴 GANA YA! - Lotería Interactiva (v11.7)</title>
+<title>🎴 GANA YA! - Lotería Interactiva (v11.8)</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ff6bcb'/%3E%3Ctext x='50%25' y='55%25' font-size='18' font-family='Arial' fill='white' text-anchor='middle' font-weight='700'%3EG%3C/text%3E%3C/svg%3E">
 <style>
 /* --- INICIO DE ESTILO (v11.7) --- */
@@ -198,10 +198,10 @@ body{
     min-width: 25px; 
 } 
 
-/* CORRECCIÓN 6: Lógica de cartas 'drawn' (pasadas) y 'marked' (marcadas) */
-/* Solo aplicar a las cartas dentro del grid de jugadores */
+/* Lógica de cartas 'drawn' (pasadas) y 'marked' (marcadas) */
 #players-area .card-thumb.drawn { filter:grayscale(1) opacity(0.6); }
 #players-area .card-thumb.drawn .sticker { filter: grayscale(0) opacity(1); }
+
 
 .sticker{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
 .sticker img{ width:70%; height:70%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
@@ -257,7 +257,6 @@ body{
     border-top: 2px dashed var(--accent1);
     padding-top: 10px;
 }
-/* CORRECCIÓN 5: Posición del helper de presupuesto */
 #budget-helper {
     font-size: 13px; 
     color: #555; 
@@ -265,7 +264,6 @@ body{
     min-height: 20px; 
     text-align: center;
 }
-/* CORRECCIÓN 2 y 3: Hint de validación */
 .input-hint { 
     font-size: 12px; 
     font-weight: 600; 
@@ -316,7 +314,6 @@ tr:hover { background: #f9f9f9; }
     50% { box-shadow: 0 0 20px var(--verde), 0 0 30px var(--accent1), 0 0 40px var(--rojo); transform: scale(1.18); }
     100% { box-shadow: 0 0 5px var(--verde), 0 0 10px var(--crema), 0 0 15px var(--rojo); }
 }
-/* CORRECCIÓN 1: Eliminados width/height !important */
 .winner-card {
     animation: mexicanGlow 1.5s infinite ease-in-out;
     z-index: 10;
@@ -869,7 +866,6 @@ function renderAll(){
     if(lastEl) lastEl.innerHTML = last.length? 
         last.map(id=> `<div class="card-thumb" style="width:40px;height:55px;background-image:url('${cardImageUrl(id)}')"></div>`).join('') : '<div class="small-muted">...</div>';
 
-    // Lógica de botones (v11.5)
     const winnerPending = game.winnerPending || false;
     $q('#game-controls').classList.toggle('hidden', !!winnerPending);
     $q('#btn-reset-win').classList.toggle('hidden', !winnerPending);
@@ -885,7 +881,7 @@ function renderAll(){
     if (isAuto) {
         $q('#btn-draw').disabled = true;
         $q('#btn-shuffle').disabled = true;
-        $q('#btn-auto').disabled = false; // Permitir que se detenga
+        $q('#btn-auto').disabled = false; 
     }
 
 
@@ -1001,7 +997,6 @@ function openPurchaseDetail(id){
     const cards=(p.card||[]).map(cid=>{ 
         const isMarked = (p.markedCards||[]).includes(cid); 
         const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : ''; 
-        // CORRECCIÓN 6: No atenuar cartas aquí
         return `<div class="card-thumb" style="width:60px; height:90px; background-image:url('${cardImageUrl(cid)}');">${sticker}</div>`; 
     }).join('');
     
@@ -1028,7 +1023,6 @@ function openPurchaseDetail(id){
             actionsDiv.innerHTML += `<button class="btn btn-green" onclick="markPaidById('${p.id}', ${pendingWin.ts})">💸 Marcar como PAGADO y Notificar</button>`;
         }
     }
-    // CORRECCIÓN 7: Solo mostrar si está jugando o pendiente
     if(isPlaying || isPending) {
         actionsDiv.innerHTML += `<button class="btn btn-muted" onclick="resendRegistrationWhatsapp('${p.id}')">📱 Reenviar Cartas (WhatsApp)</button>`;
     }
@@ -1054,7 +1048,6 @@ window.resendRegistrationWhatsapp = function(id){
     const cardNames = (p.card||[]).map(cardName).join(', ');
     messageParts.push(`🎟️ *FOLIO ${p.id}* (${p.modality} Cartas):\n${cardNames}`);
     
-    // CORRECCIÓN 3: Añadir +52
     const finalMsg = `🎉 ¡HOLA ${p.playerName.toUpperCase()}! BIENVENIDO A GANA YA! 🎉\n\n✅ Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${messageParts.join('\n\n')}\n\n🍀 ¡MUCHA SUERTE Y A GANAR! 🍀`;
     window.open(`https://wa.me/52${p.cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
 };
@@ -1229,7 +1222,6 @@ async function drawOne(){
 function processCard(cardId){
     const winnersFound=[];
     purchases.forEach((p,i)=>{
-        // CORRECCIÓN 7: Lógica de 1 partida
         if(p.state !== 'JUGANDO' || p.modality !== currentMode) return;
         
         if(p.card && p.card.includes(cardId) && !(p.markedCards||[]).includes(cardId)){
@@ -1299,9 +1291,15 @@ function showWinnerDetailModal(purchaseId, cardId){
     }
     
     if(!cardId) {
+        // CORRECCIÓN 2: Lógica para 'VER'
         const winnerRec = winners.find(w => w.purchaseId === purchaseId && !w.paid);
-        if(!winnerRec) return;
-        cardId = winnerRec.cardId;
+        if(!winnerRec) {
+             const anyWinnerRec = winners.find(w => w.purchaseId === purchaseId);
+             if(anyWinnerRec) cardId = anyWinnerRec.cardId;
+             else return;
+        } else {
+             cardId = winnerRec.cardId;
+        }
     }
 
     const player = purchases.find(p=>p.id===purchaseId);
@@ -1514,7 +1512,7 @@ async function resetGame(){
                 p.gamesLeft = 0; 
             }
             if(p.state === 'POR PAGAR') {
-                p.gamesLeft = 0; // Se asegura que la partida ganadora se consuma
+                // p.gamesLeft ya fue puesto a 0 al ganar
             }
         }
         p.markedCards=[]; 
@@ -1776,12 +1774,31 @@ document.addEventListener('DOMContentLoaded', ()=>{
     $q('#winner-detail-close-x').addEventListener('click', closeWinnerDetailModal);
     
     $q('#modal-alert-ok').addEventListener('click', () => $q('#modal-alert').classList.add('hidden'));
-    // Los botones de Confirmar/Cancelar se manejan en la promesa
 
+    // CORRECCIÓN 1: Flujo de 'ESC'
     document.addEventListener('keydown', (e)=>{
         if(e.key==='Escape'){ 
-            $qa('.modal-back').forEach(m => m.classList.add('hidden'));
-            stopConfettiFullScreen();
+            const winnerModal = $q('#modal-winner');
+            const detailModal = $q('#modal-winner-detail');
+            const playerModal = $q('#modal-player');
+            const alertModal = $q('#modal-alert');
+            const confirmModal = $q('#modal-confirm');
+
+            if (!confirmModal.classList.contains('hidden')) {
+                confirmModal.classList.add('hidden');
+                // Simula un 'resolve(false)' para la promesa de confirmación
+                // (La promesa se resolverá en el handler de 'cancel')
+                $q('#modal-confirm-cancel').click();
+            } else if (!alertModal.classList.contains('hidden')) {
+                alertModal.classList.add('hidden');
+            } else if (!playerModal.classList.contains('hidden')) {
+                closeGroupModal();
+            } else if (!detailModal.classList.contains('hidden')) {
+                closeWinnerDetailModal();
+            } else if (!winnerModal.classList.contains('hidden')) {
+                // ESC en "FELICIDADES" abre el detalle
+                showWinnerDetailModal(); 
+            }
         }
     });
 

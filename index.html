@@ -1224,11 +1224,85 @@ function animateShuffle(){
     }, 4000);
 }
 
-function shufflePending(){
-    game.deck = shuffle(Array.from({length:54},(_,i)=>i+1));
-    tx.push({id:uuid(),type:'shuffle',ts:Date.now()});
-    saveAll();
+function cardImageUrl(id){ 
+  return 'Cartas_baraja_loteria/' + id + '.png'; 
 }
+
+function shufflePendingToFullScreen(){
+  if(window.animShuffling) return; 
+  window.animShuffling = true;
+  if(typeof disableControls === 'function') disableControls(true);
+  
+  const overlay = $q('#shuffle-overlay'); 
+  overlay.style.display = 'flex'; 
+  overlay.innerHTML = '<div class="shuffle-center"></div>';
+  
+  const center = overlay.querySelector('.shuffle-center');
+  const pending = buildDeck54();
+  const sample = pending.slice(0, 20);
+  
+  const cards = sample.map((cid, i) => {
+    const el = document.createElement('div'); 
+    el.className = 'shuffle-card shuffle-wave'; 
+    el.style.backgroundImage = 'url("' + cardImageUrl(cid) + '")'; 
+    el.style.left = '50%'; 
+    el.style.top = '50%'; 
+    el.style.transform = 'translate(-50%, -50%)'; 
+    el.style.zIndex = 100 + i; 
+    center.appendChild(el); 
+    return { el, cid };
+  });
+
+  // Wave 1
+  cards.forEach((c, idx) => setTimeout(() => {
+    const tx = (idx - cards.length / 2) * 18 + (Math.random() * 40 - 20); 
+    const ty = -160 + Math.random() * 100; 
+    const rot = (Math.random() * 40 - 20);
+    c.el.style.transition = 'transform 1.2s cubic-bezier(.22,.9,.32,1), opacity 1.2s'; 
+    c.el.style.transform = `translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(1)`;
+    if(Math.random() > 0.6) c.el.classList.add('flip');
+  }, idx * 60));
+
+  // Wave 2
+  setTimeout(() => { 
+    cards.forEach((c, idx) => setTimeout(() => { 
+      const tx = (Math.random() * 700 - 350); 
+      const ty = (Math.random() * 260 - 130); 
+      const rot = (Math.random() * 720 - 360); 
+      c.el.classList.remove('flip'); 
+      c.el.classList.add('wave-move'); 
+      c.el.style.transform = `translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(.94)`; 
+    }, idx * 50)); 
+  }, 1600);
+
+  // Wave 3 final gather
+  setTimeout(() => { 
+    cards.forEach((c, idx) => { 
+      c.el.style.transition = 'transform .6s ease, opacity .6s ease'; 
+      c.el.style.transform = `translate(${(idx - cards.length / 2) * 10}px, -30px) rotate(${Math.random() * 18 - 9}deg) scale(.96)`; 
+      c.el.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><img src="logo_1_entrada.png" style="width:80px;height:80px;opacity:.95"></div>'; 
+      c.el.style.backgroundImage = 'linear-gradient(#ddd,#bbb)'; 
+    }); 
+  }, 3200);
+
+  // finalize
+  setTimeout(() => {
+    $qa('#players-grid .card-thumb').forEach(c => { 
+      c.classList.add('shine'); 
+      setTimeout(() => c.classList.remove('shine'), 2600); 
+    });
+    overlay.style.display = 'none'; 
+    overlay.innerHTML = ''; 
+    window.animShuffling = false; 
+    if(typeof disableControls === 'function') disableControls(false); 
+    if(typeof renderAll === 'function') renderAll();
+  }, 5200);
+}
+
+$q('#btn-shuffle')?.addEventListener('click', () => { 
+  shufflePendingToFullScreen(); 
+});
+
 
 function drawOne(){
     if(animShuffling || game.winnerPending) return;

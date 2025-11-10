@@ -1,1808 +1,933 @@
-<!-- index.html - versión estable mejorada (v9.10 funcional completa)
-Mejoras integradas:
-1. Reproducción de APLAUSOS_GANADOR.mp3 al ganar (sincronizado con confetti)
-2. Sonido flip.mp3 al tirar carta (manual o automático)
-3. Sección de 💰 Bolsa / EN JUEGO / ⚙️ movida al margen derecho sobre CONTROL DE PARTIDA
-4. Título centrado sobre Cartas de jugadores activos
-5. Cálculo de presupuesto reformulado con texto claro:
-   "Puedes elegir entre X partidas de 4 cartas o Y partidas de 6 cartas"
-   o "Puedes adquirir X partidas de 4 cartas" si no alcanza para 6.
-6. Botones TIRAR CARTA / CARTAS AUTOMÁTICO / BARAJEAR corregidos (funcionan sin recargar)
-7. Márgenes eliminados, diseño sin zoom, adaptado a resolución
-8. Carta ganadora con efecto de zoom, luces mexicanas y confetti persistente hasta presionar ESC
-9. Botón REINICIAR PARTIDA oculto durante la partida y visible tras ganar (los demás botones se ocultan)
--->
-
-<!-- index.html - Versión Estable v9.9 -->
-<!-- Mejoras aplicadas:
-1. Sonido de aplausos al ganar (APLAUSOS_GANADOR.mp3)
-2. Sonido flip.mp3 al tirar carta
-3. Bolsa, En juego y Configuración alineados a la derecha
-4. Título centrado sobre cartas de jugadores activos
-5. Cálculo de presupuesto mejorado (puedes elegir entre...)
-6. Botones TIRAR / AUTOMÁTICO / BARAJEAR persistentes
-7. Sin recarga de página
-8. Márgenes optimizados para evitar zoom
-9. Carta ganadora con efecto de zoom + luces mexicanas
-10. Confetti activo hasta cerrar con ESC
-11. Botón REINICIAR PARTIDA visible sólo tras ganar
-12. Sin datos demo
--->
-
-<!doctype html><html lang="es">
+<!doctype html>
+<html lang="es">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎴 GANA YA! - Lotería Interactiva Mexicana (v9.8)</title>
+<title>🎴 GANA YA! - Lotería Interactiva Mexicana (v9.14)</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ff6bcb'/%3E%3Ctext x='50%25' y='55%25' font-size='18' font-family='Arial' fill='white' text-anchor='middle' font-weight='700'%3EG%3C/text%3E%3C/svg%3E">
 <style>
 /* VARIABLES DE COLOR */
 :root{ 
-    --rojo:#b42222; 
-    --verde:#0f8a3c; 
-    --azul:#1565d8; 
-    --naranja:#f77f00; 
-    --crema:#fff8ec; 
-    --sombra:0 10px 28px rgba(0,0,0,0.12); 
-    --accent1:#ffd60a; 
-    --accent2:#ff6bcb; 
+    --rojo:#e63946; 
+    --verde:#2a9d8f; 
+    --azul:#457b9d; 
+    --naranja:#f4a261; 
+    --crema:#f1faee; 
+    --sombra:0 10px 28px rgba(0,0,0,0.15); 
+    --accent1:#e9c46a; 
+    --accent2:#d62828; 
 }
 
 /* GENERALES */
 *{box-sizing:border-box} 
-html,body{height:100%}
+html,body{height:100%; margin:0; padding:0;}
 body{ 
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-  margin:0; 
-  padding:0; 
   background:var(--crema); 
-  color:#222;
-  background-image: radial-gradient(#ffd60a 1px, transparent 1px), radial-gradient(#e63946 1px, transparent 1px);
+  color:#1d3557;
+  background-image: radial-gradient(var(--accent1) 1px, transparent 1px), radial-gradient(var(--rojo) 1px, transparent 1px);
   background-position: 0 0, 25px 25px; 
   background-size: 50px 50px;
   overflow-x: hidden; 
 }
 
-/* CONTENEDOR PRINCIPAL */
+/* CONTENEDOR PRINCIPAL CENTRADO */
 .container{ 
   max-width:1200px; 
-  margin:8px auto;
-  padding:0 8px; 
-  position: relative; 
+  margin: 0 auto;
+  padding: 10px; 
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ENCABEZADO */
 .main-header {
     display: flex;
-    align-items: flex-start; /* Alineación arriba para que los controles no empujen el título */
+    align-items: center;
     justify-content: space-between;
-    height: 96px; 
-    margin-bottom: 8px;
-    padding: 0; 
-    position: relative;
+    padding: 10px 0;
+    margin-bottom: 10px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(5px);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-bottom: 3px solid var(--rojo);
 }
 
 .logo-box-wrapper{
   flex-shrink: 0;
-  width: 96px; 
-  height: 96px;
-  position: relative;
-  z-index: 10;
-  padding-left: 8px; 
+  width: 90px; 
+  height: 90px;
+  margin-left: 15px;
 }
 
 .logo-box img{ 
-  width:96px; 
-  height:96px;
+  width:100%; 
+  height:100%;
   object-fit:contain; 
-  border-radius:12px; 
-  box-shadow:0 8px 20px rgba(0,0,0,0.12); 
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
 }
 
 .title-container {
     flex-grow: 1;
     text-align: center;
-    pointer-events: none; 
-    z-index: 5;
-    padding-top: 10px; /* Ajuste para centrar visualmente el título */
+    padding: 0 15px;
 }
 
 .title { 
-  font-size:50px; 
+  font-size: clamp(32px, 5vw, 48px); /* Título responsivo */
   font-weight:900; 
   color:var(--rojo); 
   margin:0; 
-  animation: fiesta 3.2s linear infinite; 
-  white-space: nowrap;
-  width: 100%;
+  animation: fiesta 4s linear infinite; 
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: -1px;
 }
 
 .subtitle { 
-  color:#0b7a3b; 
-  font-size:14px;
-  margin-top:4px; 
-  text-align:center; 
+  color: var(--verde); 
+  font-size: 15px;
+  margin-top: 4px; 
+  font-weight: 600;
 }
 
 @keyframes fiesta { 
-  0%{ color:#e63946 }
-  15%{ color:var(--accent1) }
-  30%{ color:#2a9d8f }
-  45%{ color:#6d9df5 }
-  60%{ color:var(--accent2) }
-  75%{ color:#ff9e00 }
-  100%{ color:#e63946 } 
+  0%{ color:#e63946 } 25%{ color:#2a9d8f } 50%{ color:#e9c46a } 75%{ color:#f4a261 } 100%{ color:#e63946 } 
 }
 
-
-/* MAIN GRID: 3 Columnas */
+/* MAIN GRID */
 .main-grid{ 
   display:grid;
-  grid-template-columns: 280px 1fr 400px; 
-  gap:8px; 
-  align-items:start; /* Alineación superior */
-  margin-top:8px;
-  padding: 0 8px; 
+  grid-template-columns: 260px 1fr 340px; 
+  gap:12px; 
+  align-items:start;
+  flex-grow: 1;
 }
-@media(max-width:1200px){ 
-  .main-grid{ grid-template-columns:1fr; } 
-  .header-controls-wrapper { padding-top: 0; padding-right: 0; }
-}
+@media(max-width:1100px){ .main-grid{ grid-template-columns: 240px 1fr; } .controls-panel{ grid-column: 1 / -1; grid-row: 1; } #winners-panel { grid-row: 2; } #players-section { grid-row: 2; }}
+@media(max-width:850px){ .main-grid{ grid-template-columns: 1fr; } .controls-panel, #winners-panel, #players-section { grid-column: auto; grid-row: auto; } }
 
-.mex-frame{ 
+.mex-frame, .mex-frame-small{ 
   background:#fff; 
   border-radius:12px; 
-  padding:10px; 
-  border:4px solid var(--rojo); 
+  padding:12px; 
   box-shadow:var(--sombra); 
+  border: none;
+  position: relative;
+  overflow: hidden;
 }
-.mex-frame-small{ 
-  background:#fff;
-  border-radius:10px; 
-  padding:10px; 
-  border:3px solid var(--rojo); 
-  box-shadow:0 6px 14px rgba(0,0,0,.06); 
-}
-
-/* CONTROLES */
-#control-partida { text-align: center; }
-#control-partida h3 { margin:0; } /* Ajuste de duplicado en h3 */
-
-#control-partida select {
-    display: block !important;
-    margin: 0 auto !important;
-    width: 100%; 
-    text-align: center; 
-    text-align-last: center;
+.mex-frame::before, .mex-frame-small::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px;
+    background: linear-gradient(90deg, var(--verde) 0%, var(--crema) 50%, var(--rojo) 100%);
 }
 
-/* CONTROLES DE BOLSA/ADMIN (MOVIDOS AL HEADER) */
+/* CONTROLES HEADER */
 .header-controls-wrapper {
+  margin-right: 15px;
   display: flex;
-  align-items: center; 
-  justify-content: flex-end; 
-  padding-top: 10px; /* Pequeño ajuste en el header */
-  padding-right: 8px;
-  z-index: 10;
-  width: auto; 
-  flex-shrink: 0;
+  gap: 10px;
+  align-items: center;
 }
-
-.header-controls{ 
-  display:flex;
-  gap:12px; 
-  align-items:center; 
-  flex-shrink: 0; 
-  padding: 0; 
-  margin: 0; 
-  justify-content: flex-end; 
-} 
 
 .bolsa-compact{ 
-  display:flex; 
-  align-items:center; 
-  gap:10px; 
-  padding:8px 10px; 
-  border-radius:10px; 
-  background:linear-gradient(90deg,#e6fff1,#fff7e6);
-  border:3px solid #c9a700; 
-  box-shadow:0 8px 20px rgba(0,0,0,0.06); 
+  display:flex; flex-direction: column; align-items:flex-end;
+  padding: 5px 10px; background: var(--crema); border-radius: 8px; border: 1px solid var(--accent1);
 }
-.bolsa-compact .label{ 
-  font-weight:900; 
-  color:#2d6b25; 
-  font-size:14px; 
-}
-.bolsa-compact .amount{ 
-  font-weight:900; 
-  color:#b45309; 
-  font-size:18px; 
-}
+.bolsa-compact .label{ font-size:11px; font-weight:700; color:var(--verde); text-transform: uppercase; }
+.bolsa-compact .amount{ font-weight:900; color:var(--rojo); font-size:18px; line-height: 1; }
 
-/* ESTILOS DE BOTONES DE VISTA (EN JUEGO / ADMIN) */
 .toggle-btn{ 
-  padding:8px 12px;
-  border-radius:10px; 
-  border:none; 
-  font-weight:800; 
-  cursor:pointer; 
-  box-shadow:0 6px 14px rgba(0,0,0,0.08); 
-  transition: transform .18s ease; /* Transición agregada */
+  padding:8px 12px; border-radius:8px; border:none; font-weight:700; cursor:pointer; 
+  transition: all .2s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-.toggle-btn:hover{ 
-  transform: scale(1.03); /* Efecto hover mejorado */
-}
-.toggle-play{ 
-  background:#1565d8;
-  color:white; 
-}
-.toggle-admin{ 
-  background:#f3f4f6;
-  color:#111; 
-}
+.toggle-btn:hover{ transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+.toggle-play{ background:var(--azul); color:white; }
+.toggle-admin{ background:#e0e0e0; color:#333; }
 
-/* GRID DE JUGADORES */
+/* JUGADORES - MODIFICADO PARA 5 COLUMNAS FIJAS Y MÁS COMPACTO */
 .players-grid{ 
   display:grid; 
-  grid-template-columns: repeat(5,1fr); 
-  gap:8px; 
-  align-items:start;
+  grid-template-columns: repeat(5, 1fr); /* 5 Columnas FIJAS */
+  gap:6px; /* Gap más pequeño */
 }
-@media(max-width:1100px){ .players-grid{ grid-template-columns: repeat(4,1fr); } }
-@media(max-width:900px){ .players-grid{ grid-template-columns: repeat(3,1fr); } }
-@media(max-width:640px){ .players-grid{ grid-template-columns: 1fr; } }
+/* En móviles muy pequeños, quizás quieras bajar a 3 o 4 para que no se rompa, 
+   pero pediste fijo a 5. Si se ve muy mal en cel, descomenta la linea de abajo */
+/* @media(max-width:600px){ .players-grid{ grid-template-columns: repeat(3, 1fr) !important; } } */
 
-/* TARJETA DE JUGADOR */
 .player-card{ 
-  background:#fff; 
-  border-radius:10px; 
-  padding:8px; 
-  text-align:center;
-  box-shadow:0 6px 16px rgba(0,0,0,0.06); 
-  cursor:pointer; 
-  min-height:220px; 
-  display:flex; 
-  flex-direction:column; 
-  align-items:center; 
-  justify-content:flex-start; 
-  transition:transform .18s ease, box-shadow .18s ease; 
+  background:#fff; border-radius:8px; padding:5px; text-align:center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08); cursor:pointer; transition:all .2s ease;
+  border: 1px solid #eee;
+  min-height: 110px; /* Altura mínima reducida */
 }
-
-.player-card:hover{ 
-  transform:translateY(-4px);
-  box-shadow:0 18px 36px rgba(0,0,0,.12); 
-}
-
-/* MEJORA UX/ACCESIBILIDAD: Borde al enfocar (teclado/click) */
-.player-card:focus, .player-card:focus-within{ 
-    box-shadow:0 18px 36px rgba(0,0,0,.12), 0 0 0 4px var(--azul); 
-    outline: none;
-}
-
+.player-card:hover{ transform:translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.12); border-color: var(--accent1); }
 .player-name{ 
-  font-weight:900; 
-  margin-top:4px; 
-  font-size:15px; 
+    font-weight:800; font-size:12px; /* Fuente más pequeña */
+    color: var(--azul); margin-bottom: 2px; 
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
 }
-.player-cards{ 
-  margin-top:8px; 
-  display:flex; 
-  flex-direction:column; 
-  gap:6px; 
-  align-items:center; 
-  overflow:hidden; 
-}
+.player-info { font-size: 10px; color:#777; margin-bottom:4px; }
 
-/* TARJETA SIMULADA (Slots vacíos) */
-.player-card.simulated {
-  cursor:default; 
-  opacity:1;
-  background:#fff; 
-  border:1px solid #ddd; 
-  box-shadow:none;
-  min-height:220px; 
-}
-.player-card.simulated .player-name, 
-.player-card.simulated .player-cards .card-thumb.back-pattern::after {
-  display: none;
-}
-.player-card.simulated .player-cards .card-thumb{
-  background: #ffffff !important; 
-  filter: none !important; 
-}
-.player-card.simulated .player-cards .card-thumb:not(.back-pattern) {
-  border: 1px dashed #eee;
-  background: #f5f5f5 !important;
-}
-
-/* MINIATURA DE CARTA */
 .card-thumb{ 
-  width:74px; 
-  height:106px; 
-  border-radius:8px; 
-  background-size:cover; 
-  background-position:center; 
-  position:relative; 
-  transition:transform .28s ease, opacity .28s ease;
+  width:48px; height:70px; border-radius:5px; background-size:cover; background-position:center; 
+  position:relative; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
-  .card-thumb.back-pattern{
-    background: repeating-linear-gradient(45deg, #f6f6f6 0 10px, #ececec 10px 20px);
-    position:relative;
-    filter:none;
-  }
-  .card-thumb.back-pattern::after{
-    content:'';
-    position:absolute;
-    left:50%; top:50%;
-    width:48px; height:48px;
-    transform:translate(-50%,-50%);
-    background-image: url('logo_1_entrada.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    opacity:0.95;
-    pointer-events:none;
-  }
-  .card-thumb.shine::before{
-    content:'';
-    position:absolute; top:0; left:-90%;
-    width:60%; height:100%;
-    background: linear-gradient(120deg, rgba(255,200,80,0.9) 0%, rgba(255,200,80,0.6) 30%, rgba(255,200,80,0.2) 50%, rgba(255,200,80,0) 100%);
-    transform: skewX(-20deg);
-    pointer-events:none;
-    z-index:3;
-    animation: shineMove 0.8s linear 0s 2;
-  }
-  @keyframes shineMove{ 100% { left:140%; } }
+/* Thumbs más pequeños DENTRO de la tarjeta de jugador para que quepan bien */
+.player-cards .card-thumb { 
+    width: 100%; height: auto; aspect-ratio: 3/4.5; 
+    min-width: 25px; /* Evita que desaparezcan en pantallas muy pequeñas */
+} 
 
-/* APLICAR BLANCO Y NEGRO/DIMMING A CARTAS YA PASADAS */
-.card-thumb.passed{ filter:grayscale(1) brightness(0.6); }
+.card-thumb.passed{ filter:grayscale(1) opacity(0.5); }
+.sticker{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+.sticker img{ width:70%; height:70%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 
-.sticker{ 
-  position:absolute; 
-  inset:0; 
-  display:flex; 
-  align-items:center; 
-  justify-content:center; 
-  pointer-events:none;
-}
-.sticker img{ 
-  width:42px; 
-  height:42px; 
-  filter:none; 
-}
-
-/* BOTONES DE CONTROL (GENERALES) */
-.controls { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; justify-content:center; }
+/* CONTROLES JUEGO */
+#control-partida h3 { color: var(--rojo); text-align: center; margin-top: 0; }
+.controls { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:10px; }
 .btn{ 
-  padding:8px 10px; 
-  border-radius:8px; 
-  font-weight:800; 
-  border:none; 
-  cursor:pointer; 
-  color:white;
-  transition: all .18s ease; /* Transición agregada */
+  padding:10px 16px; border-radius:8px; font-weight:800; border:none; cursor:pointer; color:white;
+  transition: transform .1s active, box-shadow .2s ease; text-transform: uppercase; letter-spacing: 0.5px; font-size: 14px;
 }
-.btn:hover{ 
-  transform: translateY(-1px); 
-  box-shadow: 0 8px 18px rgba(0,0,0,.1); /* Sombra al pasar el ratón */
-}
+.btn:active { transform: scale(0.98); }
+.btn-blue{ background:var(--azul); } .btn-red{ background:var(--rojo); } .btn-green{ background:var(--verde); } .btn-muted{ background:#999; }
 
-.btn-blue{ background:#1565d8 } 
-.btn-red{ background:var(--rojo)} 
-.btn-green{ background:var(--verde)} 
-.btn-muted{ background:#f3f4f6; color:#111 }
-
-/* CARTA ACTUAL */
 .current-card{ 
-  min-height:180px; 
-  border-radius:8px; 
-  display:flex; 
-  align-items:center; 
-  justify-content:center; 
-  background:#fff; 
-  box-shadow:var(--sombra);
-  border:3px solid #eee; 
-  padding:8px; 
+  height:240px; border-radius:12px; display:flex; align-items:center; justify-content:center; 
+  background: #fff url('logo_1_entrada.png') no-repeat center center; background-size: 80px;
+  border: 2px dashed #ddd; margin-top: 10px; overflow: hidden;
 }
-.last-cards{ display:flex; gap:6px; justify-content:center; }
+.current-card-img { width: 100%; height: 100%; background-size: contain; background-position: center; background-repeat: no-repeat; }
 
-.admin-row{ display:flex; gap:8px; align-items:flex-start; }
-.admin-col{ flex:1; }
+/* ADMIN */
+.admin-row{ display:flex; gap:10px; flex-wrap: wrap; }
+.admin-col{ flex:1; min-width: 300px; }
+.input{ width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; margin-bottom: 8px; font-family: inherit; }
+.input:focus { outline: 2px solid var(--azul); border-color: transparent; }
 
-.price-grid{ display:flex; gap:8px; }
-.price-box{ 
-  padding:12px; 
-  border-radius:12px;
-  border:2px dashed #eee; 
-  background:#fff; 
-  text-align:center; 
-  font-weight:800; 
-  box-shadow:0 6px 14px rgba(0,0,0,0.03); 
-  min-height:100px; 
-  flex:1; 
-}
-
-/* INPUTS Y SELECTS MEJORADOS */
-.input, select {
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.input:focus, select:focus {
-  border-color: var(--azul); 
-  box-shadow: 0 0 0 3px rgba(21, 101, 216, 0.2); 
-  outline: none;
-}
-
-/* TABLA DE ADMINISTRACIÓN */
-.table-wrap{ 
-  overflow:auto; 
-  max-height:300px; 
-  border:1px solid #ddd; /* Borde más visible */
-  border-radius:8px; 
-  padding:6px;
-  background:#fff; 
-  font-size:12px; 
-}
-
-.table-wrap table thead tr{ 
-    border-bottom: 2px solid #ddd; /* Separador de cabecera más claro */
-}
-
-.table-wrap table th{
-    background: #f8f8ff; /* Fondo más claro para la cabecera sticky */
-}
-
-.filter-btn{ 
-  padding:6px 8px; 
-  border-radius:8px; 
-  border:none; 
-  cursor:pointer; 
-  font-weight:800; 
-  background:#f3f4f6;
-  transition: background .2s ease, box-shadow .2s ease;
-}
-.filter-btn.active-4{ background: #d1fae5; box-shadow:0 8px 18px rgba(34,197,94,0.08); }
-.filter-btn.active-6{ background: #dbeafe; box-shadow:0 8px 18px rgba(37,99,235,0.08); }
-.filter-btn.active-all{ background: #f8fafc; box-shadow:0 8px 18px rgba(99,102,241,0.04); }
+.table-wrap{ overflow-x:auto; background: #fff; border-radius: 8px; border: 1px solid #eee; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: var(--azul); color: white; text-align: left; padding: 8px; position: sticky; top: 0; }
+td { border-bottom: 1px solid #eee; padding: 8px; }
+tr:hover { background: #f9f9f9; }
 
 /* MODALES */
-.modal-back{ 
-  position:fixed; 
-  inset:0; 
-  background:rgba(0,0,0,0.45); 
-  display:flex; 
-  align-items:center; 
-  justify-content:center; 
-  z-index:9999;
+.modal-back{ position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter: blur(3px); display:flex; align-items:center; justify-content:center; z-index:9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+.modal-back.active { opacity: 1; pointer-events: all; }
+.modal{ background:#fff; border-radius:15px; padding:20px; width:90%; max-width:500px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); position: relative; transform: translateY(20px); transition: transform 0.3s ease; max-height: 90vh; overflow-y: auto; }
+.modal-back.active .modal { transform: translateY(0); }
+
+.close-modal-x { position: absolute; top: 10px; right: 15px; font-size: 24px; background: none; border: none; cursor: pointer; color: #999; }
+.close-modal-x:hover { color: var(--rojo); }
+
+/* WINNER ANIMATIONS */
+@keyframes mexicanGlow {
+    0% { box-shadow: 0 0 5px var(--verde), 0 0 10px var(--blanco), 0 0 15px var(--rojo); }
+    50% { box-shadow: 0 0 20px var(--verde), 0 0 30px var(--accent1), 0 0 40px var(--rojo); transform: scale(1.18); }
+    100% { box-shadow: 0 0 5px var(--verde), 0 0 10px var(--blanco), 0 0 15px var(--rojo); }
 }
-.modal{ 
-  background:#fff; 
-  border-radius:12px; 
-  padding:12px; 
-  width:820px; 
-  max-width:96%; 
-  box-shadow:var(--sombra); 
-  position:relative; 
+.winner-card {
+    animation: mexicanGlow 1.5s infinite ease-in-out;
+    z-index: 10;
 }
-.hidden{ display:none; }
 
 /* SHUFFLE OVERLAY */
-.shuffle-overlay{ 
-  position:fixed; 
-  inset:0; 
-  z-index:2200; 
-  display:none; 
-  align-items:center; 
-  justify-content:center; 
-  background:rgba(255,255,255,0.98); 
-}
+.shuffle-overlay{ position:fixed; inset:0; z-index:2000; background:rgba(255,248,240,0.95); display:none; align-items:center; justify-content:center; flex-direction: column; }
 .shuffle-overlay.visible{ display:flex; }
-.shuffle-card{ 
-  width:240px; 
-  height:340px; 
-  background-size:cover; 
-  border-radius:12px; 
-  box-shadow:0 20px 40px rgba(0,0,0,.25); 
-  position:absolute; 
-  transform-origin:center; 
-  transition:transform .45s ease, opacity .45s ease; 
-}
 
-#confetti-canvas{ 
-  position:fixed; 
-  left:0;
-  top:0; 
-  width:100vw; 
-  height:100vh; 
-  z-index:3000; 
-  pointer-events:none; 
-  display:none; 
-}
+#confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 9998; }
+.hidden { display: none !important; }
 
-.small-muted{ color:#6b7280; font-size:12px; }
-.badge{ 
-  display:inline-block; 
-  padding:4px 8px; 
-  border-radius:999px; 
-  color:white; 
-  font-weight:700; 
-  font-size:11px; 
-  margin-left:4px;
-}
-.badge-porpagar{ background:#d97706 } 
-.badge-pagado{ background:#2a9d8f } 
-.badge-jugando{ background:#1565d8 }
+/* UTILS */
+.text-center { text-align: center; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mt-2 { margin-top: 0.5rem; }
+.w-full { width: 100%; }
+.font-bold { font-weight: 700; }
+.badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; }
+.badge-play { background-color: var(--verde); }
+.badge-win { background-color: var(--accent1); color: #333; animation: pulse 1s infinite; }
+.badge-paid { background-color: var(--azul); }
+.badge-end { background-color: #999; }
 
-.input{ width:100%; padding:8px 10px; border-radius:8px; border:1px solid #ddd; }
-
-.tooltip{ position:relative; }
-.tooltip .tip{ 
-  position:absolute; 
-  bottom:110%; 
-  left:50%; 
-  transform:translateX(-50%); 
-  background:#111; 
-  color:#fff; 
-  padding:6px 8px; 
-  border-radius:6px; 
-  font-size:12px; 
-  display:none; 
-  white-space:nowrap; 
-}
-.tooltip.show .tip{ display:block; }
-
-#modal-winner-detail .modal{
-  width: auto;
-  padding: 20px;
-  max-width: 96%;
-  text-align: center;
-  border: 5px solid var(--accent1);
-  background: #fff;
-}
-#winner-detail-player-cards{
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 16px;
-}
-#winner-detail-player-cards .card-thumb{
-  width: 90px;
-  height: 130px;
-}
-#winner-detail-player-cards .card-thumb.winner-card{
-  box-shadow: 0 0 0 6px var(--rojo), 0 0 20px rgba(255,200,80,0.8);
-  transform: scale(1.15);
-  transition: transform 0.3s ease-in-out;
-}
-
-/* ESTILOS DE BOTONES DE ACCIÓN EN ADMIN */
-.admin-actions-top{
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #eee;
-  margin-bottom: 8px;
-}
-.admin-actions-top .btn{
-  padding: 6px 10px;
-}
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
 </style>
 </head>
 <body>
 
+<!-- SONIDOS (Requieren archivos locales) -->
+<audio id="snd-flip" src="flip.mp3" preload="auto"></audio>
+<audio id="snd-win" src="APLAUSOS_GANADOR.mp3" preload="auto"></audio>
+
 <div class="container">
 
   <header class="main-header">
-      
       <div class="logo-box-wrapper">
-          <div class="logo-box"><img id="logo-img" src="logo_1_entrada.png" alt="logo"></div>
+          <div class="logo-box"><img id="logo-img" src="logo_1_entrada.png" alt="Logo Lotería"></div>
       </div>
-
       <div class="title-container">
           <div class="title">🎉 GANA YA!</div>
-          <div class="subtitle">Gana Ya! es una página de carácter interactivo y de entretenimiento.</div>
+          <div class="subtitle">Lotería Interactiva Mexicana</div>
       </div>
-      
       <div class="header-controls-wrapper">
-          <div class="header-controls">
-              <div class="bolsa-compact">
-                  <div style="font-weight:900" id="bolsa-label">💰 Bolsa</div>
-    
-                  <div class="amount" id="bolsa-amount">$0.00</div>
-              </div>
-              <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
-              <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
+          <div class="bolsa-compact">
+              <span class="label" id="bolsa-label">💰 Bolsa</span>
+              <span class="amount" id="bolsa-amount">$0.00</span>
           </div>
+          <button id="btn-view-play" class="toggle-btn toggle-play" title="Vista de Juego">Jugar</button>
+          <button id="btn-view-admin" class="toggle-btn toggle-admin" title="Vista de Administración">⚙️</button>
       </div>
   </header>
   
+  <!-- VISTA DE JUEGO -->
   <div class="main-grid" id="main-grid">
 
-    <aside class="mex-frame-small winners" id="winners-panel" aria-label="Últimos Ganadores">
-      <h3 style="margin:0 0 8px 0; text-align:center">ÚLTIMOS GANADORES</h3>
-      <div class="winners-list" id="winners-list" style="margin-top:4px"><div class="small-muted" style="text-align:center">Aún no hay ganadores.</div></div>
+    <!-- PANEL IZQUIERDO: GANADORES -->
+    <aside class="mex-frame-small winners" id="winners-panel">
+      <h3 class="text-center" style="color: var(--verde); margin-top:0;">🏆 Ganadores Recientes</h3>
+      <div id="winners-list" style="min-height: 100px;">
+          <div class="text-center small-muted" style="padding: 20px; opacity: 0.6;">Esperando ganadores...</div>
+      </div>
     </aside>
 
-    <section class="mex-frame" id="players-section" style="min-height:420px;">
-      <h2 style="text-align:center;margin:0 0 8px 0">CARTAS DE JUGADORES ACTIVOS</h2>
-   
-      <div class="players-grid" id="players-area" style="margin-top:8px">
-        <div class="small-muted" style="padding:18px; text-align:center">Aún no hay jugadores.</div>
+    <!-- PANEL CENTRAL: JUGADORES -->
+    <section class="mex-frame" id="players-section">
+      <h2 class="text-center" style="color: var(--azul); margin-top:0;">JUGADORES ACTIVOS</h2>
+      <div class="players-grid" id="players-area">
+          <!-- Se llena con JS -->
       </div>
     </section>
 
-    <aside class="controls-panel" id="controls-panel">
-      
-      <div class="mex-frame-small" aria-label="Control de partida" id="control-partida" style="margin-top:0px"> 
- 
-        <h3>CONTROL DE PARTIDA</h3>
-        <div class="small-muted" style="margin-top:4px">Barajea, tira cartas o activa automático — selecciona modalidad</div>
+    <!-- PANEL DERECHO: CONTROLES -->
+    <aside class="controls-panel mex-frame-small" id="controls-panel">
+        <div id="control-partida"> 
+            <h3>🎮 CONTROL DE JUEGO</h3>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="select-modality" style="display:block; text-align:center; font-size:12px; color:#666; margin-bottom:5px;">Modalidad Actual:</label>
+                <select id="select-modality" class="input" style="text-align:center; font-weight:bold; font-size:16px;">
+                    <option value="4">4 Cartas</option>
+                    <option value="6">6 Cartas</option>
+                </select>
+            </div>
 
-        <div style="margin-top:8px; text-align:center;">
-          <select id="select-modality" style="padding:10px;border-radius:8px;border:1px solid #ddd;font-weight:800;">
-            <option value="4">4 cartas</option>
-            <option value="6">6 cartas</option>
-          </select>
+            <!-- CONTROLES NORMALES -->
+            <div id="game-controls-group" class="controls">
+                <button id="btn-shuffle" class="btn btn-blue w-full">🔀 BARAJEAR</button>
+                <div style="display:flex; gap:8px; width:100%;">
+                    <button id="btn-draw" class="btn btn-red" style="flex:1;">🃏 TIRAR</button>
+                    <button id="btn-auto" class="btn btn-green" style="flex:1;">🤖 AUTO</button>
+                </div>
+            </div>
+
+            <!-- BOTÓN DE REINICIO (SOLO AL GANAR) -->
+            <button id="btn-reset-win" class="btn btn-verde w-full hidden" style="background: var(--verde); padding: 15px; font-size: 18px; animation: pulse 2s infinite;">🔄 REINICIAR PARTIDA</button>
+
+            <div class="text-center mt-2" style="color:#666; font-size:13px;">
+                Cartas restantes: <strong id="deck-count" style="color:var(--rojo)">54</strong>
+            </div>
         </div>
 
-        <div class="controls" style="margin-top:8px">
-          <div id="game-controls">
-            <button id="btn-shuffle" class="btn btn-blue">BARAJEAR</button>
-    
-            <button id="btn-draw" class="btn btn-red">TIRAR CARTA</button>
-            <button id="btn-auto" class="btn btn-green">CARTAS AUTOMÁTICO</button>
-          </div>
-          <button id="btn-reset" class="btn btn-red hidden" style="width:100%;
-          padding:12px; font-size:18px;">REINICIAR PARTIDA</button>
+        <div style="margin-top:20px">
+            <h3 class="text-center" style="margin-bottom:10px; color:var(--azul)">CARTA EN JUEGO</h3>
+            <div id="current-card" class="current-card">
+                <!-- Carta actual -->
+            </div>
         </div>
 
-        <div style="text-align:center;margin-top:6px" class="small-muted">Cartas restantes: <span id="deck-count">54</span></div>
-      </div>
-
-      <div class="mex-frame-small" style="margin-top:8px">
-        <h3 style="text-align:center;margin:0">CARTA EN JUEGO</h3>
-        <div id="current-card" class="current-card" style="margin-top:6px">
-          <div class="small-muted">Esperando barajeo...</div>
+        <div style="margin-top:20px">
+            <h4 class="text-center" style="margin:0 0 10px 0; color:#999; font-size:14px;">ANTERIORES</h4>
+            <div id="last-cards" style="display:flex; gap:5px; justify-content:center; min-height:60px;"></div>
         </div>
-      </div>
-
-      <div class="mex-frame-small" style="margin-top:8px">
-       
-        <h3 style="text-align:center;margin:0">ÚLTIMAS 3 CARTAS</h3>
-        <div id="last-cards" class="last-cards" style="margin-top:6px; display:flex; gap:8px;
-        justify-content:center;"></div>
-      </div>
-
     </aside>
 
   </div> 
   
-  <section id="view-admin" class="mex-frame hidden" style="margin-top:8px; padding: 10px 8px;">
+  <!-- VISTA DE ADMINISTRACIÓN -->
+  <section id="view-admin" class="mex-frame hidden" style="margin-top:10px;">
+    <h2 style="color:var(--azul); margin-top:0; border-bottom:2px solid #eee; padding-bottom:10px;">⚙️ Administración de Caja</h2>
     
     <div class="admin-row">
+      <!-- CONFIG PRECIOS -->
       <div class="admin-col mex-frame-small">
-        <h3 style="margin:0 0 8px 0">Modalidades - Precio & Ganancia</h3>
-        <div class="price-grid" style="margin-top:4px">
-          <div class="price-box">
-            <div style="font-size:16px">4 Cartas</div>
-            <div style="display:flex; gap:6px; margin-top:6px;">
-              <input id="price4" class="input" type="number" value="10" min="1">
-              <input id="profit4" class="input" type="number" value="2" min="0">
+        <h3 style="margin-top:0; color:var(--verde)">💲 Configuración de Precios</h3>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div>
+                <label class="font-bold">4 Cartas:</label>
+                <div style="display:flex; gap:5px; align-items:center">
+                    <input id="price4" class="input" type="number" placeholder="Precio" title="Precio al público">
+                    <input id="profit4" class="input" type="number" placeholder="Ganancia" title="Ganancia de la casa">
+                </div>
             </div>
-            <div class="small-muted" style="margin-top:4px">Precio • Ganancia</div>
-          </div>
-          <div class="price-box">
-            <div style="font-size:16px">6 Cartas</div>
-            <div style="display:flex; gap:6px; margin-top:6px;">
-              <input id="price6" class="input" type="number" value="12" min="1">
-              <input id="profit6" class="input" type="number" value="3" min="0">
+            <div>
+                <label class="font-bold">6 Cartas:</label>
+                <div style="display:flex; gap:5px; align-items:center">
+                    <input id="price6" class="input" type="number" placeholder="Precio">
+                    <input id="profit6" class="input" type="number" placeholder="Ganancia">
+                </div>
             </div>
-            <div class="small-muted" style="margin-top:4px">Precio • Ganancia</div>
-          </div>
         </div>
-        <div style="display:flex; gap:8px; margin-top:10px;">
-          <button id="save-prices" class="btn btn-green">Guardar</button>
-          <button id="reset-prices" class="btn btn-muted">Reset</button>
-        </div>
+        <button id="save-prices" class="btn btn-blue w-full mt-2">Guardar Precios</button>
       </div>
 
+      <!-- REGISTRO JUGADOR -->
       <div class="admin-col mex-frame-small">
-        <h3 style="margin:0 0 8px 0">Registrar Jugador (Caja)</h3>
-        <div style="display:grid; gap:8px; margin-top:4px">
-          <input id="input-name" placeholder="Nombre completo" class="input">
-          <input id="input-cell" placeholder="Celular (ej. 5512345678)" class="input">
-          <input id="input-clabe" placeholder="CLABE / Cuenta" class="input">
-          <input id="input-budget" placeholder="Ingresa presupuesto (Auto-Calcula)" class="input" type="number" min="0" value="">
-          <div style="display:flex; gap:4px;">
+        <h3 style="margin-top:0; color:var(--rojo)">📝 Registrar Jugador</h3>
+        <input id="input-name" placeholder="Nombre Completo" class="input">
+        <div style="display:flex; gap:10px;">
+            <input id="input-cell" placeholder="Celular (WhatsApp)" class="input" style="flex:1">
+            <input id="input-clabe" placeholder="CLABE / Cuenta Destino" class="input" style="flex:1">
+        </div>
+        
+        <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin:10px 0;">
+            <label style="font-size:13px; font-weight:bold; color:var(--azul)">🔢 Calculadora Rápida:</label>
+            <input id="input-budget" placeholder="Ingresa Presupuesto MXN" class="input" type="number" min="0">
+            <div id="calc-info" style="font-size:13px; color:#555; margin-bottom:8px; min-height:20px;">Ingresa un presupuesto para ver opciones.</div>
+        </div>
+
+        <div style="display:flex; gap:10px; align-items: flex-end;">
             <div style="flex:1">
-              <label class="small-muted">4 cartas - Cantidad</label>
-              <input id="qty4" type="number" min="0" value="0" class="input">
+                <label style="font-size:12px;">Cant. 4 Cartas</label>
+                <input id="qty4" type="number" min="0" value="0" class="input text-center">
             </div>
             <div style="flex:1">
-              <label class="small-muted">6 cartas - Cantidad</label>
-              <input id="qty6" type="number" min="0" value="0" class="input">
+                <label style="font-size:12px;">Cant. 6 Cartas</label>
+                <input id="qty6" type="number" min="0" value="0" class="input text-center">
             </div>
-          </div>
-          <div style="display:flex; gap:8px;">
-            <button id="btn-register" class="btn btn-green">Registrar</button>
-          </div>
-          <div id="calc-info" class="small-muted"></div>
+            <button id="btn-register" class="btn btn-green" style="flex:1.5; height: 42px;">✅ REGISTRAR</button>
         </div>
       </div>
     </div>
 
-    <div style="margin-top:8px" class="mex-frame-small">
-      <div style="display:flex; flex-wrap: wrap; gap: 8px; align-items:center; justify-content:space-between; margin-bottom:8px">
-          <div style="font-weight:900">Administración de Jugadores / Compras</div>
-          <div class="admin-actions-top">
-              <button id="btn-export" class="btn btn-blue" title="Generar PDF (Con logo)">📄 Generar PDF</button>
-              <button id="btn-reset-day" class="btn btn-red" title="Reiniciar Día">🧹 Reiniciar Día</button>
-          </div>
-      </div>
-
-      <div style="display:flex; gap:8px; align-items:center; justify-content:flex-start;">
-          <div style="font-weight:700; font-size:14px;">Filtro:</div>
-          <div class="admin-actions">
-            <button id="filter-all" class="filter-btn filter-all filter-btn active-all">VER TODO</button>
-            <button id="filter-4" class="filter-btn">4 CARTAS</button>
-            <button id="filter-6" class="filter-btn">6 CARTAS</button>
-          </div>
-      </div>
-      
-      <div class="table-wrap" style="margin-top:6px">
-        <table style="width:100%; border-collapse:collapse;">
-          <thead style="background:#f8f8ff; position:sticky; top:0">
-            <tr>
-              <th style="text-align:left;padding:6px">ID</th>
-              <th style="text-align:left;padding:6px">Jugador</th>
-              <th style="padding:6px">Modalidad</th>
-              <th style="padding:6px">Partidas</th>
-              <th style="padding:6px">En Juego</th>
-              <th style="padding:6px">Casa</th>
-              <th style="padding:6px">Estado</th>
-              <th style="padding:6px">Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="players-table">
-            <tr>
-              <td colspan="8" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <!-- TABLA DE JUGADORES -->
+    <div class="mex-frame-small" style="margin-top:15px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
+            <div style="display:flex; gap:5px; align-items:center;">
+                <strong>Filtrar:</strong>
+                <button class="toggle-btn" id="filter-all" style="background:#eee">Todos</button>
+                <button class="toggle-btn" id="filter-4" style="background:#eee">4 Cartas</button>
+                <button class="toggle-btn" id="filter-6" style="background:#eee">6 Cartas</button>
+            </div>
+            <div style="display:flex; gap:10px;">
+                 <button id="btn-export" class="btn btn-blue">📄 Reporte PDF</button>
+                 <button id="btn-reset-day" class="btn btn-red">🗑️ BORRAR DÍA</button>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table id="players-table-el">
+                <thead>
+                    <tr><th>Folio</th><th>Jugador</th><th>Mod.</th><th>Restantes</th><th>En Juego</th><th>Casa</th><th>Estado</th><th>Acción</th></tr>
+                </thead>
+                <tbody id="players-table-body">
+                    <!-- Llenado con JS -->
+                </tbody>
+            </table>
+        </div>
     </div>
   </section>
   
-  <footer style="text-align:center; margin-top:8px; padding-bottom:8px;" class="small-muted">Coloca <strong>logo_1_entrada.png</strong> en la raíz y la carpeta <strong>Cartas_baraja_loteria/</strong> con las 54 imágenes.</footer>
+</div> <!-- Fin Container -->
+
+<!-- MODALES -->
+<div class="modal-back" id="modal-player">
+    <div class="modal">
+        <button class="close-modal-x" id="close-player-modal">×</button>
+        <h3 id="modal-player-title" style="color:var(--azul); margin-top:0;">Detalle de Jugador</h3>
+        <div id="modal-player-body"></div>
+        <div id="modal-player-actions" class="mt-2" style="display:flex; flex-direction:column; gap:8px;">
+            <!-- Acciones dinámicas (copiar clabe, marcar pagado, etc) -->
+        </div>
+    </div>
 </div>
 
-<div id="modal-player" class="hidden"><div class="modal-back" id="modal-player-back"><div class="modal"><button id="modal-close-x" style="position:absolute;right:10px;top:8px;border:none;background:transparent;font-size:18px;cursor:pointer">✖</button><h3 id="modal-player-name">Jugador</h3><div id="modal-body"></div><div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px"><button id="modal-close" class="btn btn-muted">Cerrar</button></div></div></div></div>
-<div id="modal-winner" class="hidden"><div class="modal-back" id="modal-winner-back"><div class="modal" style="text-align:center"><button id="winner-close" style="position:absolute; right:10px; top:8px; border:none; background:transparent; font-size:20px; cursor:pointer;">❌</button><div style="font-size:28px; font-weight:900; color:var(--rojo); margin-bottom:6px" id="winner-title">🎉 ¡FELICIDADES!</div><div id="winner-body" style="font-size:18px; font-weight:700; margin-bottom:10px;"></div><div style="margin-bottom:6px" id="winner-sub"></div><div style="display:flex; gap:8px; justify:center;"><button id="winner-ok" class="btn btn-blue">Aceptar</button></div></div></div></div>
-<div id="modal-winner-detail" class="hidden"><div class="modal-back" id="modal-winner-detail-back"><div class="modal"><button id="winner-detail-close-x" style="position:absolute;right:10px;top:8px;border:none;background:transparent;font-size:24px;cursor:pointer">❌</button><h2 style="margin:0 0 10px 0; color:var(--verde)">¡LOTERÍA GANADA!</h2><h3 style="margin:0 0 10px 0; font-weight:900" id="winner-detail-player-name"></h3><div style="font-weight:700; color:var(--rojo);" id="winner-detail-card-name"></div><div id="winner-detail-player-cards"></div><div style="margin-top:20px"><button id="winner-detail-ok" class="btn btn-blue" style="width:200px">Cerrar Detalle</button></div></div></div></div>
+<div class="modal-back" id="modal-winner">
+    <div class="modal text-center" style="border: 5px solid var(--accent1);">
+        <h1 style="color:var(--rojo); font-size: 36px; margin:10px 0;">🎉 ¡LOTERÍA! 🎉</h1>
+        <div id="winner-body" style="font-size:20px; margin-bottom:20px;"></div>
+        <button id="btn-winner-ok" class="btn btn-green" style="font-size:20px; padding:15px 30px;">¡VER GANADORES!</button>
+    </div>
+</div>
 
-<div id="shuffle-overlay" class="shuffle-overlay"></div>
+<div class="modal-back" id="modal-winner-detail">
+    <div class="modal text-center">
+        <button class="close-modal-x" id="close-winner-detail">×</button>
+        <h2 style="color:var(--verde); margin-top:0;">👑 ¡TENEMOS GANADOR!</h2>
+        <h3 id="wd-player-name" style="color:var(--azul)"></h3>
+        <div id="wd-cards" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:20px 0;"></div>
+        <button id="btn-wd-close" class="btn btn-blue">Cerrar y Continuar</button>
+    </div>
+</div>
+
+<!-- OVERLAYS -->
+<div id="shuffle-overlay" class="shuffle-overlay">
+    <div style="font-size: 40px; color:var(--rojo); font-weight:900; margin-bottom:20px;">¡BARAJEANDO!</div>
+    <!-- Aquí se inyectan cartas animadas -->
+</div>
 <canvas id="confetti-canvas"></canvas>
 
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
-/* index_v9.8_final - code block */
-const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
-const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg",49:"49 el pino-min.jpg"};
-const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
+/*** GANA YA! v9.14 Core Logic ***/
 
-// Se cambia el nombre de Kpas a Kdig (drawn in game) para mayor claridad
-const Kp='ganya_v90_prices', Kg='ganya_v90_game', Kpu='ganya_v90_purchases', Ktx='ganya_v90_tx', Kw='ganya_v90_winners', Kdig='ganya_v90_dig', Kmod='ganya_v90_mod';
-const Kid='ganya_v90_id_counter'; 
-const defaultsPrices=()=>({price4:10,profit4:2,price6:12,profit6:3});
-const defaultsGame=()=>({deck:Array.from({length:54},(_,i)=>i+1),drawn:[],current:0,pending:[]});
+// CONFIG & CONSTANTS
+const CARD_PATH = 'Cartas_baraja_loteria/'; 
+const CARD_MAP = {1:"1 el gallo",2:"2 el diablito",3:"3 la dama",4:"4 el catrin",5:"5 el paraguas",6:"6 la sirena",7:"7 la escalera",8:"8 la botella",9:"9 el barril",10:"10 arbol",11:"11 melon",12:"12 el valiente",13:"13 el gorrito",14:"14 la muerte",15:"15 la pera",16:"16 la bandera",17:"17 el bandolon",18:"18 el violoncello",19:"19 la garza",20:"20 el pajaro",21:"21 la mano",22:"22 la bota",23:"23 la luna",24:"24 el cotorro",25:"25 el borracho",26:"26 el negrito",27:"27 el corazon",28:"28 la sandia",29:"29 el tambor",30:"30 el camaron",31:"31 las jaras",32:"32 el musico",33:"33 la araña",34:"34 el soldado",35:"35 la estrella",36:"36 el cazo",37:"37 el mundo",38:"38 el apache",39:"39 el nopal",40:"40 el alacran",41:"41 la rosa",42:"42 la calavera",43:"43 la campana",44:"44 el cantarito",45:"45 el venado",46:"46 el sol",47:"47 la corona",48:"48 la chalupa",49:"49 el pino",50:"50 el pescado",51:"51 la palma",52:"52 la maceta",53:"53 el arpa",54:"54 la rana"};
+const getCardUrl = id => `${CARD_PATH}${CARD_MAP[id] || id}.jpg`;
+const getCardName = id => (CARD_MAP[id] || `Carta ${id}`).replace(/^\d+\s*/, '').toUpperCase();
 
-let prices = load(Kp) || defaultsPrices();
-let game = load(Kg) || defaultsGame();
-let purchases = load(Kpu) || [];
-let tx = load(Ktx) || [];
-let winners = load(Kw) || [];
-let drawnInGame = load(Kdig) || []; // Nombre de variable actualizado
-let currentMode = Number(localStorage.getItem(Kmod) || 4);
-if(currentMode===8) currentMode=4; 
-let currentIdCounter = Number(localStorage.getItem(Kid) || 233); 
-
-let isAuto=false, autoInterval=null, animShuffling=false;
-let audioCtx=null;
-try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ audioCtx=null; }
-
-function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
-function load(k){ try{ const v=localStorage.getItem(k); return v? JSON.parse(v): null;}catch(e){return null;} }
-function saveAll(){ save(Kp,prices); save(Kg,game); save(Kpu,purchases); save(Ktx,tx); save(Kw,winners); save(Kdig,drawnInGame); localStorage.setItem(Kmod,String(currentMode)); localStorage.setItem(Kid,String(currentIdCounter)); }
-
-function getNextPurchaseId() {
-    currentIdCounter += 1;
-    localStorage.setItem(Kid, String(currentIdCounter));
-    return `GanaYA!-` + String(currentIdCounter).padStart(4, '0');
-}
-
-function uuid(){ return 'id-'+Math.random().toString(36).slice(2,10); } 
-function shuffle(a){ const arr=a.slice();
-for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]] } return arr; }
-function formatMoney(n){ return '$'+Number(n||0).toFixed(2); }
-function cardName(id){ 
-    let baseName = CARD_NAME_MAP[id] ? CARD_NAME_MAP[id].replace(/^\d+\s*/,'').replace(/-min\.jpg$/,'').replace(/\.min\.jpg$/,'') : ('Carta '+id);
-    return baseName.replace(/_/g, ' ').replace(/\.jpg/i, '').trim(); 
-}
-
-function playShuffleSound(){ if(!audioCtx) return; const now=audioCtx.currentTime; const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*0.22,audioCtx.sampleRate); const d=buf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length); const s=audioCtx.createBufferSource(); s.buffer=buf;
-const g=audioCtx.createGain();g.gain.setValueAtTime(0.04,now);s.connect(g);g.connect(audioCtx.destination);s.start(0); }
-
-function playWinSound(){ if(!audioCtx) return; const now=audioCtx.currentTime; const osc=audioCtx.createOscillator(); osc.type='triangle'; const gain=audioCtx.createGain(); gain.gain.setValueAtTime(0.0,now); gain.gain.linearRampToValueAtTime(0.3,now+0.05); gain.gain.exponentialRampToValueAtTime(0.0001,now+1.2); osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(500,now); osc.frequency.exponentialRampToValueAtTime(800,now+0.3); osc.frequency.exponentialRampToValueAtTime(1000,now+0.8); osc.start(now); osc.stop(now+1.2); }
-
-let confettiInstance = null;
-function startConfettiFullScreen(){
-    const canvas=document.getElementById('confetti-canvas');
-    if(!canvas) return;
-    canvas.style.display='block';
-    if(confettiInstance){ confettiInstance.clear(); }
-    confettiInstance=confetti.create(canvas,{ resize:true, useWorker:true });
-    const defaults = { origin: { y: 0.7 }, zIndex: 3000 };
-    confettiInstance({ ...defaults, particleCount: 50, spread: 150, startVelocity: 40, scalar: 0.8 });
-    confettiInstance({ ...defaults, particleCount: 40, spread: 90, startVelocity: 60, scalar: 1.0 });
-}
-
-function stopConfettiFullScreen(){
-    const canvas=document.getElementById('confetti-canvas');
-    if(canvas) canvas.style.display='none';
-    if(confettiInstance){ confettiInstance.clear(); confettiInstance=null; }
-}
-
-function stopAuto(){
-    if(autoInterval){ clearInterval(autoInterval); autoInterval=null; }
-    isAuto=false;
-    const btn=document.getElementById('btn-auto');
-    if(btn){ btn.textContent='CARTAS AUTOMÁTICO'; btn.classList.remove('btn-muted'); btn.classList.add('btn-green'); }
-    disableControls(false); 
-}
-function startAuto(){
-    if(animShuffling || game.winnerPending) return;
-    isAuto=true;
-    const btn=document.getElementById('btn-auto');
-    if(btn){ btn.textContent='AUTOMÁTICO ACTIVO'; btn.classList.remove('btn-green'); btn.classList.add('btn-muted'); }
-    autoInterval=setInterval(drawOne, 2500);
-    disableControls(true);
-    document.getElementById('btn-auto').disabled = false;
-}
-
-function disableControls(disable){
-    document.getElementById('btn-shuffle').disabled = disable;
-    document.getElementById('btn-draw').disabled = disable;
-    document.getElementById('select-modality').disabled = disable;
-    document.getElementById('btn-reset').disabled = disable;
-    if(disable){ document.getElementById('btn-auto').disabled = true; }
-}
-
-function renderPlayerCard(p){
-    let html=`<div class="player-card" tabindex="0" data-player-id="${p.id}">`;
-    html+=`<div class="player-name">${escapeHtml(p.playerName)}</div>`;
-    html+=`<div class="small-muted">${p.modality} cartas - ${p.gamesLeft||0} restantes</div>`;
-    html+=`<div class="player-cards" style="display:grid;grid-template-columns:repeat(${p.modality===4?2:3},1fr);gap:8px;justify-items:center;">`;
-    (p.card||[]).forEach(cid=>{
-        const isMarked = (p.markedCards||[]).includes(cid);
-        // Usa drawnInGame (anteriormente cartasPasadas) para dimming
-        const passed = drawnInGame.includes(cid) && !isMarked; 
-        const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : '';
-        html+=`<div class="card-thumb ${passed?'passed':''}" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
-    });
-    html+='</div></div>';
-    return html;
-}
-
-function renderAll(){
-    const isAdminView = !document.getElementById('view-admin').classList.contains('hidden');
-    const mainGridEl = document.getElementById('main-grid');
-    
-    if (isAdminView) {
-        if (mainGridEl) mainGridEl.style.display = 'none';
-        document.getElementById('btn-view-admin').classList.add('toggle-play');
-        document.getElementById('btn-view-admin').classList.remove('toggle-admin');
-        document.getElementById('btn-view-play').classList.remove('toggle-play');
-        document.getElementById('btn-view-play').classList.add('toggle-admin');
-    } else {
-        if (mainGridEl) mainGridEl.style.display = 'grid';
-        document.getElementById('btn-view-play').classList.add('toggle-play');
-        document.getElementById('btn-view-play').classList.remove('toggle-admin');
-        document.getElementById('btn-view-admin').classList.remove('toggle-play');
-        document.getElementById('btn-view-admin').classList.add('toggle-admin');
-    }
-
-    let potAmount = 0;
-    let potLabelText = '💰 Bolsa';
-    purchases.forEach(p => initializePurchaseData(p));
-    
-    if (isAdminView) {
-        const totalHouseProfit = purchases.reduce((s, p) => s + (p.casa || 0), 0);
-        potAmount = totalHouseProfit;
-        potLabelText = '💰 Casa';
-    } else {
-        const activeForPot = purchases.filter(p=> (p.state==='JUGANDO' || p.state==='POR PAGAR') && (p.gamesLeft||0)>0 && p.modality === currentMode );
-        const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
-        potAmount = totalEnJuego;
-        potLabelText = '💰 Bolsa';
-    }
-
-    animateBolsa(potAmount);
-    const bolsaLabelEl = document.getElementById('bolsa-label');
-    if(bolsaLabelEl) bolsaLabelEl.textContent = potLabelText;
-    
-    const deckCount=document.getElementById('deck-count');
-    if(deckCount) deckCount.textContent=game.deck.length;
-    
-    const area=document.getElementById('players-area');
-    const active = purchases.filter(p=> (p.gamesLeft||0)>0 && (p.state==='JUGANDO' || p.state==='POR PAGAR') && p.modality===currentMode);
-    const maxPlayersInRow = 5; 
-    let numActive = active.length;
-    let numSimulated = 0;
-    
-    if(numActive < maxPlayersInRow) { 
-        numSimulated = maxPlayersInRow - numActive; 
-    }
-    
-    let finalHtml = active.map(p=> renderPlayerCard(p)).join('');
-
-    if(numSimulated > 0) {
-        const gridCols = currentMode === 4 ? 2 : 3;
-        const numPattern = currentMode;
-        let emptyHtml = '';
-        for(let i=0; i<numSimulated; i++) {
-            let cardSlotsHtml = '';
-            for(let j=0; j<numPattern; j++) {
-                cardSlotsHtml += `<div class="card-thumb back-pattern"></div>`;
-            }
-            emptyHtml += `<div class="player-card simulated"> 
-                <div class="player-name small-muted">&nbsp;</div> 
-                <div class="player-cards" style="display:grid;grid-template-columns:repeat(${gridCols},1fr);gap:8px;justify-items:center;margin-top:10px;"> 
-                    ${cardSlotsHtml} 
-                </div> 
-            </div>`;
-        }
-        finalHtml += emptyHtml;
-    } 
-    
-    if (area) area.innerHTML = finalHtml || '<div class="small-muted" style="padding:18px; text-align:center">Aún no hay jugadores.</div>';
-    
-    const cur=document.getElementById('current-card');
-    if(game.current && cur) cur.innerHTML=`<div style="width:160px;height:220px;background-image:url('${cardImageUrl(game.current)}');background-size:contain;background-repeat:no-repeat;background-position:center;"></div>`; 
-    else if(cur) cur.innerHTML='<div class="small-muted">Esperando barajeo...</div>';
-    
-    const last=(game.drawn||[]).slice(-3).reverse(); 
-    const lastEl=document.getElementById('last-cards'); 
-    if(lastEl) lastEl.innerHTML = last.length? 
-        last.map(id=> `<div style="width:50px;height:70px;background-image:url('${cardImageUrl(id)}');background-size:cover;border-radius:6px;box-shadow:0 4px 10px rgba(0,0,0,0.1)"></div>`).join('') : '<div class="small-muted">...</div>';
-
-    const currentFilter = document.querySelector('.filter-btn.active-4') ? 4 : (document.querySelector('.filter-btn.active-6') ? 6 : null);
-    renderPlayersTable(currentFilter);
-    renderWinnersList();
-    updateCalculatorInfo();
-}
-
-function renderWinnersList(){
-    const listEl=document.getElementById('winners-list');
-    const sortedWinners = winners.slice().sort((a,b)=> b.ts-a.ts).slice(0,5);
-    if(!listEl) return;
-    if(!sortedWinners.length){ listEl.innerHTML='<div class="small-muted" style="text-align:center">Aún no hay ganadores.</div>'; return; }
-
-    listEl.innerHTML=sortedWinners.map(w=>{
-        const player=purchases.find(p=>p.id===w.purchaseId);
-        if(!player) return ''; 
-        const badgeClass = w.paid ? 'badge-pagado' : 'badge-porpagar';
-        const cardNameText = cardName(w.cardId);
-        return `<div style="padding:6px 0; border-bottom:1px solid #f0f0f0; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="showWinnerDetailModal('${w.purchaseId}','${w.cardId}')">
-            <div style="font-weight:700; font-size:13px; color:#111;">${escapeHtml(player.playerName)}</div>
-            <div style="font-size:12px; color:#555; display:flex; gap:6px; align-items:center;">
-                <div class="badge ${badgeClass}">${w.paid ? 'PAGADO' : 'PENDIENTE'}</div>
-                <div style="font-size:11px;">(${cardNameText})</div>
-            </div>
-        </div>`;
-    }).join('');
-}
-
-function renderPlayersTable(filter){
-    const tbody=document.getElementById('players-table');
-    const list = purchases.slice().filter(p=> !filter || p.modality===filter);
-    list.forEach(p => initializePurchaseData(p));
-    if(!tbody) return;
-    if(!list.length){ tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:18px;color:#888">No hay operaciones.</td></tr>'; return; }
-    
-    tbody.innerHTML = list.map(p=>`<tr><td style="padding:6px">${p.id}</td><td style="padding:6px">${escapeHtml(p.playerName)}<div class="small-muted">${escapeHtml(p.cell||'—')}</div></td><td style="padding:6px;text-align:center">${p.modality}</td><td style="padding:6px;text-align:center">${p.gamesLeft||0}</td><td style="padding:6px;text-align:center">${formatMoney(p.enJuego||0)}</td><td style="padding:6px;text-align:center">${formatMoney(p.casa||0)}</td><td style="padding:6px;text-align:center">${p.state||'JUGANDO'}</td><td style="padding:6px;text-align:center"><button class="btn btn-blue" onclick="openPurchaseDetail('${p.id}')">Detalle</button></td></tr>`).join('');
-}
-
-function openPurchaseDetail(id){
-    const p=purchases.find(x=>x.id===id);
-    if(!p) return alert('No encontrado');
-    initializePurchaseData(p);
-    const modal=document.getElementById('modal-player');
-    document.getElementById('modal-player-name').textContent=`${p.playerName} • ${p.cell||''} • ${p.id}`;
-    
-    const pendingWin = winners.some(w => w.purchaseId === id && !w.paid);
-
-    const cards=(p.card||[]).map(cid=>{ 
-        const isMarked = (p.markedCards||[]).includes(cid); 
-        const passed = drawnInGame.includes(cid) && !isMarked;
-        const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : ''; 
-        return `<div class="card-thumb ${passed?'passed':''}" style="width:100px;height:150px;background-image:url('${cardImageUrl(cid)}');display:inline-block;margin-right:8px;position:relative">${sticker}</div>`; 
-    }).join('');
-    
-    let buttonsHtml = `<button class="btn btn-blue" onclick="printPurchase('${p.id}');">Tomar captura / Imprimir</button>`;
-    
-    if (pendingWin) {
-        buttonsHtml += `<button class="btn btn-green" onclick="copyClabe('${p.id}');">Copiar CLABE</button>`;
-        buttonsHtml += `<button class="btn btn-green" onclick="markPaidById('${p.id}');">Marcar Pagado & Enviar WhatsApp</button>`;
-    } else if (p.state === 'JUGANDO' || p.state === 'FINALIZADO') {
-        buttonsHtml += `<button class="btn btn-blue" onclick="resendRegistrationWhatsapp('${p.id}');">Reenviar registro WhatsApp</button>`;
-    }
-
-    const details = `
-        <div><strong>Modalidad:</strong> ${p.modality} cartas</div>
-        <div><strong>Total Pagado:</strong> ${formatMoney(p.totalPaid)}</div>
-        <div><strong>Monto en Juego:</strong> ${formatMoney(p.enJuego||0)}</div>
-        <div><strong>Ganancia Casa:</strong> ${formatMoney(p.casa||0)}</div>
-        <div><strong>Partidas restantes:</strong> ${p.gamesLeft||0}</div>
-        <div style="margin-top:8px"><strong>Cartas asignadas:</strong></div>
-        <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:8px;">${cards}</div>
-        <div style="margin-top:8px"><strong>CLABE / Cuenta:</strong> ${escapeHtml(p.clabe||'')}</div>
-        <div style="margin-top:8px"><strong>Estado:</strong> ${p.state||'JUGANDO'}</div>
-        <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
-            ${buttonsHtml}
-        </div>`;
-    document.getElementById('modal-body').innerHTML = details;
-    modal.classList.remove('hidden');
-    modal.style.display='block';
-    document.getElementById('modal-close').onclick=closeGroupModal;
-    document.getElementById('modal-close-x').onclick=closeGroupModal;
-}
-
-function copyClabe(id){
-    const p=purchases.find(x=>x.id===id);
-    if(!p) return; 
-    const text = p.clabe||'';
-    if(!text) return alert('No hay CLABE registrada');
-    navigator.clipboard.writeText(text).then(()=>alert('CLABE copiada al portapapeles.'));
-}
-
-window.resendRegistrationWhatsapp = function(id){
-    const p=purchases.find(x=>x.id===id);
-    if(!p) return; 
-
-    const messageParts = [];
-    const cardNames = (p.card||[]).map(cardName).join(', ');
-    messageParts.push(`${p.id} Cartas asignadas: ${cardNames}`);
-    
-    const finalMsg = `¡Bienvenido a GANA YA! 🎉 Tus partidas han sido registradas:\n\n${messageParts.join('\n')}\n\n¡Mucha suerte! 🎴`;
-    window.open(`https://wa.me/${p.cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
+// STATE MANAGEMENT
+const LS_KEYS = { PRICES:'gy_prices', GAME:'gy_game', PURCHASES:'gy_purchases', WINNERS:'gy_winners', ID:'gy_id_ctr', MODE:'gy_mode' };
+let APP = {
+    prices: load(LS_KEYS.PRICES) || {p4:10, g4:2, p6:12, g6:3},
+    game: load(LS_KEYS.GAME) || {deck:createDeck(), drawn:[], current:null, state:'READY'}, 
+    purchases: load(LS_KEYS.PURCHASES) || [],
+    winners: load(LS_KEYS.WINNERS) || [],
+    mode: parseInt(localStorage.getItem(LS_KEYS.MODE) || 4),
+    idCounter: parseInt(localStorage.getItem(LS_KEYS.ID) || 100),
+    autoInterval: null
 };
 
-function printPurchase(id){
-    const p=purchases.find(x=>x.id===id);
-    if(!p) return alert('No encontrado');
+// UTILS
+function load(k){ try{return JSON.parse(localStorage.getItem(k))}catch(e){return null} }
+function save(){ 
+    localStorage.setItem(LS_KEYS.PRICES, JSON.stringify(APP.prices));
+    localStorage.setItem(LS_KEYS.GAME, JSON.stringify(APP.game));
+    localStorage.setItem(LS_KEYS.PURCHASES, JSON.stringify(APP.purchases));
+    localStorage.setItem(LS_KEYS.WINNERS, JSON.stringify(APP.winners));
+    localStorage.setItem(LS_KEYS.MODE, APP.mode);
+    localStorage.setItem(LS_KEYS.ID, APP.idCounter);
+}
+function createDeck(){ return Array.from({length:54},(_,i)=>i+1); }
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]} return arr; }
+function fmtMoney(n){ return '$'+Number(n||0).toFixed(2); }
+function playSound(id) { const el = document.getElementById(id); if(el) { el.currentTime = 0; el.play().catch(e=>console.log('Audio error:',e)); } }
 
-    const html = `<html>
-        <head>
-            <title>Ticket ${p.id}</title>
-            <style>
-                body{ font-family:sans-serif; padding:12px; }
-                .card-thumb{ width:74px; height:106px; border-radius:8px; background-size:cover; background-position:center; position:relative; display:inline-block; margin:4px;}
-                .sticker{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
-                .sticker img{ width:42px; height:42px; filter:none; }
-                .card-thumb.passed{ filter:grayscale(1) brightness(0.6); } /* CSS para dimming en impresión */
-            </style>
-        </head>
-        <body>
-            <div style="text-align:center;">
-                <img src="logo_1_entrada.png" style="width:80px;height:80px;object-fit:contain"/>
-                <h2>¡GANA YA!</h2>
-                <p><strong>Lotería Interactiva Mexicana</strong></p>
-            </div>
-            <hr>
-            <h3>Detalle de Compra #${p.id}</h3>
-            <p><strong>Jugador:</strong> ${escapeHtml(p.playerName)} (${escapeHtml(p.cell||'—')})</p>
-            <p><strong>Modalidad:</strong> ${p.modality} cartas</p>
-            <p><strong>Partidas:</strong> ${p.gamesLeft || 0}</p>
-            <p><strong>Total Pagado:</strong> ${formatMoney(p.totalPaid)}</p>
-            <p><strong>En Juego:</strong> ${formatMoney(p.enJuego || 0)}</p>
-            <p><strong>Ganancia Casa:</strong> ${formatMoney(p.casa || 0)}</p>
-            <hr>
-            <h4>Cartas Asignadas (${p.card.length})</h4>
-            <div style="text-align:center;">
-            ${(p.card||[]).map(cid=>{
-                const isMarked = (p.markedCards||[]).includes(cid);
-                const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : ''; 
-                return `<div class="card-thumb" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
-            }).join('')}
-            </div>
-            <hr>
-            <p style="text-align:center; font-size:10px;">ID de registro: ${p.id}<br>Fecha: ${new Date(p.createdAt).toLocaleString()}</p>
-        </body>
-    </html>`;
-
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.print();
+// CORE GAME FUNCTIONS
+function drawCard() {
+    if(APP.game.state === 'WINNER') return;
+    if(APP.game.deck.length === 0) { alert('¡Se acabaron las cartas! Barajea de nuevo.'); stopAuto(); return; }
+    
+    playSound('snd-flip');
+    const card = APP.game.deck.shift();
+    APP.game.drawn.push(card);
+    APP.game.current = card;
+    APP.game.state = 'PLAYING';
+    
+    checkWinners(card);
+    save();
+    renderUI();
 }
 
-function initializePurchaseData(p){
-    // Asegura que las propiedades existan para cálculos
-    p.price = p.price || (p.modality === 4 ? prices.price4 : prices.price6);
-    p.profit = p.profit || (p.modality === 4 ? prices.profit4 : prices.profit6);
-    p.enJuego = p.price - p.profit;
-    p.casa = p.profit;
-    p.state = p.state || 'JUGANDO'; 
-    p.markedCards = p.markedCards || [];
-    p.gamesLeft = p.gamesLeft === undefined ? 1 : p.gamesLeft;
-    p.totalPaid = p.totalPaid || p.price;
-}
-
-function animateBolsa(targetAmount){
-    const el=document.getElementById('bolsa-amount');
-    if(!el) return;
-    let currentAmount=parseFloat(el.textContent.replace('$', '') || 0);
-    const duration=800;
-    let start=null;
-
-    function step(timestamp){
-        if(!start) start=timestamp;
-        const progress=timestamp-start;
-        const percentage=Math.min(progress/duration, 1);
-        const nextAmount=currentAmount+(targetAmount-currentAmount)*percentage;
-        el.textContent=formatMoney(nextAmount);
-        if(percentage<1){ window.requestAnimationFrame(step); }
-    }
-    window.requestAnimationFrame(step);
-}
-
-function animateShuffle(){
-    if(animShuffling) return;
-    stopAuto();
-    animShuffling=true;
-    disableControls(true);
-
-    const overlay=document.getElementById('shuffle-overlay');
-    overlay.classList.add('visible');
-    overlay.style.display='flex';
-    overlay.innerHTML='';
-    const cardIds = game.deck.slice().sort(()=>Math.random()-0.5).slice(0, 10);
-    const cards=[];
-
-    cardIds.forEach(id=>{
-        const el=document.createElement('div');
-        el.className='shuffle-card';
-        el.style.backgroundImage=`url('${cardImageUrl(id)}')`;
-        el.style.left='50%';
-        el.style.top='50%';
-        el.style.opacity=0;
-        overlay.appendChild(el);
-        cards.push({id,el});
+function checkWinners(lastCard) {
+    let winnersFound = [];
+    APP.purchases.forEach(p => {
+        if(p.state !== 'JUGANDO' || p.gamesLeft < 1) return;
+        if(p.cards.includes(lastCard) && !p.marked.includes(lastCard)) {
+            p.marked.push(lastCard);
+        }
+        if(p.marked.length === p.modality) {
+            winnersFound.push(p);
+        }
     });
 
-    cards.forEach((c,idx)=>{
-        setTimeout(()=>{ 
-            c.el.style.transition='transform 1.5s ease, opacity 1.5s ease';
-            c.el.style.transform = `translate(${(Math.random()*900-450)}px, ${(Math.random()*360-180)}px) rotate(${Math.random()*90-45}deg) scale(0.85)`;
-            c.el.style.opacity = 1; 
-            playShuffleSound();
-        }, idx * 60);
-    });
-
-    setTimeout(()=>{
-        cards.forEach((c,ii)=>{ 
-            c.el.style.transition='transform 1.5s ease-in-out, opacity 1.5s ease';
-            c.el.style.transform = `translate(${(ii - cards.length/2) * 2}px, -20px) rotate(${(Math.random()*8)-4}deg) scale(0.98)`;
-        });
-        playShuffleSound();
-    }, 2000);
-
-    setTimeout(()=>{
-        cards.forEach((c,ii)=>{ 
-            c.el.style.transition='transform 0.8s ease, opacity 0.8s ease, background-image 0.2s';
-            c.el.style.backgroundImage = `linear-gradient(#ddd,#bbb)`;
-            c.el.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><img src="logo_1_entrada.png" style="width:80px;height:80px;opacity:.95"></div>`;
-        });
-        playShuffleSound();
-    }, 3200);
-
-    setTimeout(()=>{
-        overlay.classList.remove('visible');
-        overlay.style.display='none';
-        overlay.innerHTML='';
-        animShuffling=false;
-        disableControls(false);
-        shufflePending();
-        renderAll();
-        const visible = Array.from(document.querySelectorAll('#players-area .card-thumb'));
-        visible.forEach(c=>{ 
-            c.classList.add('shine'); 
-            setTimeout(()=> c.classList.remove('shine'), 1800); 
-        });
-    }, 4000);
-}
-
-function shufflePending(){
-    game.deck = shuffle(Array.from({length:54},(_,i)=>i+1));
-    tx.push({id:uuid(),type:'shuffle',ts:Date.now()});
-    saveAll();
-}
-
-function drawOne(){
-    if(animShuffling || game.winnerPending) return;
-
-    if(game.deck.length === 0){
-        alert('El mazo está vacío. Barajea para continuar.');
+    if(winnersFound.length > 0) {
+        APP.game.state = 'WINNER';
         stopAuto();
+        
+        const winMod = winnersFound[0].modality;
+        const activePot = APP.purchases.filter(p => p.modality === winMod && p.state === 'JUGANDO' && p.gamesLeft > 0)
+                                       .reduce((sum, p) => sum + (p.price - p.profit), 0);
+        const prizePerWinner = activePot / winnersFound.length;
+
+        winnersFound.forEach(p => {
+            p.state = 'GANADOR'; 
+            APP.winners.unshift({
+                ts: Date.now(), pid: p.id, name: p.name, mod: p.modality, 
+                card: lastCard, prize: prizePerWinner, paid: false
+            });
+        });
+
+        save();
+        showWinnerModal(winnersFound, lastCard, prizePerWinner);
+    }
+}
+
+function resetGame() {
+    if(!confirm('¿INICIAR NUEVA PARTIDA?\n\nSe descontará 1 partida a los jugadores activos de la modalidad actual ('+APP.mode+' cartas).')) return;
+    
+    APP.purchases.forEach(p => {
+        if(p.modality === APP.mode && (p.state === 'JUGANDO' || p.state === 'GANADOR')) {
+            if(p.state === 'GANADOR') p.state = 'JUGANDO'; 
+            p.gamesLeft--;
+            if(p.gamesLeft <= 0) p.state = 'FINALIZADO';
+        }
+        p.marked = []; 
+    });
+
+    APP.game.deck = shuffle(createDeck());
+    APP.game.drawn = [];
+    APP.game.current = null;
+    APP.game.state = 'READY';
+    
+    save();
+    renderUI();
+    
+    const overlay = document.getElementById('shuffle-overlay');
+    overlay.classList.add('visible');
+    setTimeout(() => { overlay.classList.remove('visible'); }, 2000);
+}
+
+// UI RENDERING
+function renderUI() {
+    const isPlayView = document.getElementById('view-admin').classList.contains('hidden');
+    let totalPot = 0;
+    if(isPlayView) {
+        totalPot = APP.purchases.filter(p => p.modality === APP.mode && p.state === 'JUGANDO' && p.gamesLeft > 0)
+                     .reduce((sum, p) => sum + (p.price - p.profit), 0);
+        document.getElementById('bolsa-label').textContent = `💰 BOLSA (${APP.mode} CARTAS)`;
+    } else {
+         totalPot = APP.purchases.reduce((sum,p) => sum + (p.profit * p.initialGames), 0);
+         document.getElementById('bolsa-label').textContent = `🏦 CASA TOTAL`;
+    }
+    document.getElementById('bolsa-amount').textContent = fmtMoney(totalPot);
+
+    const grid = document.getElementById('players-area');
+    const activePlayers = APP.purchases.filter(p => p.modality === APP.mode && (p.state === 'JUGANDO' || p.state === 'GANADOR') && p.gamesLeft > 0);
+    
+    if(activePlayers.length === 0) {
+        grid.innerHTML = '<div class="text-center small-muted" style="grid-column:1/-1; padding:30px; opacity:0.5;">No hay jugadores activos para '+APP.mode+' cartas.</div>';
+    } else {
+        grid.innerHTML = activePlayers.map(p => {
+            let cardsHtml = p.cards.map(cid => {
+                const isMarked = p.marked.includes(cid);
+                const isPassed = !isMarked && APP.game.drawn.includes(cid);
+                return `<div class="card-thumb ${isPassed?'passed':''}" style="background-image:url('${getCardUrl(cid)}')">
+                    ${isMarked ? '<div class="sticker"><img src="logo_1_entrada.png"></div>' : ''}
+                </div>`;
+            }).join('');
+            
+            return `<div class="player-card" onclick="showPlayerDetail('${p.id}')">
+                <div class="player-name" title="${p.name}">${p.name}</div>
+                <div class="player-info">Partidas: <strong>${p.gamesLeft}</strong></div>
+                <div class="player-cards" style="display:grid; grid-template-columns:repeat(${APP.mode===4?2:3}, 1fr); gap:3px;">
+                    ${cardsHtml}
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    const winnerPending = APP.game.state === 'WINNER';
+    document.getElementById('game-controls-group').classList.toggle('hidden', winnerPending);
+    document.getElementById('btn-reset-win').classList.toggle('hidden', !winnerPending);
+    document.getElementById('deck-count').textContent = APP.game.deck.length;
+    document.getElementById('select-modality').value = APP.mode;
+    document.getElementById('select-modality').disabled = APP.game.state === 'PLAYING' || winnerPending;
+
+    const curCardEl = document.getElementById('current-card');
+    if(APP.game.current) {
+        curCardEl.innerHTML = `<div class="current-card-img" style="background-image:url('${getCardUrl(APP.game.current)}')"></div>`;
+    } else {
+        curCardEl.innerHTML = '<div style="opacity:0.4; font-weight:bold; color:#999;">LISTO PARA JUGAR</div>';
+    }
+    
+    const lastEl = document.getElementById('last-cards');
+    lastEl.innerHTML = APP.game.drawn.slice(-4, -1).reverse().map(cid => 
+        `<div class="card-thumb" style="width:40px;height:55px;background-image:url('${getCardUrl(cid)}')"></div>`
+    ).join('');
+
+    renderWinnersPanel();
+    renderAdminTable();
+}
+
+function renderWinnersPanel() {
+    const list = document.getElementById('winners-list');
+    if(APP.winners.length === 0) {
+        list.innerHTML = '<div class="text-center small-muted" style="padding:20px; opacity:0.6;">Sin ganadores hoy.</div>';
         return;
     }
-    
-    // CORRECCIÓN: Usar shift() para tomar la primera carta del mazo barajeado
-    const card = game.deck.shift(); 
-    game.drawn.push(card);
-    game.current=card;
-    drawnInGame.push(card); // Marcar como dibujada para efectos visuales (dimming)
-    
-    tx.push({id:uuid(),type:'draw',card:card,ts:Date.now()});
-    saveAll();
-    processCard(card);
-    renderAll();
+    list.innerHTML = APP.winners.slice(0,5).map(w => `
+        <div style="padding:8px; border-bottom:1px solid #eee; font-size:13px;">
+            <div style="font-weight:bold; color:var(--azul)">${w.name}</div>
+            <div style="display:flex; justify-content:space-between; color:#666;">
+                <span>${fmtMoney(w.prize)} (${w.mod} CARTAS)</span>
+                <span style="color:${w.paid?'var(--verde)':'var(--rojo)'}">${w.paid?'PAGADO':'PENDIENTE'}</span>
+            </div>
+        </div>
+    `).join('');
 }
 
-function processCard(cardId){
-    const winnersFound=[];
-    purchases.forEach((p,i)=>{
-        if(!(p.gamesLeft>0 && p.state==='JUGANDO')) return;
-        
-        if(p.card && p.card.includes(cardId) && !(p.markedCards||[]).includes(cardId)){
-            p.markedCards = [...(p.markedCards||[]), cardId];
-        }
+// ADMIN FUNCTIONS
+function registerPlayer() {
+    const name = document.getElementById('input-name').value.trim();
+    const cell = document.getElementById('input-cell').value.trim();
+    const clabe = document.getElementById('input-clabe').value.trim();
+    const q4 = parseInt(document.getElementById('qty4').value) || 0;
+    const q6 = parseInt(document.getElementById('qty6').value) || 0;
+    
+    if(!name || (q4+q6) === 0) { alert('Faltan datos (Nombre, Cantidad de Partidas).'); return; }
+    // CLABE es opcional pero recomendada.
 
-        if((p.markedCards||[]).length === p.modality){
-            winnersFound.push({idx:i,purchaseId:p.id});
-        }
+    const batch = [];
+    for(let i=0; i<q4; i++) batch.push(createPurchase(name, cell, clabe, 4));
+    for(let i=0; i<q6; i++) batch.push(createPurchase(name, cell, clabe, 6));
+    
+    APP.purchases.push(...batch);
+    save();
+    renderUI();
+    
+    alert(`¡${name} registrado con éxito! (${q4+q6} partidas totales)`);
+    
+    // Limpiar todos los campos tras registro exitoso
+    document.getElementById('input-name').value = '';
+    document.getElementById('input-cell').value = '';
+    document.getElementById('input-clabe').value = '';
+    document.getElementById('qty4').value = 0;
+    document.getElementById('qty6').value = 0;
+    document.getElementById('input-budget').value = '';
+    document.getElementById('calc-info').textContent = 'Ingresa un presupuesto para ver opciones.';
+    
+    // Enviar WhatsApp de bienvenida (toma el primer ID del batch para referencia)
+    if(cell && batch.length > 0) sendWelcomeWhatsapp(batch[0].id, batch);
+}
+
+function createPurchase(name, cell, clabe, mod) {
+    APP.idCounter++;
+    const cards = generateUniqueCards(mod);
+    // NUEVO FORMATO DE FOLIO: GanaYA!-XXXX
+    const newId = `GanaYA!-` + String(APP.idCounter).padStart(4, '0');
+    
+    return {
+        id: newId, name, cell, clabe, modality: mod, cards, marked: [],
+        gamesLeft: 1, initialGames: 1, state: 'JUGANDO',
+        price: mod===4 ? APP.prices.p4 : APP.prices.p6,
+        profit: mod===4 ? APP.prices.g4 : APP.prices.g6,
+        ts: Date.now()
+    };
+}
+
+function generateUniqueCards(qty) {
+    return shuffle(createDeck()).slice(0, qty);
+}
+
+function renderAdminTable() {
+    const tbody = document.getElementById('players-table-body');
+    tbody.innerHTML = APP.purchases.slice().reverse().map(p => `
+        <tr>
+            <td>${p.id}</td>
+            <td><strong>${p.name}</strong><br><small>${p.cell || 'Sin Cel'}</small></td>
+            <td class="text-center">${p.modality} Cartas</td>
+            <td class="text-center">${p.gamesLeft}</td>
+            <td class="text-center">${fmtMoney(p.price - p.profit)}</td>
+            <td class="text-center">${fmtMoney(p.profit)}</td>
+            <td class="text-center"><span class="badge ${p.state==='JUGANDO'?'badge-play':p.state==='GANADOR'?'badge-win':p.state==='PAGADO'?'badge-paid':'badge-end'}">${p.state}</span></td>
+            <td class="text-center"><button class="btn btn-blue" style="padding:4px 8px; font-size:11px;" onclick="showPlayerDetail('${p.id}')">VER</button></td>
+        </tr>
+    `).join('');
+}
+
+// WHATSAPP MESSAGES
+function sendWelcomeWhatsapp(pid, batch = []) {
+    const p = APP.purchases.find(x => x.id === pid);
+    if(!p || !p.cell) return;
+
+    // Si es un lote, mandamos todas las cartas juntas
+    const purchasesToSend = batch.length > 0 ? batch : [p];
+    let cardsMsg = "";
+    purchasesToSend.forEach(pur => {
+         cardsMsg += `🎟️ *FOLIO ${pur.id}* (${pur.modality} Cartas):\n${pur.cards.map(id => getCardName(id)).join(', ')}\n\n`;
     });
 
-    if(winnersFound.length){
-        stopAuto();
-        game.winnerPending = true;
-        disableControls(true);
-        
-        const winningModality = purchases.find(p => p.id === winnersFound[0].purchaseId)?.modality || currentMode;
-        
-        const activeForPot = purchases.filter(p=> p.state==='JUGANDO' && (p.gamesLeft||0)>0 && p.modality === winningModality );
-        activeForPot.forEach(p => initializePurchaseData(p));
-        const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
-        
-        const share = totalEnJuego / winnersFound.length;
-
-        const recs=[];
-
-        winnersFound.forEach(w=>{
-            const p=purchases[w.idx];
-            p.wins=(p.wins||0)+1;
-            p.state='POR PAGAR';
-            p.prize=share;
-            p.casa = (p.casa || 0) - share; 
-            
-            const rec = {
-                id: uuid(),
-                purchaseId: p.id,
-                playerName: p.playerName,
-                modality: p.modality,
-                cardId: cardId, 
-                prize: share,
-                paid: false,
-                ts: Date.now()
-            };
-            winners.push(rec);
-            recs.push(rec);
-            tx.push({id:uuid(),type:'win',player:p.playerName,modality:p.modality,amount:share,card:cardId,purchaseId:p.id,ts:Date.now()});
-        });
-
-        saveAll();
-        window._tempWinnerRecs = recs; 
-
-        const modal = document.getElementById('modal-winner');
-        document.getElementById('winner-title').textContent = `🎉 ¡LOTERÍA!`;
-        const winnerNames = winnersFound.map(w=> purchases[w.idx].playerName).join(' y ');
-        document.getElementById('winner-body').innerHTML = `¡El jugador <strong>${escapeHtml(winnerNames)}</strong> ha ganado con la carta <strong>${cardName(cardId)}</strong>!`;
-        document.getElementById('winner-sub').innerHTML = `Premio de ${formatMoney(share)} para cada uno.`;
-        modal.classList.remove('hidden');
-        modal.style.display='flex';
-        
-        playWinSound();
-        startConfettiFullScreen();
-
-        renderAll();
-    }
+    const msg = `🎉 ¡HOLA ${p.name.toUpperCase()}! BIENVENIDO A GANA YA! 🎉\n\n✅ Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${cardsMsg}🍀 ¡MUCHA SUERTE Y A GANAR! 🍀`;
+    window.open(`https://wa.me/${p.cell}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
-function showWinnerDetailModal(purchaseId, cardId){
-    if(!purchaseId){
-        if(!window._tempWinnerRecs || window._tempWinnerRecs.length === 0) return;
-        purchaseId = window._tempWinnerRecs[0].purchaseId;
-        cardId = window._tempWinnerRecs[0].cardId;
-    }
+function sendPaymentWhatsapp(winRec) {
+    const p = APP.purchases.find(x => x.id === winRec.pid);
+    if(!p || !p.cell) { alert('No hay celular registrado para enviar confirmación.'); return; }
     
-    if(!cardId) {
-        const winnerRec = winners.find(w => w.purchaseId === purchaseId);
-        if(!winnerRec) return;
-        cardId = winnerRec.cardId;
-    }
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('es-MX', {hour: '2-digit', minute:'2-digit'});
+    const accountStr = p.clabe ? `a la cuenta con terminación *${p.clabe.slice(-4)}*` : 'a tu cuenta registrada';
 
-    const player = purchases.find(p=>p.id===purchaseId);
-    if(!player) return;
+    const msg = `🤑 ¡FELICIDADES ${p.name.toUpperCase()}! 🤑\n\n💸 TU PAGO HA SIDO ENVIADO 💸\n\n💰 Monto: *${fmtMoney(winRec.prize)}*\n🏦 Destino: Enviado ${accountStr}\n⏰ Hora: ${timeStr}\n\n🃏 Carta Ganadora: *${getCardName(winRec.card)}*\n\n🥳 ¡Que siga la racha! ¿Listo para la próxima ronda? ¡VAMOS POR MÁS! 💪🔥`;
+    window.open(`https://wa.me/${p.cell}?text=${encodeURIComponent(msg)}`, '_blank');
+}
 
-    document.getElementById('modal-winner').classList.add('hidden');
-    document.getElementById('modal-winner').style.display='none';
+// MODALS & INTERACTION
+function showWinnerModal(winnersList, winningCard, prize) {
+    playSound('snd-win');
+    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 9999 });
+
+    const winModal = document.getElementById('modal-winner');
+    winModal.classList.add('active');
     
-    const detailPlayerName = document.getElementById('winner-detail-player-name');
-    const detailCardName = document.getElementById('winner-detail-card-name');
-    const detailCardsContainer = document.getElementById('winner-detail-player-cards');
+    let html = `Ganador(es) con la carta <strong>${getCardName(winningCard)}</strong>:<br><br>`;
+    winnersList.forEach(w => {
+        html += `<div style="color:var(--azul); font-weight:900; font-size:24px;">${w.name}</div>`;
+    });
+    html += `<br>Premio por jugador: <strong style="color:var(--verde);">${fmtMoney(prize)}</strong>`;
+    document.getElementById('winner-body').innerHTML = html;
+    document.getElementById('btn-winner-ok').onclick = () => { winModal.classList.remove('active'); showWinnerDetail(winnersList[0]); };
+}
 
-    detailPlayerName.textContent = escapeHtml(player.playerName) + ' - Modalidad ' + player.modality + ' cartas';
-    detailCardName.textContent = 'Carta Ganadora: ' + cardName(cardId);
-
-    const cardListHtml = (player.card || []).map(cid => {
-        const isMarked = (player.markedCards || []).includes(cid);
-        const isWinner = cid === cardId;
-        const passed = drawnInGame.includes(cid) && !isMarked; 
-        const sticker = isMarked ? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : '';
-        return `<div class="card-thumb ${isWinner ? 'winner-card' : ''} ${passed ? 'passed' : ''}" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
+function showWinnerDetail(player) {
+    const modal = document.getElementById('modal-winner-detail');
+    modal.classList.add('active');
+    document.getElementById('wd-player-name').textContent = player.name;
+    const lastDrawn = APP.game.current;
+    document.getElementById('wd-cards').innerHTML = player.cards.map(cid => {
+        const isWinnerCard = (cid === lastDrawn);
+        const isMarked = player.marked.includes(cid);
+        return `<div class="card-thumb ${isWinnerCard ? 'winner-card' : ''}" style="width:80px; height:120px; background-image:url('${getCardUrl(cid)}')">
+            ${isMarked ? '<div class="sticker"><img src="logo_1_entrada.png"></div>' : ''}
+        </div>`;
     }).join('');
-    detailCardsContainer.innerHTML = cardListHtml;
-
-    const modalDetail = document.getElementById('modal-winner-detail');
-    modalDetail.classList.remove('hidden');
-    modalDetail.style.display = 'flex';
 }
 
-function closeWinnerDetailModal(){
-    const modalDetail = document.getElementById('modal-winner-detail');
-    modalDetail.classList.add('hidden');
-    modalDetail.style.display = 'none';
-    delete window._tempWinnerRecs;
-    stopConfettiFullScreen(); 
-    renderAll();
+function showPlayerDetail(pid) {
+    const p = APP.purchases.find(x => x.id === pid);
+    if(!p) return;
+    
+    document.getElementById('modal-player').classList.add('active');
+    document.getElementById('modal-player-title').textContent = p.name;
+    
+    // Detectar si tiene premio pendiente
+    const winRec = APP.winners.find(w => w.pid === pid && !w.paid);
+
+    let html = `<div class="text-center">
+        <p>Folio: <strong>${p.id}</strong> | Cel: ${p.cell || 'N/A'}</p>
+        <p>CLABE/Cta: <strong>${p.clabe || 'No registrada'}</strong></p>
+        <p>Modalidad: ${p.modality} Cartas | Restantes: ${p.gamesLeft}</p>
+        <hr>
+        <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin:15px 0;">
+             ${p.cards.map(cid => `<div class="card-thumb" style="width:60px; height:90px; background-image:url('${getCardUrl(cid)}')"></div>`).join('')}
+        </div>
+    </div>`;
+    document.getElementById('modal-player-body').innerHTML = html;
+
+    // Botones de acción dinámicos
+    const actionsDiv = document.getElementById('modal-player-actions');
+    actionsDiv.innerHTML = '';
+
+    if(p.clabe) {
+        actionsDiv.innerHTML += `<button class="btn btn-blue" onclick="copyToClipboard('${p.clabe}')">📋 Copiar CLABE/Cuenta</button>`;
+    }
+    if(winRec) {
+        actionsDiv.innerHTML += `<button class="btn btn-green" onclick="markAsPaid('${winRec.pid}', ${winRec.ts})">💸 Marcar como PAGADO y Notificar</button>`;
+    }
+    actionsDiv.innerHTML += `<button class="btn btn-muted" onclick="sendWelcomeWhatsapp('${p.id}')">📱 Reenviar Cartas (WhatsApp)</button>`;
+    actionsDiv.innerHTML += `<button class="btn btn-muted" onclick="document.getElementById('modal-player').classList.remove('active')">Cerrar</button>`;
 }
 
-function escapeHtml(s){ return String(s||'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"\'":'&#39;'}[m])); }
-
-window.markPaidById = function(id){
-    const p=purchases.find(x=>x.id===id);
-    if(!p) return alert('No encontrado');
-    if(p.state!=='POR PAGAR') return alert('Solo marcar si está POR PAGAR');
-    
-    const winnerRec = winners.find(w => w.purchaseId === id && !w.paid); 
-    if(!winnerRec) return alert('No se encontró registro de premio pendiente de pago para esta compra.');
-
-    p.state='PAGADO';
-    p.paidAt=Date.now();
-    winners=winners.map(w=> w.purchaseId===id? {...w,paid:true}:w);
-    tx.push({id:uuid(),type:'mark_paid',purchaseId:id,ts:Date.now()});
-    saveAll();
-    renderAll();
-
-    const prizeAmount = formatMoney(winnerRec.prize);
-    const datePaid = new Date(p.paidAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
-    const winningCardName = cardName(winnerRec.cardId);
-    const winningCardUrl = `${window.location.origin}/${cardImageUrl(winnerRec.cardId)}`;
-    
-    const message = `Hola ${p.playerName}, se ha realizado tu pago de ${prizeAmount} a la cuenta ${p.clabe} el ${datePaid}.\n\nTu carta de la suerte en esta partida fue: 🌟 ${winningCardName} 🌟\n\n${winningCardUrl}\n\n¡Felicidades por tu premio en GANA YA! 🎉🇲🇽`;
-
-    window.open(`https://wa.me/${p.cell}?text=${encodeURIComponent(message)}`, '_blank');
-
-    alert('Marcado como PAGADO y mensaje de confirmación de pago enviado por WhatsApp.');
-};
-
-function closeGroupModal(){
-    const modal=document.getElementById('modal-player');
-    modal.classList.add('hidden');
-    modal.style.display='none';
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => alert('CLABE copiada al portapapeles'));
 }
 
-function setActiveFilter(f){
-    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active-4','active-6','active-all'));
-    if(f==='all'){ document.getElementById('filter-all').classList.add('active-all'); }
-    else if(f===4){ document.getElementById('filter-4').classList.add('active-4'); }
-    else if(f===6){ document.getElementById('filter-6').classList.add('active-6'); }
+function markAsPaid(pid, ts) {
+    const winIdx = APP.winners.findIndex(w => w.pid === pid && w.ts === ts);
+    if(winIdx === -1) return;
+    
+    APP.winners[winIdx].paid = true;
+    const p = APP.purchases.find(x => x.id === pid);
+    if(p) p.state = 'PAGADO'; // Opcional, si quieres rastrear el estado final de esa "compra"
+    
+    save(); renderUI();
+    document.getElementById('modal-player').classList.remove('active');
+    
+    if(confirm('Marcado como PAGADO. ¿Enviar confirmación por WhatsApp ahora?')) {
+        sendPaymentWhatsapp(APP.winners[winIdx]);
+    }
 }
 
-function generateCardForPurchase(modality){
-    let cards = Array.from({length:54},(_,i)=>i+1);
-    
-    const usedCards = purchases
-        .filter(p => p.modality === modality && p.card)
-        .flatMap(p => p.card);
-
-    const availableCards = cards.filter(c => !usedCards.includes(c));
-    
-    if (availableCards.length < modality) {
-        cards = shuffle(cards);
+// AUTO PLAY
+function toggleAuto() {
+    if(APP.autoInterval) {
+        stopAuto();
     } else {
-        cards = shuffle(availableCards);
+        document.getElementById('btn-auto').textContent = '⏹ DETENER';
+        document.getElementById('btn-auto').classList.replace('btn-green','btn-muted');
+        drawCard(); // Primera carta inmediata
+        APP.autoInterval = setInterval(drawCard, 3000); // Cada 3 seg
     }
-    
-    const selectedCards = cards.slice(0, modality);
-
-    if (new Set(selectedCards).size !== modality) {
-        // Fallback for unique selection (should not happen often)
+}
+function stopAuto() {
+    clearInterval(APP.autoInterval);
+    APP.autoInterval = null;
+    const btn = document.getElementById('btn-auto');
+    if(btn) {
+        btn.textContent = '🤖 AUTO';
+        btn.classList.replace('btn-muted','btn-green');
     }
-
-    return selectedCards;
 }
 
-// CORRECCIÓN/MEJORA: Calcula la máxima cantidad de partidas
-function calculateMaxGames(budget, p4, p6) {
-    let q4 = 0;
-    let q6 = 0;
-    let remaining = budget;
-    
-    // Priorizar la partida de 6 cartas (la más cara en este caso)
-    const price6 = p6 > 0 ? p6 : 999999; 
-    const price4 = p4 > 0 ? p4 : 999999;
+// EVENT LISTENERS & INIT
+document.addEventListener('DOMContentLoaded', () => {
+    renderUI();
 
-    if (price6 <= remaining) {
-        q6 = Math.floor(remaining / price6);
-        remaining -= q6 * price6;
-    }
+    // View Toggles
+    document.getElementById('btn-view-play').onclick = () => {
+        document.getElementById('view-admin').classList.add('hidden');
+        document.getElementById('main-grid').classList.remove('hidden');
+    };
+    document.getElementById('btn-view-admin').onclick = () => {
+        document.getElementById('view-admin').classList.remove('hidden');
+        document.getElementById('main-grid').classList.add('hidden');
+    };
 
-    if (price4 <= remaining) {
-        q4 = Math.floor(remaining / price4);
-        remaining -= q4 * price4;
-    }
+    // Game Actions
+    document.getElementById('btn-draw').onclick = drawCard;
+    document.getElementById('btn-shuffle').onclick = resetGame; 
+    document.getElementById('btn-reset-win').onclick = resetGame;
+    document.getElementById('btn-auto').onclick = toggleAuto;
+    document.getElementById('select-modality').onchange = (e) => {
+        APP.mode = parseInt(e.target.value);
+        APP.game.state = 'READY'; 
+        save(); renderUI();
+    };
 
-    return { q4, q6 };
-}
-
-
-function updateCalculatorInfo(autoFill = false){
-    const p4=prices.price4, p6=prices.price6;
-    const budgetRaw=document.getElementById('input-budget').value;
-    const budget = budgetRaw===''?0:parseFloat(budgetRaw||0);
-
-    let q4=parseInt(document.getElementById('qty4').value||0);
-    let q6=parseInt(document.getElementById('qty6').value||0);
-    
-    if(autoFill && budget > 0) {
-        const { q4: maxQ4, q6: maxQ6 } = calculateMaxGames(budget, p4, p6);
-        document.getElementById('qty4').value = maxQ4;
-        document.getElementById('qty6').value = maxQ6;
-        q4 = maxQ4;
-        q6 = maxQ6;
-    }
-    
-    const cost4 = q4*p4;
-    const cost6 = q6*p6;
-    const totalCost = cost4 + cost6;
-    
-    let msg = `Costo 4C (${q4}): ${formatMoney(cost4)} • Costo 6C (${q6}): ${formatMoney(cost6)} • <strong>Total: ${formatMoney(totalCost)}</strong>`;
-    
-    if(totalCost > budget && budget > 0){
-        msg += `<br><span style="color:var(--rojo);font-weight:700;">Faltan: ${formatMoney(totalCost - budget)}</span>`;
-    } else if (budget > totalCost && totalCost > 0){
-        msg += `<br><span style="color:var(--verde);font-weight:700;">Sobrante: ${formatMoney(budget - totalCost)}</span>`;
-    } else if (budget > 0 && totalCost === 0) {
-        msg += `<br><span style="color:var(--azul);font-weight:700;">Presupuesto de ${formatMoney(budget)} sin asignar.</span>`;
-    }
-
-    document.getElementById('calc-info').innerHTML = msg;
-    
-    document.getElementById('qty4').parentElement.style.display = budget>=p4? 'block':'none';
-    document.getElementById('qty6').parentElement.style.display = budget>=p6? 'block':'none';
-}
-
-function registerPlayer(){
-    const name=(document.getElementById('input-name').value||'').trim();
-    const cell=(document.getElementById('input-cell').value||'').trim();
-    const clabe=(document.getElementById('input-clabe').value||'').trim();
-    const budgetRaw=document.getElementById('input-budget').value;
-    const budget = budgetRaw===''?0:parseFloat(budgetRaw||0);
-    const q4=parseInt(document.getElementById('qty4').value||0), q6=parseInt(document.getElementById('qty6').value||0);
-
-    if(!name) return alert('Captura el nombre');
-    if(!cell) return alert('Captura el celular');
-    if(q4+q6<=0) return alert('Selecciona al menos una partida (cantidad)');
-    
-    const needed = q4*prices.price4 + q6*prices.price6;
-    
-    if(budget < needed) return alert(`El presupuesto no alcanza. Se requiere ${formatMoney(needed)}.`);
-    
-    // Permitir sobrante. Ya no es error, solo advertencia.
-    if(budget > needed && budget > 0){
-        if(!confirm(`Hay un sobrante de ${formatMoney(budget-needed)}. ¿Deseas continuar el registro con las partidas asignadas?`)){
-            return;
+    // Admin Actions
+    document.getElementById('btn-register').onclick = registerPlayer;
+    document.getElementById('save-prices').onclick = () => {
+        APP.prices.p4 = parseFloat(document.getElementById('price4').value) || APP.prices.p4;
+        APP.prices.g4 = parseFloat(document.getElementById('profit4').value) || APP.prices.g4;
+        APP.prices.p6 = parseFloat(document.getElementById('price6').value) || APP.prices.p6;
+        APP.prices.g6 = parseFloat(document.getElementById('profit6').value) || APP.prices.g6;
+        save(); alert('Precios guardados');
+    };
+    document.getElementById('btn-reset-day').onclick = () => {
+        if(confirm('¿BORRAR TODAS LAS COMPRAS Y GANADORES DEL DÍA?')) {
+            APP.purchases = []; APP.winners = []; APP.game = {deck:createDeck(), drawn:[], current:null, state:'READY'};
+            save(); renderUI();
         }
-    }
+    };
 
-    const parts=[];
-    if(q4>0) parts.push({modality:4,qty:q4,price:prices.price4,profit:prices.profit4});
-    if(q6>0) parts.push({modality:6,qty:q6,price:prices.price6,profit:prices.profit6});
-
-    const purchasesInBatch = [];
-    const messageParts = []; 
-    
-    parts.forEach(pt=>{
-        const ptPrice = pt.price;
-        const ptProfit = pt.profit;
-        const ptEnJuego = ptPrice - ptProfit;
-
-        for(let i=0;i<pt.qty;i++){
-            const id = getNextPurchaseId(); 
-            const p={
-                id:id,playerName:name,cell:cell,clabe:clabe,
-                modality:pt.modality,
-                initialGames:1,gamesLeft:1,
-                totalPaid:ptPrice,
-                wins:0,state:'JUGANDO',card:[],markedCards:[],selectionUsed:true,createdAt:Date.now(),
-                price: ptPrice, profit: ptProfit, enJuego: ptEnJuego, casa: ptProfit
-            };
-            p.card=generateCardForPurchase(pt.modality);
-            purchases.push(p);
-            purchasesInBatch.push(p);
-
-            const cardNames = p.card.map(cardName).join(', ');
-            messageParts.push(`${id} Cartas asignadas: ${cardNames}`);
-            
-            tx.push({id:uuid(),type:'purchase',player:name,modality:pt.modality,amount:ptPrice,purchaseId:p.id,ts:Date.now()});
-        }
+    // Calculator
+    document.getElementById('input-budget').addEventListener('input', (e) => {
+        const budget = parseFloat(e.target.value) || 0;
+        const p4 = APP.prices.p4 || 1;
+        const p6 = APP.prices.p6 || 1;
+        const max4 = Math.floor(budget / p4);
+        const max6 = Math.floor(budget / p6);
+        
+        document.getElementById('calc-info').innerHTML = 
+            (budget > 0) 
+            ? `Opciones: <strong style="color:var(--azul)">${max4}</strong> de 4 Cartas ó <strong style="color:var(--azul)">${max6}</strong> de 6 Cartas.`
+            : 'Ingresa un presupuesto para ver opciones.';
     });
 
-    saveAll();
-    
-    // Cleanup
-    document.getElementById('input-name').value='';
-    document.getElementById('input-cell').value='';
-    document.getElementById('input-clabe').value='';
-    document.getElementById('input-budget').value='';
-    document.getElementById('qty4').value='0';
-    document.getElementById('qty6').value='0';
-    
-    const finalMsg = `¡Bienvenido a GANA YA! 🎉 Tus partidas han sido registradas:\n\n${messageParts.join('\n')}\n\n¡Mucha suerte! 🎴`;
-    window.open(`https://wa.me/${cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
-    
-    alert('Jugador(s) registrado(s) y cartas asignadas automáticamente. Se abrió WhatsApp para enviar el registro.');
-    renderAll();
-}
-
-function resetGame(){
-    if(!confirm('Iniciar un juego nuevo: se reiniciará el mazo y se quitará 1 partida a los jugadores **de la modalidad en juego (JUGANDO o POR PAGAR)**. ¿Continuar?')) return;
-    
-    stopAuto();
-    
-    purchases.forEach(p=>{
-        if (p.modality === currentMode) {
-            if(p.state==='JUGANDO' || p.state==='POR PAGAR'){
-                p.gamesLeft = Math.max(0,(p.gamesLeft||0)-1);
-                if(p.gamesLeft<=0 && p.state==='JUGANDO') p.state='FINALIZADO';
-            }
-        }
-        p.markedCards=[];
+    // Modals
+    document.querySelectorAll('.close-modal-x, #btn-wd-close').forEach(el => {
+        el.onclick = () => document.querySelectorAll('.modal-back').forEach(m => m.classList.remove('active'));
     });
 
-    game.deck = Array.from({length:54},(_,i)=>i+1);
-    game.drawn=[];
-    game.current=0;
-    drawnInGame=[];
-    game.winnerPending = false;
-    document.getElementById('shuffle-overlay').classList.remove('visible');
-    document.getElementById('shuffle-overlay').style.display='none';
-    tx.push({id:uuid(),type:'reset',ts:Date.now()});
-    saveAll();
-    renderAll();
-    alert('Juego reiniciado y partidas descontadas.');
-    disableControls(false);
-}
-
-function exportPdf(){
-    // ... (logic for exportPdf remains the same) ...
-    const date=new Date();
-    const header=`Reporte de partidas — GANA YA!`;
-    const logo='logo_1_entrada.png';
-    let html=`<html><head><title>${header}</title></head><body style="font-family:Arial;padding:12px">`;
-    
-    html+=`<div style="display:flex;gap:12px;align-items:center">
-        <img src="${logo}" style="width:80px;height:80px;object-fit:contain"/>
-        <div><h2>${header}</h2><p style="font-size:12px">Generado el ${date.toLocaleString()}</p></div>
-    </div><hr>`;
-
-    const pricesHtml = `<div style="margin-top:20px;">
-        <h3>Precios y Ganancias</h3>
-        <table border="1" style="width:100%; border-collapse: collapse; font-size:14px;">
-            <tr><th>Modalidad</th><th>Precio</th><th>Ganancia Casa</th><th>Monto en Juego</th></tr>
-            <tr><td style="padding:4px; text-align:center;">4 Cartas</td><td style="padding:4px; text-align:center;">${formatMoney(prices.price4)}</td><td style="padding:4px; text-align:center;">${formatMoney(prices.profit4)}</td><td style="padding:4px; text-align:center;">${formatMoney(prices.price4 - prices.profit4)}</td></tr>
-            <tr><td style="padding:4px; text-align:center;">6 Cartas</td><td style="padding:4px; text-align:center;">${formatMoney(prices.price6)}</td><td style="padding:4px; text-align:center;">${formatMoney(prices.profit6)}</td><td style="padding:4px; text-align:center;">${formatMoney(prices.price6 - prices.profit6)}</td></tr>
-        </table>
-    </div>`;
-
-    let totalEnJuego=0;
-    let totalCasa=0;
-    let totalPagado=0;
-
-    const playersHtml = `<div style="margin-top:20px;">
-        <h3>Jugadores y Compras</h3>
-        <table border="1" style="width:100%; border-collapse: collapse; font-size:12px;">
-            <thead><tr><th>ID</th><th>Jugador</th><th>Mod</th><th>Partidas</th><th>En Juego</th><th>Casa</th><th>Estado</th></tr></thead>
-            <tbody>
-                ${purchases.map(p=>{
-                    initializePurchaseData(p);
-                    totalEnJuego += (p.enJuego||0);
-                    totalCasa += (p.casa||0);
-                    totalPagado += (p.totalPaid||0);
-                    return `<tr>
-                        <td style="padding:4px">${p.id}</td>
-                        <td style="padding:4px">${escapeHtml(p.playerName)}<br><span style="color:#777">${escapeHtml(p.cell||'—')}</span></td>
-                        <td style="padding:4px;text-align:center">${p.modality}</td>
-                        <td style="padding:4px;text-align:center">${p.gamesLeft||0}</td>
-                        <td style="padding:4px;text-align:center">${formatMoney(p.enJuego||0)}</td>
-                        <td style="padding:4px;text-align:center">${formatMoney(p.casa||0)}</td>
-                        <td style="padding:4px;text-align:center">${p.state||'JUGANDO'}</td>
-                    </tr>`;
-                }).join('')}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="4" style="text-align:right; padding:4px; font-weight:bold;">TOTALES:</td>
-                    <td style="text-align:center; padding:4px; font-weight:bold;">${formatMoney(totalEnJuego)}</td>
-                    <td style="text-align:center; padding:4px; font-weight:bold;">${formatMoney(totalCasa)}</td>
-                    <td></td>
-                </tr>
-            </tfoot>
-        </table>
-        <p style="font-size:12px; margin-top:10px;">Total Pagado por Jugadores: <strong>${formatMoney(totalPagado)}</strong></p>
-    </div>`;
-
-    const winnersHtml = `<div style="margin-top:20px;">
-        <h3>Ganadores</h3>
-        <table border="1" style="width:100%; border-collapse: collapse; font-size:12px;">
-            <thead><tr><th>Fecha</th><th>Jugador</th><th>Modalidad</th><th>Carta Ganadora</th><th>Premio</th><th>Estado</th></tr></thead>
-            <tbody>
-                ${winners.slice().sort((a,b)=>b.ts-a.ts).map(w=>{
-                    return `<tr>
-                        <td style="padding:4px">${new Date(w.ts).toLocaleString()}</td>
-                        <td style="padding:4px">${escapeHtml(w.playerName)}</td>
-                        <td style="padding:4px;text-align:center">${w.modality}</td>
-                        <td style="padding:4px;text-align:center">${cardName(w.cardId)}</td>
-                        <td style="padding:4px;text-align:center">${formatMoney(w.prize)}</td>
-                        <td style="padding:4px;text-align:center">${w.paid?'PAGADO':'POR PAGAR'}</td>
-                    </tr>`;
-                }).join('')}
-            </tbody>
-        </table>
-    </div>`;
-    
-    html+=pricesHtml+playersHtml+winnersHtml;
-    html+='<hr><p style="text-align:center; font-size:10px;">Fin del Reporte</p></body></html>';
-
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.print();
-}
-
-
-// INICIALIZACIÓN Y EVENT LISTENERS
-document.addEventListener('DOMContentLoaded', ()=>{
-    
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js';
-    document.head.appendChild(script);
-
-    renderAll();
-    
-    document.getElementById('btn-shuffle').addEventListener('click', animateShuffle);
-    document.getElementById('btn-draw').addEventListener('click', drawOne);
-    document.getElementById('btn-auto').addEventListener('click', ()=>{ isAuto? stopAuto() : startAuto(); });
-    document.getElementById('btn-reset').addEventListener('click', resetGame);
-    document.getElementById('save-prices').addEventListener('click', ()=>{
-        prices.price4=parseFloat(document.getElementById('price4').value||0);
-        prices.profit4=parseFloat(document.getElementById('profit4').value||0);
-        prices.price6=parseFloat(document.getElementById('price6').value||0);
-        prices.profit6=parseFloat(document.getElementById('profit6').value||0);
-        saveAll();
-        renderAll();
-        alert('Precios guardados. La bolsa/casa se actualizará al reiniciar la partida o al siguiente registro.');
-    });
-    document.getElementById('reset-prices').addEventListener('click', ()=>{
-        prices=defaultsPrices();
-        document.getElementById('price4').value=prices.price4;
-        document.getElementById('profit4').value=prices.profit4;
-        document.getElementById('price6').value=prices.price6;
-        document.getElementById('profit6').value=prices.profit6;
-        saveAll();
-        renderAll();
-        alert('Precios reseteados a los valores por defecto.');
-    });
-
-    // Eventos de control de admin (caja)
-    document.getElementById('btn-register').addEventListener('click', registerPlayer);
-    
-    // Auto-calculo en el input de presupuesto
-    document.getElementById('input-budget').addEventListener('input', (e) => updateCalculatorInfo(true)); 
-    // Los inputs de cantidad solo actualizan el info
-    document.getElementById('qty4').addEventListener('input', (e) => updateCalculatorInfo(false));
-    document.getElementById('qty6').addEventListener('input', (e) => updateCalculatorInfo(false));
-    
-    // Eventos de botón JUEGO / ADMINISTRADOR
-    document.getElementById('btn-view-play').addEventListener('click', ()=>{ 
-        document.getElementById('view-admin').classList.add('hidden'); 
-        renderAll(); 
-    });
-    document.getElementById('btn-view-admin').addEventListener('click', ()=>{ 
-        document.getElementById('view-admin').classList.remove('hidden'); 
-        renderAll(); 
-    });
-    
-    document.getElementById('select-modality').addEventListener('change', (e)=>{ 
-        currentMode = Number(e.target.value); 
-        localStorage.setItem(Kmod,String(currentMode)); 
-        renderAll(); 
-    });
-
-    // Eventos de Botones de Acciones (Antes FAB)
-    document.getElementById('btn-export').addEventListener('click', exportPdf);
-    document.getElementById('btn-reset-day').addEventListener('click', ()=>{ 
-        if(!confirm('Borrar todo y reiniciar día? Esto eliminará compras, transacciones y registros de ganadores. El contador de IDs **NO** se reiniciará.')) return;
-        purchases=[];
-        tx.push({id:uuid(),type:'clear',ts:Date.now()});
-        game=defaultsGame();
-        winners=[];
-        drawnInGame=[];
-        saveAll();
-        renderAll();
-        alert('Día reiniciado. Todos los datos de compras y ganancias se borraron.');
-    });
-
-    // Eventos de filtros de tabla admin
-    document.getElementById('filter-all').addEventListener('click', ()=>{ setActiveFilter('all'); renderPlayersTable(); });
-    document.getElementById('filter-4').addEventListener('click', ()=>{ setActiveFilter(4); renderPlayersTable(4); });
-    document.getElementById('filter-6').addEventListener('click', ()=>{ setActiveFilter(6); renderPlayersTable(6); });
-
-    // Eventos de modales
-    document.getElementById('modal-player-back').addEventListener('click', (e)=>{ if(e.target.id==='modal-player-back') closeGroupModal(); });
-    document.getElementById('modal-winner-back').addEventListener('click', (e)=>{ if(e.target.id==='modal-winner-back') { document.getElementById('modal-winner').classList.add('hidden'); document.getElementById('modal-winner').style.display='none'; stopConfettiFullScreen(); } });
-    
-    document.getElementById('modal-close').addEventListener('click', closeGroupModal);
-    document.getElementById('modal-close-x').addEventListener('click', closeGroupModal);
-    document.getElementById('winner-ok').addEventListener('click', showWinnerDetailModal); 
-    document.getElementById('winner-close').addEventListener('click', ()=>{ const m=document.getElementById('modal-winner'); m.classList.add('hidden'); m.style.display='none'; stopConfettiFullScreen(); });
-    document.getElementById('winner-detail-ok').addEventListener('click', closeWinnerDetailModal);
-    document.getElementById('winner-detail-close-x').addEventListener('click', closeWinnerDetailModal);
-    document.getElementById('modal-winner-detail-back').addEventListener('click', (e)=>{ if(e.target.id==='modal-winner-detail-back') closeWinnerDetailModal(); });
-    
-    document.addEventListener('keydown', (e)=>{
-        if(e.key==='Escape'){ 
-            closeGroupModal(); 
-            const mw=document.getElementById('modal-winner'); 
-            if(mw && !mw.classList.contains('hidden')){ mw.classList.add('hidden'); mw.style.display='none'; stopConfettiFullScreen(); }
-            const mwd=document.getElementById('modal-winner-detail'); 
-            if(mwd && !mwd.classList.contains('hidden')){ closeWinnerDetailModal(); }
-        }
-    });
-
-    const playersAreaEl = document.getElementById('players-area');
-    if (playersAreaEl) {
-        playersAreaEl.addEventListener('click', (e) => {
-            let target = e.target.closest('.player-card');
-            if (target && !target.classList.contains('simulated')) {
-                const playerId = target.getAttribute('data-player-id');
-                if (playerId) {
-                    openPurchaseDetail(playerId);
-                }
-            }
-        });
-    }
-
+    // Init inputs with current prices
+    document.getElementById('price4').value = APP.prices.p4;
+    document.getElementById('profit4').value = APP.prices.g4;
+    document.getElementById('price6').value = APP.prices.p6;
+    document.getElementById('profit6').value = APP.prices.g6;
 });
-
 </script>
 </body>
 </html>
-
-<!-- Nota: Este archivo es la versión estable "index.html" lista para despliegue. -->
-
-
-<!-- Fin de mejoras v9.10 - versión estable integrada -->

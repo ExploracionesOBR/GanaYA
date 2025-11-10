@@ -2,7 +2,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎴 GANA YA! - Lotería Interactiva (v11.0)</title>
+<title>🎴 GANA YA! - Lotería Interactiva (v11.1)</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ff6bcb'/%3E%3Ctext x='50%25' y='55%25' font-size='18' font-family='Arial' fill='white' text-anchor='middle' font-weight='700'%3EG%3C/text%3E%3C/svg%3E">
 <style>
 /* --- INICIO DE ESTILO (Tomado de v9.14) --- */
@@ -21,7 +21,7 @@
 
 /* GENERALES */
 *{box-sizing:border-box} 
-html,body{height:100%; margin:0; padding:0;}
+html{ margin:0; padding:0; }
 body{ 
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
   background:var(--crema); 
@@ -30,14 +30,18 @@ body{
   background-position: 0 0, 25px 25px; 
   background-size: 50px 50px;
   overflow-x: hidden; 
+  margin:0; 
+  padding:0;
+  min-height: 100vh; /* CORRECCIÓN 4: min-height en body */
 }
 
 /* CONTENEDOR PRINCIPAL CENTRADO */
 .container{ 
-  max-width:1200px; 
+  max-width: 1600px; /* CORRECCIÓN 4: Aumentado de 1200px */
+  width: 100%; /* CORRECCIÓN 4: Ocupa ancho disponible */
   margin: 0 auto;
   padding: 10px; 
-  min-height: 100vh;
+  /* min-height: 100vh; <-- CORRECCIÓN 4: Eliminado de aquí */
   display: flex;
   flex-direction: column;
 }
@@ -77,7 +81,7 @@ body{
 }
 
 .title { 
-  font-size: clamp(32px, 5vw, 48px); /* Título responsivo */
+  font-size: clamp(32px, 5vw, 48px); 
   font-weight:900; 
   color:var(--rojo); 
   margin:0; 
@@ -146,26 +150,25 @@ body{
 .toggle-play{ background:var(--azul); color:white; }
 .toggle-admin{ background:#e0e0e0; color:#333; }
 
-/* JUGADORES - MODIFICADO PARA 5 COLUMNAS FIJAS Y MÁS COMPACTO */
+/* JUGADORES */
 .players-grid{ 
   display:grid; 
-  grid-template-columns: repeat(5, 1fr); /* 5 Columnas FIJAS */
-  gap:6px; /* Gap más pequeño */
+  grid-template-columns: repeat(5, 1fr); 
+  gap:6px; 
 }
-/* @media(max-width:600px){ .players-grid{ grid-template-columns: repeat(3, 1fr) !important; } } */
 
 .player-card{ 
   background:#fff; border-radius:8px; padding:5px; text-align:center;
   box-shadow: 0 2px 5px rgba(0,0,0,0.08); cursor:pointer; transition:all .2s ease;
   border: 1px solid #eee;
-  min-height: 110px; /* Altura mínima reducida */
-  display: flex; /* Añadido para mejor alineación */
-  flex-direction: column; /* Añadido */
-  justify-content: flex-start; /* Añadido */
+  min-height: 110px; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: flex-start; 
 }
 .player-card:hover{ transform:translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.12); border-color: var(--accent1); }
 .player-name{ 
-    font-weight:800; font-size:12px; /* Fuente más pequeña */
+    font-weight:800; font-size:12px; 
     color: var(--azul); margin-bottom: 2px; 
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
 }
@@ -175,10 +178,9 @@ body{
   width:48px; height:70px; border-radius:5px; background-size:cover; background-position:center; 
   position:relative; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
-/* Thumbs más pequeños DENTRO de la tarjeta de jugador para que quepan bien */
 .player-cards .card-thumb { 
     width: 100%; height: auto; aspect-ratio: 3/4.5; 
-    min-width: 25px; /* Evita que desaparezcan en pantallas muy pequeñas */
+    min-width: 25px; 
 } 
 
 .card-thumb.passed{ filter:grayscale(1) opacity(0.5); }
@@ -232,7 +234,6 @@ tr:hover { background: #f9f9f9; }
 .modal-back{ position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter: blur(3px); display:flex; align-items:center; justify-content:center; z-index:9999; opacity: 1; pointer-events: all; transition: opacity 0.3s ease; }
 .modal{ background:#fff; border-radius:15px; padding:20px; width:90%; max-width:500px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); position: relative; transform: translateY(0); transition: transform 0.3s ease; max-height: 90vh; overflow-y: auto; }
 
-/* Ocultar modales */
 .modal-back.hidden { opacity: 0; pointer-events: none; }
 .modal-back.hidden .modal { transform: translateY(20px); }
 
@@ -265,10 +266,9 @@ tr:hover { background: #f9f9f9; }
   position:relative;
   width:880px;
   height:520px;
-  /* Ajuste para pantallas pequeñas */
   max-width: 95vw;
   max-height: 90vh;
-  transform: scale(0.8); /* Ajuste de escala para que quepa en el layout */
+  transform: scale(0.8); 
 }
 .shuffle-card{
   position:absolute;
@@ -300,15 +300,13 @@ tr:hover { background: #f9f9f9; }
 .font-bold { font-weight: 700; }
 .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; }
 
-/* Badges de Estado (Adaptados de v9.14 a lógica v9.10) */
-.badge-jugando { background-color: var(--verde); } /* 'JUGANDO' */
-.badge-porpagar { background-color: var(--accent1); color: #333; animation: pulse 1s infinite; } /* 'POR PAGAR' */
-.badge-pagado { background-color: var(--azul); } /* 'PAGADO' */
-.badge-finalizado { background-color: #999; } /* 'FINALIZADO' */
+.badge-jugando { background-color: var(--verde); } 
+.badge-porpagar { background-color: var(--accent1); color: #333; animation: pulse 1s infinite; } 
+.badge-pagado { background-color: var(--azul); } 
+.badge-finalizado { background-color: #999; } 
 
 @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
-/* --- FIN DE ESTILO --- */
 </style>
 </head>
 <body>
@@ -327,14 +325,12 @@ tr:hover { background: #f9f9f9; }
       </div>
       
       <div class="header-controls-wrapper">
-          <div class="header-controls">
-              <div class="bolsa-compact">
-                  <span class="label" id="bolsa-label">💰 Bolsa</span>
-                  <span class="amount" id="bolsa-amount">$0.00</span>
-              </div>
-              <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
-              <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
+          <div class="bolsa-compact">
+              <span class="label" id="bolsa-label">💰 Bolsa</span>
+              <span class="amount" id="bolsa-amount">$0.00</span>
           </div>
+          <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
+          <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
       </div>
   </header>
   
@@ -490,7 +486,7 @@ tr:hover { background: #f9f9f9; }
         <h3 id="modal-player-name" style="color:var(--azul); margin-top:0;">Detalle de Jugador</h3>
         <div id="modal-body"></div>
         <div id="modal-player-actions" class="mt-2" style="display:flex; flex-direction:column; gap:8px;">
-            </div>
+        </div>
         <button id="modal-close" class="btn btn-muted mt-2 w-full">Cerrar</button>
     </div>
 </div>
@@ -512,19 +508,19 @@ tr:hover { background: #f9f9f9; }
         <h3 id="winner-detail-player-name" style="color:var(--azul)"></h3>
         <div id="winner-detail-card-name" style="font-weight:700; color:var(--rojo); margin-bottom: 15px;"></div>
         <div id="winner-detail-player-cards" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:20px 0;">
-          </div>
+        </div>
         <button id="winner-detail-ok" class="btn btn-blue">Cerrar y Continuar</button>
     </div>
 </div>
 
 
 <div id="shuffle-overlay" aria-hidden="true">
-    </div>
+</div>
 <canvas id="confetti-canvas"></canvas>
 
 
 <script>
-/* index_v11.0_definitiva - code block */
+/* index_v11.1_pulido - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
 const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg",49:"49 el pino-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
@@ -532,7 +528,8 @@ const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME
 const Kp='ganya_v90_prices', Kg='ganya_v90_game', Kpu='ganya_v90_purchases', Ktx='ganya_v90_tx', Kw='ganya_v90_winners', Kdig='ganya_v90_dig', Kmod='ganya_v90_mod';
 const Kid='ganya_v90_id_counter'; 
 const defaultsPrices=()=>({price4:10,profit4:2,price6:12,profit6:3});
-const defaultsGame=()=>({deck:Array.from({length:54},(_,i)=>i+1),drawn:[],current:0,pending:[]});
+// CORRECCIÓN 3: Añadir winnerPending al estado por defecto
+const defaultsGame=()=>({deck:Array.from({length:54},(_,i)=>i+1),drawn:[],current:0,pending:[], winnerPending: false});
 
 let prices = load(Kp) || defaultsPrices();
 let game = load(Kg) || defaultsGame();
@@ -696,9 +693,11 @@ function renderAll(){
     if(lastEl) lastEl.innerHTML = last.length? 
         last.map(id=> `<div class="card-thumb" style="width:40px;height:55px;background-image:url('${cardImageUrl(id)}')"></div>`).join('') : '<div class="small-muted">...</div>';
 
-    const winnerPending = game.winnerPending;
-    $q('#game-controls').classList.toggle('hidden', winnerPending);
+    // CORRECCIÓN 3: Lógica de botones robustecida
+    const winnerPending = game.winnerPending || false;
+    $q('#game-controls').classList.toggle('hidden', !!winnerPending);
     $q('#btn-reset-win').classList.toggle('hidden', !winnerPending);
+    // CORRECCIÓN 2: Lógica de deshabilitar select (ya estaba bien)
     $q('#select-modality').disabled = (isAuto || winnerPending || (game.drawn && game.drawn.length > 0));
 
     const currentFilter = $q('.toggle-btn[id^="filter-"][style*="background: var(--azul)"]');
@@ -900,15 +899,12 @@ function animateShuffle(){
   overlay.innerHTML='<div class="shuffle-center"></div>';
   const center = overlay.querySelector('.shuffle-center');
   
-  // *** MODIFICACIÓN IMPORTANTE ***
-  // Usar el mazo restante (game.deck) en lugar de un mazo nuevo
-  const pending = shuffle(game.deck.slice()); // Tomar copia barajada del mazo RESTANTE
-  const sample = pending.slice(0, 20); // Tomar 20 cartas de muestra para la anim-visual
+  const pending = shuffle(game.deck.slice()); 
+  const sample = pending.slice(0, 20); 
   
   const cards = sample.map((cid,i)=>{
     const el=document.createElement('div'); 
     el.className='shuffle-card shuffle-wave'; 
-    // Usar la función 'cardImageUrl' de v10.0
     el.style.backgroundImage='url("' + cardImageUrl(cid) + '")'; 
     el.style.left='50%'; 
     el.style.top='50%'; 
@@ -957,18 +953,14 @@ function animateShuffle(){
     overlay.innerHTML=''; 
     window.animShuffling=false; 
     
-    // *** MODIFICACIÓN IMPORTANTE ***
-    // Ejecutar la lógica de barajeo del estado (game.deck)
     shufflePending(); 
     
     disableControls(false); 
     renderAll();
-  }, 5200); // Duración total de 5.2s
+  }, 5200); 
 }
 
 function shufflePending(){
-    // Esta es la lógica de 'barajear' (de v10.0)
-    // Solo barajea el mazo restante.
     game.deck = shuffle(game.deck);
     tx.push({id:uuid(),type:'shuffle_remaining',ts:Date.now()});
     saveAll();
@@ -1326,7 +1318,7 @@ function exportPdf(){
                     totalEnJuego += (p.enJuego||0); totalCasa += (p.casa||0); totalPagado += (p.totalPaid||0);
                     return `<tr>
                         <td style="padding:4px">${p.id}</td>
-                        <td style="padding:4px">${escapeHtml(p.playerName)}<br><span style="color:#777">${escapeHtml(p.cell||'—')}</span></td>
+                        <td style"padding:4px">${escapeHtml(p.playerName)}<br><span style="color:#777">${escapeHtml(p.cell||'—')}</span></td>
                         <td style="padding:4px;text-align:center">${p.modality}</td>
                         <td style="padding:4px;text-align:center">${p.gamesLeft||0}</td>
                         <td style="padding:4px;text-align:center">${formatMoney(p.enJuego||0)}</td>

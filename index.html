@@ -997,7 +997,7 @@ let APP = {
     audioCtx: null,
     syncInterval: null,
     isSyncing: false,
-    isWriting: false, // Bloqueo para evitar conflictos de escritura
+    isWriting: false, 
 };
 
 try{ APP.audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ APP.audioCtx=null; }
@@ -1016,10 +1016,11 @@ function cardName(id){
     return baseName.replace(/_/g, ' ').replace(/\.jpg/i, '').trim(); 
 }
 function parseJSON(str, defaultVal = []) {
-    if (typeof str === 'object') return str;
+    if (typeof str === 'object' && str !== null) return str;
     if (typeof str !== 'string' || !str) return defaultVal;
     try {
-        return JSON.parse(str) || defaultVal;
+        const parsed = JSON.parse(str);
+        return parsed === null ? defaultVal : parsed;
     } catch (e) {
         return defaultVal;
     }
@@ -1032,7 +1033,6 @@ function showSyncIndicator(show) {
         APP.isSyncing = true;
         $q('#sync-indicator').classList.add('active');
     } else {
-        // Retrasar el apagado para que el usuario lo vea
         setTimeout(() => {
             APP.isSyncing = false;
             $q('#sync-indicator').classList.remove('active');
@@ -1042,12 +1042,14 @@ function showSyncIndicator(show) {
 
 // --- API (SheetDB) Helpers ---
 async function apiGet(endpoint) {
+    // AÑADIR '_cb' (cache bust) para forzar a SheetDB a no usar el caché
+    const url = endpoint.includes('?') ? `${endpoint}&_cb=${Date.now()}` : `${endpoint}?_cb=${Date.now()}`;
     try {
-        const response = await fetch(endpoint, { cache: "no-cache" });
+        const response = await fetch(url, { cache: "no-cache" });
         if (!response.ok) throw new Error(`Error ${response.status} en GET`);
         return await response.json();
     } catch (error) {
-        console.error("Error en apiGet:", error);
+        console.error("Error en apiGet:", url, error);
         showAlert(`Error de Conexión:<br>${error.message}<br><br>Verifica la URL de la API y la conexión a internet.`);
         return null;
     }
@@ -1092,11 +1094,11 @@ async function apiPatch(endpoint, searchCol, searchVal, data) {
     }
 }
 async function apiPatchMultiple(endpoint, searchCriteria, data) {
-    if (APP.isWriting) return showAlert('Operación en curso, espera un momento.');
+    if (APP.isWriting) return showAlert('Operación en curso...');
     APP.isWriting = true;
     try {
         const searchParams = new URLSearchParams(searchCriteria).toString();
-        const url = `${endpoint}?${searchParams}`;
+        const url = `${endpoint}?${searchParams}&_cb=${Date.now()}`;
         const response = await fetch(url, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -1131,7 +1133,7 @@ async function apiDelete(endpoint, searchCol, searchVal) {
 
 // --- Sonidos ---
 function playSound(id) { /* ... (igual) ... */ }
-function playWinSound(){ /* ... (igual) ... */ }
+function playWinSound(){ playSound('snd-win'); }
 function playShuffleSound(){ /* ... (igual) ... */ }
 
 // --- Modales Personalizados ---
@@ -1159,8 +1161,10 @@ async function startAuto(){
     const btn=$q('#btn-auto');
     if(btn){ btn.textContent='⏹ DETENER'; btn.classList.remove('btn-green'); btn.classList.add('btn-muted'); }
     
-    APP.autoInterval=setInterval(drawOne, 1500); 
     await drawOne(); // Tira la primera carta inmediatamente
+    if (APP.isAuto) { // Comprobar si no se canceló por un ganador
+        APP.autoInterval=setInterval(drawOne, 1500); 
+    }
     renderAll();
 }
 
@@ -1278,6 +1282,7 @@ function renderAll(){
         $q('#btn-shuffle').disabled = true;
         $q('#btn-auto').disabled = false; 
     }
+
 
     const currentFilter = $q('.toggle-btn[id^="filter-"][style*="background: var(--azul)"]');
     let filterValue = null;
@@ -1456,7 +1461,7 @@ function openPurchaseDetail(id){
         actionsDiv.innerHTML += `<button class="btn btn-blue" onclick="copyClabe('${p.id}')">📋 Copiar CLABE/Cuenta</button>`;
     }
     if(isPending) {
-        const pendingWin = APP.winners.find(w => w.purchaseId === id && !w.paid);
+        const pendingWin = APP.winners.find(w => w.purchaseId === id && (w.paid === false || w.paid === 'false'));
         if (pendingWin) {
             actionsDiv.innerHTML += `<button class="btn btn-green" onclick="markPaidById('${p.id}', ${pendingWin.ts})">💸 Marcar como PAGADO y Notificar</button>`;
         }
@@ -1530,7 +1535,6 @@ function printPurchase(id){
 }
 
 function initializePurchaseData(p){
-    // Convertir números de string a number
     p.price = Number(p.price || 0);
     p.profit = Number(p.profit || 0);
     p.modality = Number(p.modality || 4);
@@ -1585,7 +1589,7 @@ async function animateShuffle(){
     return {el,cid};
   });
   
-  // Wave 1
+  // ... (animación visual) ...
   cards.forEach((c,idx)=> setTimeout(()=>{ 
     const tx=(idx-cards.length/2)*18+(Math.random()*40-20); 
     const ty=-160+Math.random()*100; 
@@ -1595,8 +1599,6 @@ async function animateShuffle(){
     if(Math.random()>0.6) c.el.classList.add('flip');
     if(idx % 5 === 0) playShuffleSound(); 
   }, idx*60));
-  
-  // Wave 2
   setTimeout(()=>{ 
       cards.forEach((c,idx)=> setTimeout(()=>{ 
           const tx=(Math.random()*700-350); 
@@ -1608,8 +1610,6 @@ async function animateShuffle(){
           if(idx % 5 === 0) playShuffleSound(); 
       }, idx*50)); 
   }, 1600);
-  
-  // Wave 3 final gather
   setTimeout(()=>{ 
       playShuffleSound();
       cards.forEach((c,idx)=>{ 
@@ -1620,7 +1620,6 @@ async function animateShuffle(){
       }); 
   }, 3200);
   
-  // finalize
   setTimeout(async ()=>{
     $qa('#players-grid .card-thumb').forEach(c=>{ c.classList.add('shine'); setTimeout(()=>c.classList.remove('shine'),2600); });
     overlay.style.display='none'; 
@@ -1636,8 +1635,6 @@ async function animateShuffle(){
 
 async function shufflePending(){
     APP.game.deck = shuffle(APP.game.deck);
-    APP.tx.push({id:uuid(),type:'shuffle_remaining',ts:Date.now()});
-    // Guardar el nuevo estado del juego en la nube
     await apiUpdateEstadoJuego();
 }
 // --- FIN ANIMACIÓN BARAJEO ---
@@ -1657,7 +1654,6 @@ async function drawOne(){
     APP.game.current=card;
     APP.drawnInGame.push(card); 
     
-    APP.tx.push({id:uuid(),type:'draw',card:card,ts:Date.now()});
     await apiUpdateEstadoJuego(); // Guardar mazo, carta actual, etc.
     await processCard(card);
     renderAll();
@@ -1673,13 +1669,13 @@ async function processCard(cardId){
         let pCards = parseJSON(p.card, []);
         let pMarked = parseJSON(p.markedCards, []);
 
-        if(pCards.includes(cardId) && !pMarked.includes(cardId)){
-            pMarked.push(cardId);
+        if(pCards.includes(Number(cardId)) && !pMarked.includes(Number(cardId))){
+            pMarked.push(Number(cardId));
             p.markedCards = serialize(pMarked); // Re-serializar
             playersToUpdate.push({ id: p.id, markedCards: p.markedCards });
         }
 
-        if(pMarked.length === p.modality){
+        if(pMarked.length == p.modality){
             winnersFound.push({idx:i,purchaseId:p.id});
         }
     });
@@ -1702,6 +1698,8 @@ async function processCard(cardId){
         activeForPot.forEach(p => initializePurchaseData(p));
         const totalEnJuego = activeForPot.reduce((s,p)=> s + Number(p.enJuego||0),0);
         
+        const recs=[];
+        
         const p = APP.purchases[firstWinner.idx];
         
         const rec = {
@@ -1715,14 +1713,13 @@ async function processCard(cardId){
             ts: Date.now()
         };
         APP.winners.push(rec);
-        APP.tx.push({id:uuid(),type:'win',player:p.playerName,modality:p.modality,amount:totalEnJuego,card:cardId,purchaseId:p.id,ts:Date.now()});
-
+        
         // Actualizar la nube
         await apiPost(API_ENDPOINTS.ganadores, rec);
-        await apiPatch(API_ENDPOINTS.partidas, 'id', p.id, { state: 'POR PAGAR', prize: totalEnJuego });
+        await apiPatch(API_ENDPOINTS.partidas, 'id', p.id, { state: 'POR PAGAR', prize: totalEnJuego, gamesLeft: 0 });
         await apiUpdateEstadoJuego(); // Guardar que hay un ganador pendiente
 
-        window._tempWinnerRecs = [rec]; // Guardar para modal
+        window._tempWinnerRecs = [rec]; 
 
         const modal = $q('#modal-winner');
         $q('#winner-title').textContent = `🎉 ¡LOTERÍA! 🎉`;
@@ -1812,8 +1809,6 @@ async function markPaidById(id, ts){
     if (!hasOtherPendingWins) {
         newPlayerState = 'PAGADO';
     }
-    
-    APP.tx.push({id:uuid(),type:'mark_paid',purchaseId:id, winnerId: winnerRec.id, ts:Date.now()});
     
     // Actualizar nube
     await apiPatch(API_ENDPOINTS.ganadores, 'id', winnerRec.id, { paid: true });
@@ -1938,8 +1933,9 @@ async function registerPlayer(){
                 id:id, playerName:name, cell:cell, clabe:clabe,
                 modality:pt.modality, 
                 state:'JUGANDO',
-                card: serialize(newCards), // Serializar
-                markedCards: serialize([]), // Serializar
+                gamesLeft: 1,
+                card: serialize(newCards), 
+                markedCards: serialize([]), 
                 createdAt: Date.now(), 
                 price: ptPrice, 
                 profit: ptProfit, 
@@ -1956,14 +1952,16 @@ async function registerPlayer(){
     });
     
     // Guardar en la nube
+    showSyncIndicator(true);
     const result = await apiPost(API_ENDPOINTS.partidas, newPurchases);
     if (!result || !result.created) {
+        showSyncIndicator(false);
         return showAlert('Error al guardar en la nube. Intenta de nuevo.');
     }
     
     // Actualizar el contador de ID
     APP.currentIdCounter = nextId;
-    await apiPatch(API_ENDPOINTS.config, 'idCounter', APP.currentIdCounter - newPurchases.length, { idCounter: nextId });
+    await apiPatch(API_ENDPOINTS.config, 'price4', APP.prices.price4, { idCounter: nextId });
     
     // Actualizar caché local
     APP.purchases.push(...newPurchases);
@@ -1977,6 +1975,8 @@ async function registerPlayer(){
 
     const finalMsg = `🎉 ¡HOLA ${name.toUpperCase()}! BIENVENIDO A GANA YA! 🎉\n\n✅ Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${messageParts.join('\n\n')}\n\n🍀 ¡MUCHA SUERTE Y A GANAR! 🍀`;
     window.open(`https://wa.me/52${cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
+    
+    showSyncIndicator(false);
     await showAlert(`¡${name} registrado con éxito! (${q4+q6} partidas totales). Se abrió WhatsApp para enviar el registro.`);
     renderAll();
 }
@@ -1987,27 +1987,154 @@ async function resetGame(){
     
     APP.game.winnerPending = false; 
     stopAuto();
+    showSyncIndicator(true);
+
+    // Actualizar TODOS los jugadores 'JUGANDO' de esta modalidad a 'FINALIZADO'
+    await apiPatchMultiple(API_ENDPOINTS.partidas, 
+        { state: 'JUGANDO', modality: APP.currentMode }, 
+        { state: 'FINALIZADO', gamesLeft: 0, markedCards: '[]' }
+    );
     
-    // Actualizar estado en la nube
-    await apiPatchMultiple(API_ENDPOINTS.partidas, { state: 'JUGANDO', modality: APP.currentMode }, { state: 'FINALIZADO' });
-    
+    // Actualizar jugadores 'POR PAGAR' (solo limpiar cartas, no estado)
+    await apiPatchMultiple(API_ENDPOINTS.partidas,
+        { state: 'POR PAGAR', modality: APP.currentMode },
+        { markedCards: '[]' }
+    );
+
     APP.game.deck = shuffle(Array.from({length:54},(_,i)=>i+1));
     APP.game.drawn=[]; APP.game.current=0; APP.drawnInGame=[];
     
     await apiUpdateEstadoJuego(); // Guardar el nuevo mazo
     
-    $q('#shuffle-overlay').classList.remove('visible');
-    $q('#shuffle-overlay').style.display='none';
+    $q('#shuffle-overlay').classList.add('hidden');
     
-    // Sincronizar datos locales
-    await syncData();
+    // Forzar la resincronización de datos locales
+    await syncData(); 
     
+    showSyncIndicator(false);
     showAlert('Partida anterior finalizada. Mazo reiniciado. ¡Listo para una nueva partida!');
 }
 
-function exportPdf(){ /* ... (igual a v13.1, agrupando por celular) ... */ }
+function exportPdf(){ 
+    const date=new Date(), header=`Reporte de partidas — GANA YA!`, logo='logo_1_entrada.png';
+    let html=`<html><head><title>${header}</title><style>
+        body{font-family:Arial;padding:12px;font-size:12px;}
+        table{width:100%; border-collapse: collapse; margin-top: 10px;}
+        th, td{padding:4px 6px; border: 1px solid #ccc; text-align:left;}
+        th{background:#f0f0f0; text-align:center;}
+        .text-center{text-align:center;}
+        .text-right{text-align:right;}
+        .summary-table td{font-size: 14px; font-weight: bold; padding: 8px;}
+        .summary-table tr:last-child td { border-top: 2px solid #333; }
+        .folios { font-size: 10px; color: #333; word-break: break-all; }
+    </style></head><body>`;
+    
+    html+=`<div style="display:flex;gap:12px;align-items:center">
+        <img src="${logo}" style="width:80px;height:80px;object-fit:contain"/>
+        <div><h2>${header}</h2><p style="font-size:12px">Generado el ${date.toLocaleString()}</p></div>
+    </div><hr>`;
 
-async function apiUpdateEstadoJuego() {
+    let totalRecaudado=0, totalPremios=0, totalCasa=0, totalPagado=0, totalPartidas=0;
+    const purchasesByPhone = {};
+
+    APP.purchases.forEach(p=>{ 
+        initializePurchaseData(p);
+        totalRecaudado += (p.price||0); 
+        totalCasa += (p.casa||0);
+        totalPartidas++;
+        
+        const cell = p.cell || 'sin-celular';
+        if (!purchasesByPhone[cell]) {
+            purchasesByPhone[cell] = {
+                playerName: p.playerName,
+                cell: p.cell,
+                tickets: [],
+                totalSpent: 0
+            };
+        }
+        purchasesByPhone[cell].tickets.push(p.id);
+        purchasesByPhone[cell].totalSpent += (p.price||0);
+    });
+    
+    const uniqueUsers = Object.keys(purchasesByPhone).length;
+    
+    APP.winners.forEach(w => {
+        totalPremios += Number(w.prize || 0);
+        if(w.paid === 'true' || w.paid === true) { totalPagado += Number(w.prize || 0); }
+    });
+    const gananciaNeta = totalRecaudado - totalPagado;
+
+    html += `<div style="margin-top:20px;">
+        <h3>Resumen Ejecutivo</h3>
+        <table class="summary-table">
+            <tr><td>Total Recaudado:</td><td class="text-right">${formatMoney(totalRecaudado)}</td></tr>
+            <tr><td>Total Pagado a Ganadores:</td><td class="text-right" style="color:red;">(${formatMoney(totalPagado)})</td></tr>
+            <tr><td style="font-weight:bold; color:green;">Ganancia Neta (en Caja):</td><td class="text-right" style="color:green;">${formatMoney(gananciaNeta)}</td></tr>
+            <tr><td style="font-size:12px; font-weight:normal;">Total Apartado por la Casa (Bruto):</td><td class="text-right" style="font-size:12px; font-weight:normal;">${formatMoney(totalCasa)}</td></tr>
+            <tr><td style="font-size:12px; font-weight:normal;">Total de Premios Pendientes:</td><td class="text-right" style="font-size:12px; font-weight:normal;">${formatMoney(totalPremios - totalPagado)}</td></tr>
+            <tr><td style="font-size:12px; font-weight:normal;">Total de Partidas Vendidas:</td><td class="text-right" style="font-size:12px; font-weight:normal;">${totalPartidas}</td></tr>
+            <tr><td style="font-size:12px; font-weight:normal;">Total de Usuarios Únicos:</td><td class="text-right" style="font-size:12px; font-weight:normal;">${uniqueUsers}</td></tr>
+        </table>
+    </div>`;
+
+    const pricesHtml = `<div style="margin-top:20px;">
+        <h3>Configuración de Precios</h3>
+        <table>
+            <tr><th>Modalidad</th><th>Precio</th><th>Ganancia Casa</th><th>Monto en Juego</th></tr>
+            <tr><td class="text-center">4 Cartas</td><td class="text-center">${formatMoney(APP.prices.price4)}</td><td class="text-center">${formatMoney(APP.prices.profit4)}</td><td class="text-center">${formatMoney(APP.prices.price4 - APP.prices.profit4)}</td></tr>
+            <tr><td class="text-center">6 Cartas</td><td class="text-center">${formatMoney(APP.prices.price6)}</td><td class="text-center">${formatMoney(APP.prices.profit6)}</td><td class="text-center">${formatMoney(APP.prices.price6 - APP.prices.profit6)}</td></tr>
+        </table>
+    </div>`;
+
+    const playersHtml = `<div style="margin-top:20px;">
+        <h3>Detalle de Jugadores (Agrupado por Celular)</h3>
+        <table>
+            <thead><tr><th>Jugador</th><th>Celular</th><th>Partidas</th><th>Total Gastado</th><th>Folios</th></tr></thead>
+            <tbody>
+                ${Object.values(purchasesByPhone).map(user => { 
+                    return `<tr>
+                        <td style="padding:4px">${escapeHtml(user.playerName)}</td>
+                        <td style="padding:4px">${escapeHtml(user.cell||'—')}</td>
+                        <td class="text-center">${user.tickets.length}</td>
+                        <td class="text-center">${formatMoney(user.totalSpent)}</td>
+                        <td style="padding:4px"><span class="folios">${user.tickets.join(', ')}</span></td>
+                    </tr>`;
+                }).join('')}
+            </tbody>
+        </table>
+    </div>`;
+
+    const winnersHtml = `<div style="margin-top:20px;">
+        <h3>Detalle de Ganadores</h3>
+        <table>
+            <thead><tr><th>Fecha</th><th>Jugador</th><th>Carta Ganadora</th><th>Premio</th><th>Estado</th></tr></thead>
+            <tbody>
+                ${APP.winners.slice().sort((a,b)=>Number(b.ts)-Number(a.ts)).map(w=>{ 
+                    return `<tr>
+                        <td style="padding:4px">${new Date(Number(w.ts)).toLocaleString()}</td>
+                        <td style="padding:4px">${escapeHtml(w.playerName)}</td>
+                        <td class="text-center">${cardName(w.cardId)}</td>
+                        <td class="text-center">${formatMoney(w.prize)}</td>
+                        <td class="text-center">${(w.paid === 'true' || w.paid === true)?'PAGADO':'POR PAGAR'}</td>
+                    </tr>`;
+                }).join('')}
+            </tbody>
+        </table>
+    </div>`;
+    
+    html+=pricesHtml+playersHtml+winnersHtml;
+    html+='<hr><p style="text-align:center; font-size:10px;">Fin del Reporte</p></body></html>';
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.print();
+}
+
+async function apiUpdateEstadoJuego(isCreation = false) {
+    if (APP.isWriting) return;
+    APP.isWriting = true;
+    
     const estado = {
         deck: serialize(APP.game.deck),
         drawn: serialize(APP.game.drawn),
@@ -2016,9 +2143,15 @@ async function apiUpdateEstadoJuego() {
         drawnInGame: serialize(APP.drawnInGame),
         lastUpdate: Date.now()
     };
-    // Usar 'lastUpdate' como la "llave" para actualizar la fila (asumiendo que solo hay 1 fila)
-    await apiPatch(API_ENDPOINTS.estado, 'lastUpdate', '*', estado);
+    
+    if (isCreation) {
+        await apiPost(API_ENDPOINTS.estado, estado);
+    } else {
+        await apiPatch(API_ENDPOINTS.estado, 'lastUpdate', '*', estado);
+    }
+    APP.isWriting = false;
 }
+
 
 function applyTheme(themeName) {
     document.documentElement.dataset.theme = themeName;
@@ -2066,8 +2199,12 @@ async function loadInitialData() {
         APP.game.winnerPending = (s.winnerPending === 'true' || s.winnerPending === true);
         APP.drawnInGame = parseJSON(s.drawnInGame, []);
     } else {
-        // Si no hay estado, crear uno nuevo
-        await resetGame();
+        // La fila de estado no existe. La creamos.
+        console.log("Creando estado de juego inicial en la nube...");
+        APP.game = defaultsGame();
+        APP.game.deck = shuffle(Array.from({length:54},(_,i)=>i+1));
+        APP.drawnInGame = [];
+        await apiUpdateEstadoJuego(true); // 'true' para forzar POST
     }
     
     // Cargar Partidas y Ganadores
@@ -2078,7 +2215,7 @@ async function loadInitialData() {
 }
 
 async function syncData(doRender = true) {
-    if (APP.isSyncing || APP.isWriting) return; // Evitar syncs paralelos
+    if (APP.isSyncing || APP.isWriting) return; 
     
     showSyncIndicator(true);
     
@@ -2116,7 +2253,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     $q('#select-modality').value = APP.currentMode;
     applyTheme(APP.currentTheme); 
     
-    // Cargar todos los datos de la nube al iniciar
     loadInitialData();
     
     $q('#btn-shuffle').addEventListener('click', animateShuffle);
@@ -2209,11 +2345,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     $q('#btn-export').addEventListener('click', exportPdf);
     $q('#btn-reset-day').addEventListener('click', async ()=>{ 
-        const confirm = await showConfirm('¿BORRAR TODAS LAS COMPRAS Y GANADORES DEL DÍA?<br><br>Esta acción no se puede deshacer.', 'Borrar Día');
+        const confirm = await showConfirm('¿BORRAR TODAS LAS COMPRAS Y GANADORES DEL DÍA?<br><br>Esta acción no se puede deshacer y borrará los datos de la nube.', 'Borrar Día');
         if(!confirm) return;
         
         showSyncIndicator(true);
-        // Borrar todas las filas en las pestañas 'partidas' y 'ganadores'
+        // Borrar todas las filas
         await apiDelete(API_ENDPOINTS.partidas, 'id', '*');
         await apiDelete(API_ENDPOINTS.ganadores, 'id', '*');
         

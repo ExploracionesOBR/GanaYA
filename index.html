@@ -2,7 +2,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎴 GANA YA! - Lotería Interactiva (v14.1 Sincronizado)</title>
+<title>🎴 GANA YA! - Lotería Interactiva (v14.2 Sincronizado)</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ff6bcb'/%3E%3Ctext x='50%25' y='55%25' font-size='18' font-family='Arial' fill='white' text-anchor='middle' font-weight='700'%3EG%3C/text%3E%3C/svg%3E">
 <style>
 /* --- INICIO DE ESTILO (v13.1) --- */
@@ -1041,7 +1041,6 @@ function showSyncIndicator(show) {
 
 // --- API (SheetDB) Helpers ---
 async function apiGet(endpoint) {
-    // CORRECCIÓN 1: Añadido cache-buster
     const url = endpoint.includes('?') ? `${endpoint}&_cb=${Date.now()}` : `${endpoint}?_cb=${Date.now()}`;
     try {
         const response = await fetch(url, { 
@@ -1311,8 +1310,6 @@ function initializePurchaseData(p){
     p.casa = p.profit;
     p.state = p.state || 'JUGANDO'; 
     p.totalPaid = p.totalPaid || p.price;
-    // gamesLeft ya no se usa, pero lo normalizamos
-    p.gamesLeft = Number(p.gamesLeft === undefined ? 1 : p.gamesLeft); 
 }
 
 function animateBolsa(targetAmount){ /* ... (igual) ... */ }
@@ -1709,7 +1706,7 @@ async function registerPlayer(){
         return showAlert('Error al guardar en la nube. Intenta de nuevo.');
     }
     
-    await apiUpdateConfig({ idCounter: nextId }); // Solo actualizar el contador
+    await apiUpdateConfig({ idCounter: nextId });
     APP.currentIdCounter = nextId;
     
     APP.purchases.push(...newPurchases);
@@ -1762,6 +1759,7 @@ async function resetGame(){
 
 function exportPdf(){ /* ... (igual a v13.1, agrupando por celular) ... */ }
 
+// CORRECCIÓN 3: Funciones de actualización de config y estado
 async function apiUpdateConfig(dataToUpdate) {
     if (APP.isWriting) return;
     APP.isWriting = true;
@@ -1772,11 +1770,10 @@ async function apiUpdateConfig(dataToUpdate) {
         price6: dataToUpdate.price6 || APP.prices.price6,
         profit6: dataToUpdate.profit6 || APP.prices.profit6,
         idCounter: dataToUpdate.idCounter || APP.currentIdCounter,
-        lastUpdate: Date.now()
+        search_key: 'config_row'
     };
     
-    // CORRECCIÓN: Usar 'search' para actualizar la fila única
-    const response = await fetch(`${API_ENDPOINTS.config}/search?lastUpdate=*`, {
+    const response = await fetch(`${API_ENDPOINTS.config}/search_key/config_row`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: config })
@@ -1800,32 +1797,22 @@ async function apiUpdateEstadoJuego(isCreation = false) {
         current: APP.game.current || 0,
         winnerPending: APP.game.winnerPending || false,
         drawnInGame: serialize(APP.drawnInGame),
-        lastUpdate: Date.now()
+        search_key: 'game_row'
     };
     
     let response;
     if (isCreation) {
-        response = await fetch(API_ENDPOINTS.estado, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ data: [estado] })
-        });
+        response = await apiPost(API_ENDPOINTS.estado, estado);
     } else {
-        // CORRECCIÓN: Usar 'search' para actualizar la fila única
-        response = await fetch(`${API_ENDPOINTS.estado}/search?lastUpdate=*`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ data: estado })
-        });
+        response = await apiPatch(API_ENDPOINTS.estado, 'search_key', 'game_row', estado);
     }
+    
     APP.isWriting = false;
-    if (!response.ok) {
-         const errData = await response.json();
-         console.error("Error en apiUpdateEstadoJuego", errData);
+    if (!response) {
          showAlert('Error al guardar el estado del juego en la nube.');
          return null;
     }
-    return response.json();
+    return response;
 }
 
 
@@ -1860,9 +1847,9 @@ async function loadInitialData() {
         $q('#price6').value = APP.prices.price6;
         $q('#profit6').value = APP.prices.profit6;
     } else {
-        showSyncIndicator(false);
-        showAlert('Error fatal: No se pudo cargar la configuración. Asegúrate que la pestaña `config` exista y tenga datos.');
-        return;
+        // CORRECCIÓN 2: Si no hay config, crearla
+        console.log("Creando config inicial en la nube...");
+        await apiPost(API_ENDPOINTS.config, { ...APP.prices, idCounter: APP.currentIdCounter, search_key: 'config_row' });
     }
 
     const estadoData = await apiGet(API_ENDPOINTS.estado);
@@ -1880,6 +1867,7 @@ async function loadInitialData() {
              await apiUpdateEstadoJuego();
         }
     } else {
+        // CORRECCIÓN 2: Si no hay estado, crearlo
         console.log("No se encontró estado de juego, creando uno nuevo...");
         APP.game = defaultsGame();
         APP.game.deck = shuffle(Array.from({length:54},(_,i)=>i+1));
@@ -1898,7 +1886,6 @@ async function syncData(doRender = true) {
     
     showSyncIndicator(true);
     
-    // CORRECCIÓN 1: No volver a cargar config, solo partidas, ganadores y estado
     const [partidasData, ganadoresData, estadoData] = await Promise.all([
         apiGet(API_ENDPOINTS.partidas),
         apiGet(API_ENDPOINTS.ganadores),
@@ -1946,13 +1933,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
         APP.prices.price6=parseFloat($q('#price6').value||0);
         APP.prices.profit6=parseFloat($q('#profit6').value||0);
         
-        await apiUpdateConfig(); // Esto guarda el objeto APP.prices completo
+        await apiUpdateConfig(); 
         showAlert('Precios guardados.');
     });
     $q('#reset-prices').addEventListener('click', async ()=>{
         APP.prices=defaultsPrices();
         
-        await apiUpdateConfig(); // Guardar los precios por defecto
+        await apiUpdateConfig(); 
         
         $q('#price4').value=APP.prices.price4;
         $q('#profit4').value=APP.prices.profit4;
@@ -2035,7 +2022,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         APP.game=defaultsGame();
         APP.winners=[];
         APP.drawnInGame=[];
-        await apiUpdateEstadoJuego(true); // Forzar POST para crear una nueva fila de estado limpia
+        await apiUpdateEstadoJuego(true); 
         
         showSyncIndicator(false);
         renderAll();

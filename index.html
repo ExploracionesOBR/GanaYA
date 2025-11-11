@@ -1,13 +1,14 @@
-<!doctype html><html lang="es" data-theme="original"> <head>
+<!doctype html><html lang="es" data-theme="original">
+<head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎴 GANA YA! - Lotería Interactiva (v12.0)</title>
+<title>🎴 GANA YA! - Lotería Interactiva (v13.0)</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ff6bcb'/%3E%3Ctext x='50%25' y='55%25' font-size='18' font-family='Arial' fill='white' text-anchor='middle' font-weight='700'%3EG%3C/text%3E%3C/svg%3E">
 <style>
-/* --- INICIO DE ESTILO (v12.0) --- */
+/* --- INICIO DE ESTILO (v13.0) --- */
 
 /* -------------------------------------------
-  CORRECCIÓN 2: DEFINICIÓN DE TEMAS (SKINS)
+  DEFINICIÓN DE TEMAS (SKINS)
   -------------------------------------------
 */
 
@@ -28,7 +29,7 @@
     --fondo-calculadora: #f9f9f9;
 }
 
-/* TEMA 2: Mexicano 1 (Fiesta) - Basado en tu snippet */
+/* TEMA 2: Mexicano 1 (Fiesta) */
 [data-theme="mexicano1"] {
     --rojo: #d00000;
     --verde: #008000;
@@ -43,23 +44,72 @@
     --gradiente-barra: linear-gradient(90deg, var(--verde) 0%, var(--accent1) 50%, var(--rojo) 100%);
     --fondo-calculadora: #fffbe6;
 }
+/* Efecto Banderas (Mexicano 1) */
+[data-theme="mexicano1"] .mex-frame::before {
+    content: '🇲🇽';
+    position: absolute;
+    top: -5px; left: 10px;
+    font-size: 20px;
+    transform: rotate(-15deg);
+}
+[data-theme="mexicano1"] .mex-frame::after {
+    content: '🎉';
+    position: absolute;
+    top: 0; right: 10px;
+    font-size: 20px;
+    transform: rotate(15deg);
+}
 
-/* TEMA 3: Halloween */
+/* TEMA 3: Mexicano 2 (Neón y Serpentinas) */
+[data-theme="mexicano2"] {
+    --rojo: #e63946;
+    --verde: #00f0a0; /* Verde Neón */
+    --azul: #457b9d;
+    --naranja: #f4a261;
+    --crema: #1a1a1a;
+    --accent1: #ffffff; /* Blanco */
+    --accent2: #e63946;
+    --texto-principal: #f1faee;
+    --texto-secundario: #aaa;
+    --borde-cabecera: #e63946;
+    --gradiente-barra: linear-gradient(90deg, var(--verde) 0%, var(--accent1) 50%, var(--rojo) 100%);
+    --fondo-calculadora: #2a2a2a;
+}
+[data-theme="mexicano2"] body {
+    background-image: none;
+}
+[data-theme="mexicano2"] .mex-frame, 
+[data-theme="mexicano2"] .mex-frame-small { background: #222; }
+[data-theme="mexicano2"] .main-header { background: rgba(30,30,30,0.85); }
+[data-theme="mexicano2"] .bolsa-compact { background: #333; }
+[data-theme="mexicano2"] .input { background: #333; color: #fff; border-color: #555; }
+[data-theme="mexicano2"] tr:hover { background: #2a2a2a; }
+[data-theme="mexicano2"] .toggle-admin { background: #555; color: #fff; }
+/* Efecto Neón (Mexicano 2) */
+@keyframes neonGlow {
+    0%, 100% { box-shadow: 0 0 5px var(--verde), 0 0 10px var(--verde), 0 0 15px var(--accent1), 0 0 20px var(--rojo); }
+    50% { box-shadow: 0 0 15px var(--verde), 0 0 20px var(--accent1), 0 0 30px var(--accent1), 0 0 40px var(--rojo); transform: scale(1.18); }
+}
+[data-theme="mexicano2"] .winner-card {
+    animation: neonGlow 1.5s infinite ease-in-out;
+}
+
+
+/* TEMA 4: Halloween */
 [data-theme="halloween"] {
-    --rojo: #FF4500; /* Naranja Halloween */
-    --verde: #adff02; /* Verde Lima */
-    --azul: #9400D3; /* Morado */
+    --rojo: #FF4500;
+    --verde: #adff02;
+    --azul: #9400D3;
     --naranja: #FF8C00;
-    --crema: #1a1a1a; /* Fondo Oscuro */
-    --accent1: #FFD700; /* Dorado */
+    --crema: #1a1a1a;
+    --accent1: #FFD700;
     --accent2: #FF4500;
-    --texto-principal: #f1faee; /* Texto claro */
+    --texto-principal: #f1faee;
     --texto-secundario: #aaa;
     --borde-cabecera: #FF4500;
     --gradiente-barra: linear-gradient(90deg, var(--verde) 0%, var(--azul) 50%, var(--rojo) 100%);
     --fondo-calculadora: #2a2a2a;
 }
-/* CSS extra para Halloween */
 [data-theme="halloween"] body {
     background-image: radial-gradient(var(--rojo) 1px, transparent 1px), radial-gradient(var(--azul) 1px, transparent 1px);
 }
@@ -72,14 +122,14 @@
 [data-theme="halloween"] .toggle-admin { background: #555; color: #fff; }
 
 
-/* TEMA 4: Navidad */
+/* TEMA 5: Navidad */
 [data-theme="navidad"] {
-    --rojo: #c1121f; /* Rojo Navidad */
-    --verde: #005f08; /* Verde Pino */
-    --azul: #0077b6; /* Azul Hielo */
+    --rojo: #c1121f;
+    --verde: #005f08;
+    --azul: #0077b6;
     --naranja: #f77f00;
-    --crema: #fdfdfd; /* Blanco Nieve */
-    --accent1: #ffd700; /* Dorado */
+    --crema: #fdfdfd;
+    --accent1: #ffd700;
     --accent2: #c1121f;
     --texto-principal: #000;
     --texto-secundario: #444;
@@ -91,14 +141,14 @@
     background-image: radial-gradient(var(--rojo) 0.5px, transparent 0.5px), radial-gradient(var(--verde) 0.5px, transparent 0.5px);
 }
 
-/* TEMA 5: Pascua */
+/* TEMA 6: Pascua */
 [data-theme="pascua"] {
-    --rojo: #ffb3c1; /* Rosa Pastel */
-    --verde: #a9def9; /* Azul Pastel */
-    --azul: #e6c0e9; /* Lavanda */
+    --rojo: #ffb3c1;
+    --verde: #a9def9;
+    --azul: #e6c0e9;
     --naranja: #f9c74f;
     --crema: #f8f9fa;
-    --accent1: #d4e09b; /* Verde Pastel */
+    --accent1: #d4e09b;
     --accent2: #ffb3c1;
     --texto-principal: #222;
     --texto-secundario: #555;
@@ -110,11 +160,11 @@
      background-image: radial-gradient(var(--rojo) 1px, transparent 1px), radial-gradient(var(--azul) 1px, transparent 1px);
 }
 
-/* TEMA 6: Santos Reyes */
+/* TEMA 7: Santos Reyes */
 [data-theme="reyes"] {
-    --rojo: #D4AF37; /* Oro */
-    --verde: #5a189a; /* Morado */
-    --azul: #003049; /* Azul Noche */
+    --rojo: #D4AF37;
+    --verde: #5a189a;
+    --azul: #003049;
     --naranja: #D4AF37;
     --crema: #f1faee;
     --accent1: #D4AF37;
@@ -132,6 +182,113 @@
 
 /* -------------------------------------------
   FIN DE TEMAS
+  ------------------------------------------- */
+
+/* -------------------------------------------
+  EFECTOS DE TEMA
+  ------------------------------------------- */
+
+/* Efecto Telarañas (Halloween) */
+.webs-overlay { display: none; }
+[data-theme="halloween"] .webs-overlay {
+    display: block;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 9990;
+}
+.webs-overlay::before, .webs-overlay::after {
+    content: '🕸️';
+    font-size: 100px;
+    position: absolute;
+    opacity: 0.3;
+    animation: webFadeIn 5s ease;
+}
+.webs-overlay::before { top: -20px; left: -20px; }
+.webs-overlay::after { top: -20px; right: -20px; transform: scaleX(-1); }
+@keyframes webFadeIn { 0% { opacity: 0; } 100% { opacity: 0.3; } }
+
+/* Efecto Nieve (Navidad) */
+.snow-overlay { display: none; }
+[data-theme="navidad"] .snow-overlay {
+    display: block;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 9990;
+}
+.snow-overlay .snow {
+    position: absolute;
+    top: -20px;
+    color: var(--azul);
+    font-size: 20px;
+    animation: fallingSnow 10s linear infinite;
+}
+.snow-overlay .snow:nth-child(2) { left: 20%; animation-duration: 12s; animation-delay: 1s; font-size: 15px;}
+.snow-overlay .snow:nth-child(3) { left: 40%; animation-duration: 8s; animation-delay: 2s; font-size: 10px;}
+.snow-overlay .snow:nth-child(4) { left: 60%; animation-duration: 11s; animation-delay: 3s; font-size: 18px;}
+.snow-overlay .snow:nth-child(5) { left: 80%; animation-duration: 9s; animation-delay: 4s; font-size: 12px;}
+@keyframes fallingSnow {
+    0% { transform: translateY(0) rotate(0); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+
+/* Efecto Luces (Navidad) */
+.lights-overlay { display: none; }
+[data-theme="navidad"] .lights-overlay {
+    display: block;
+    position: absolute;
+    top: 10px; left: 0; right: 0;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.lights-overlay .light {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    margin: 0 10px;
+    animation: twinkleLights 2s infinite;
+}
+.lights-overlay .light:nth-child(1) { background: var(--rojo); animation-delay: 0s; }
+.lights-overlay .light:nth-child(2) { background: var(--verde); animation-delay: 0.2s; }
+.lights-overlay .light:nth-child(3) { background: var(--accent1); animation-delay: 0.4s; }
+.lights-overlay .light:nth-child(4) { background: var(--azul); animation-delay: 0.6s; }
+.lights-overlay .light:nth-child(5) { background: var(--rojo); animation-delay: 0.8s; }
+.lights-overlay .light:nth-child(6) { background: var(--verde); animation-delay: 1s; }
+.lights-overlay .light:nth-child(7) { background: var(--accent1); animation-delay: 1.2s; }
+.lights-overlay .light:nth-child(8) { background: var(--azul); animation-delay: 1.4s; }
+@keyframes twinkleLights {
+    0%, 100% { box-shadow: 0 0 5px 2px currentColor; opacity: 1; }
+    50% { box-shadow: none; opacity: 0.5; }
+}
+
+/* Efecto Serpentinas (Mexicano 2) */
+.serpentina-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 9998; /* Debajo de modales */
+}
+.serpentina-overlay.animate { display: block; }
+.serpentina {
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    width: 10px;
+    height: 100px;
+    border-radius: 5px;
+    animation: throwSerpentinas 3s ease-out forwards;
+}
+@keyframes throwSerpentinas {
+    0% { transform: translate(0, 0) rotate(0); opacity: 1; }
+    100% { transform: translate(var(--x-end), 120vh) rotate(var(--rot-end)); opacity: 0; }
+}
+
+
+/* -------------------------------------------
+  FIN EFECTOS DE TEMA
   ------------------------------------------- */
 
 
@@ -175,6 +332,8 @@ body{
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     border-bottom: 3px solid var(--borde-cabecera);
     transition: background 0.3s, border-bottom 0.3s;
+    position: relative; /* Para las luces de navidad */
+    overflow: hidden;
 }
 
 .logo-box-wrapper{
@@ -220,7 +379,6 @@ body{
   transition: color 0.3s, text-shadow 0.3s;
 }
 
-/* Animación del nuevo título */
 @keyframes pulseTitle {
   0%, 100% { color: var(--rojo); text-shadow: 2px 2px #fff, 4px 4px var(--accent1); }
   50% { color: var(--verde); text-shadow: 2px 2px #fff, 4px 4px var(--rojo); }
@@ -521,10 +679,21 @@ tr:hover { background: #f9f9f9; }
 <audio id="snd-win" src="APLAUSOS_GANADOR.mp3" preload="auto"></audio>
 <audio id="snd-flip" src="flip.mp3" preload="auto"></audio>
 
+<div id="webs-overlay" class="webs-overlay hidden"></div>
+<div id="snow-overlay" class="snow-overlay hidden">
+    <div class="snow">❅</div><div class="snow">❆</div><div class="snow">❅</div><div class="snow">❆</div><div class="snow">❅</div>
+</div>
+<div id="serpentina-overlay" class="serpentina-overlay hidden"></div>
+
+
 <div class="container">
 
   <header class="main-header">
-      
+      <div id="lights-overlay" class="lights-overlay hidden">
+          <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
+          <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
+      </div>
+
       <div class="logo-box-wrapper">
           <div class="logo-box"><img id="logo-img" src="logo_1_entrada.png" alt="logo"></div>
       </div>
@@ -638,6 +807,7 @@ tr:hover { background: #f9f9f9; }
             <select id="theme-switcher" class="input" style="text-align:center;">
                 <option value="original">Original (Defecto)</option>
                 <option value="mexicano1">Mexicano 1 (Fiesta)</option>
+                <option value="mexicano2">Mexicano 2 (Neón)</option>
                 <option value="halloween">Halloween</option>
                 <option value="navidad">Navidad</option>
                 <option value="pascua">Pascua</option>
@@ -778,7 +948,7 @@ tr:hover { background: #f9f9f9; }
 
 
 <script>
-/* index_v12.0_pulido - code block */
+/* index_v13.0_pulido - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
 const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg",49:"49 el pino-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
@@ -886,9 +1056,15 @@ function showConfirm(message, confirmText = "Confirmar") {
 // --- Fin Modales Personalizados ---
 
 
-// --- Confetti --- 
+// --- Confetti / Serpentinas --- 
 let confettiInstance = null;
 function startConfettiFullScreen(){
+    // CORRECCIÓN 2: Lógica condicional de efectos
+    if (currentTheme === 'mexicano2') {
+        startSerpentinaAnimation();
+        return;
+    }
+    
     const canvas=$q('#confetti-canvas');
     if(!canvas) return;
     canvas.style.display='block';
@@ -902,6 +1078,27 @@ function stopConfettiFullScreen(){
     const canvas=$q('#confetti-canvas');
     if(canvas) canvas.style.display='none';
     if(confettiInstance){ confettiInstance.clear(); confettiInstance=null; }
+    
+    // También detener serpentinas
+    const serpOverlay = $q('#serpentina-overlay');
+    serpOverlay.innerHTML = '';
+    serpOverlay.classList.remove('animate');
+}
+function startSerpentinaAnimation() {
+    const overlay = $q('#serpentina-overlay');
+    overlay.innerHTML = ''; // Limpiar anteriores
+    overlay.classList.add('animate');
+    const colors = ['var(--verde)', 'var(--accent1)', 'var(--rojo)'];
+    for(let i = 0; i < 20; i++) {
+        const serp = document.createElement('div');
+        serp.className = 'serpentina';
+        serp.style.background = colors[i % colors.length];
+        serp.style.left = (Math.random() * 80 + 10) + '%';
+        serp.style.setProperty('--x-end', (Math.random() * 400 - 200) + 'px');
+        serp.style.setProperty('--rot-end', (Math.random() * 720 - 360) + 'deg');
+        serp.style.animationDelay = (Math.random() * 0.5) + 's';
+        overlay.appendChild(serp);
+    }
 }
 
 // --- Control de Juego --- 
@@ -973,7 +1170,6 @@ function renderAll(){
         potAmount = totalHouseProfit;
         potLabelText = '🏦 CASA TOTAL';
     } else {
-        // CORRECCIÓN 2: El pozo solo incluye jugadores JUGANDO
         const activeForPot = purchases.filter(p=> p.state==='JUGANDO' && p.modality === currentMode );
         const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
         potAmount = totalEnJuego;
@@ -1386,8 +1582,7 @@ function processCard(cardId){
         const firstWinner = winnersFound[0];
         const winningModality = purchases[firstWinner.idx].modality;
         
-        // CORRECCIÓN 2: El pozo solo debe incluir a los que están 'JUGANDO'
-        const activeForPot = purchases.filter(p=> p.state==='JUGANDO' && p.modality === winningModality );
+        const activeForPot = purchases.filter(p=> (p.state==='JUGANDO' || p.state === 'POR PAGAR') && p.modality === winningModality );
         activeForPot.forEach(p => initializePurchaseData(p));
         const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
         
@@ -1438,13 +1633,11 @@ function showWinnerDetailModal(purchaseId, cardId){
     }
     
     if(!cardId) {
-        // CORRECCIÓN 2: Lógica para 'VER'
         const winnerRec = winners.find(w => w.purchaseId === purchaseId && !w.paid);
         if(!winnerRec) {
-             // Si no está pendiente, buscar CUALQUIER registro de ganador (para 'VER' en pagados)
              const anyWinnerRec = winners.find(w => w.purchaseId === purchaseId);
              if(anyWinnerRec) cardId = anyWinnerRec.cardId;
-             else return; // No hay registro de ganador para este ID
+             else return;
         } else {
              cardId = winnerRec.cardId;
         }
@@ -1658,7 +1851,6 @@ async function resetGame(){
                 p.state = 'FINALIZADO';
                 p.gamesLeft = 0; 
             }
-            // 'POR PAGAR' se queda como 'POR PAGAR', pero su 'gamesLeft' ya es 0
         }
         p.markedCards=[]; 
     });
@@ -1772,12 +1964,17 @@ function exportPdf(){
     printWindow.print();
 }
 
-// CORRECCIÓN 2: Aplicar Tema
 function applyTheme(themeName) {
     document.documentElement.dataset.theme = themeName;
     localStorage.setItem(Kthm, themeName);
     currentTheme = themeName;
     $q('#theme-switcher').value = themeName;
+
+    // Activar/Desactivar Overlays de efectos
+    $q('#webs-overlay').classList.toggle('hidden', themeName !== 'halloween');
+    $q('#snow-overlay').classList.toggle('hidden', themeName !== 'navidad');
+    $q('#lights-overlay').classList.toggle('hidden', themeName !== 'navidad');
+    // El de serpentinas se activa al ganar
 }
 
 // --- INICIALIZACIÓN Y EVENT LISTENERS --- 
@@ -1793,7 +1990,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     $q('#profit6').value = prices.profit6;
     $q('#select-modality').value = currentMode;
     
-    applyTheme(currentTheme); // Aplicar tema guardado al cargar
+    applyTheme(currentTheme); 
     renderAll();
     
     $q('#btn-shuffle').addEventListener('click', animateShuffle);
@@ -1821,7 +2018,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
         showAlert('Precios reseteados a los valores por defecto.');
     });
     
-    // CORRECCIÓN 2: Listener para el selector de temas
     $q('#theme-switcher').addEventListener('change', (e) => {
         applyTheme(e.target.value);
     });

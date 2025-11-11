@@ -1,14 +1,18 @@
-<!doctype html><html lang="es">
-<head>
+<!doctype html><html lang="es" data-theme="original"> <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎴 GANA YA! - Lotería Interactiva (v11.8)</title>
+<title>🎴 GANA YA! - Lotería Interactiva (v12.0)</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ff6bcb'/%3E%3Ctext x='50%25' y='55%25' font-size='18' font-family='Arial' fill='white' text-anchor='middle' font-weight='700'%3EG%3C/text%3E%3C/svg%3E">
 <style>
-/* --- INICIO DE ESTILO (v11.7) --- */
+/* --- INICIO DE ESTILO (v12.0) --- */
 
-/* VARIABLES DE COLOR */
-:root{ 
+/* -------------------------------------------
+  CORRECCIÓN 2: DEFINICIÓN DE TEMAS (SKINS)
+  -------------------------------------------
+*/
+
+/* TEMA 1: Original (Defecto) */
+:root { 
     --rojo:#e63946; 
     --verde:#2a9d8f; 
     --azul:#457b9d; 
@@ -16,8 +20,120 @@
     --crema:#f1faee; 
     --sombra:0 10px 28px rgba(0,0,0,0.15); 
     --accent1:#e9c46a; 
-    --accent2:#d62828; 
+    --accent2:#d62828;
+    --texto-principal: #1d3557;
+    --texto-secundario: #666;
+    --borde-cabecera: #e63946;
+    --gradiente-barra: linear-gradient(90deg, var(--verde) 0%, var(--crema) 50%, var(--rojo) 100%);
+    --fondo-calculadora: #f9f9f9;
 }
+
+/* TEMA 2: Mexicano 1 (Fiesta) - Basado en tu snippet */
+[data-theme="mexicano1"] {
+    --rojo: #d00000;
+    --verde: #008000;
+    --azul: #0077b6;
+    --naranja: #f77f00;
+    --crema: #fff8ec;
+    --accent1: #ffd60a;
+    --accent2: #e63946;
+    --texto-principal: #222;
+    --texto-secundario: #555;
+    --borde-cabecera: #d00000;
+    --gradiente-barra: linear-gradient(90deg, var(--verde) 0%, var(--accent1) 50%, var(--rojo) 100%);
+    --fondo-calculadora: #fffbe6;
+}
+
+/* TEMA 3: Halloween */
+[data-theme="halloween"] {
+    --rojo: #FF4500; /* Naranja Halloween */
+    --verde: #adff02; /* Verde Lima */
+    --azul: #9400D3; /* Morado */
+    --naranja: #FF8C00;
+    --crema: #1a1a1a; /* Fondo Oscuro */
+    --accent1: #FFD700; /* Dorado */
+    --accent2: #FF4500;
+    --texto-principal: #f1faee; /* Texto claro */
+    --texto-secundario: #aaa;
+    --borde-cabecera: #FF4500;
+    --gradiente-barra: linear-gradient(90deg, var(--verde) 0%, var(--azul) 50%, var(--rojo) 100%);
+    --fondo-calculadora: #2a2a2a;
+}
+/* CSS extra para Halloween */
+[data-theme="halloween"] body {
+    background-image: radial-gradient(var(--rojo) 1px, transparent 1px), radial-gradient(var(--azul) 1px, transparent 1px);
+}
+[data-theme="halloween"] .mex-frame, 
+[data-theme="halloween"] .mex-frame-small { background: #222; }
+[data-theme="halloween"] .main-header { background: rgba(30,30,30,0.85); }
+[data-theme="halloween"] .bolsa-compact { background: #333; }
+[data-theme="halloween"] .input { background: #333; color: #fff; border-color: #555; }
+[data-theme="halloween"] tr:hover { background: #2a2a2a; }
+[data-theme="halloween"] .toggle-admin { background: #555; color: #fff; }
+
+
+/* TEMA 4: Navidad */
+[data-theme="navidad"] {
+    --rojo: #c1121f; /* Rojo Navidad */
+    --verde: #005f08; /* Verde Pino */
+    --azul: #0077b6; /* Azul Hielo */
+    --naranja: #f77f00;
+    --crema: #fdfdfd; /* Blanco Nieve */
+    --accent1: #ffd700; /* Dorado */
+    --accent2: #c1121f;
+    --texto-principal: #000;
+    --texto-secundario: #444;
+    --borde-cabecera: #005f08;
+    --gradiente-barra: linear-gradient(90deg, var(--verde) 0%, var(--accent1) 50%, var(--rojo) 100%);
+    --fondo-calculadora: #f0f8ff;
+}
+[data-theme="navidad"] body {
+    background-image: radial-gradient(var(--rojo) 0.5px, transparent 0.5px), radial-gradient(var(--verde) 0.5px, transparent 0.5px);
+}
+
+/* TEMA 5: Pascua */
+[data-theme="pascua"] {
+    --rojo: #ffb3c1; /* Rosa Pastel */
+    --verde: #a9def9; /* Azul Pastel */
+    --azul: #e6c0e9; /* Lavanda */
+    --naranja: #f9c74f;
+    --crema: #f8f9fa;
+    --accent1: #d4e09b; /* Verde Pastel */
+    --accent2: #ffb3c1;
+    --texto-principal: #222;
+    --texto-secundario: #555;
+    --borde-cabecera: var(--rojo);
+    --gradiente-barra: linear-gradient(90deg, var(--verde) 0%, var(--accent1) 50%, var(--rojo) 100%);
+    --fondo-calculadora: #fff;
+}
+[data-theme="pascua"] body {
+     background-image: radial-gradient(var(--rojo) 1px, transparent 1px), radial-gradient(var(--azul) 1px, transparent 1px);
+}
+
+/* TEMA 6: Santos Reyes */
+[data-theme="reyes"] {
+    --rojo: #D4AF37; /* Oro */
+    --verde: #5a189a; /* Morado */
+    --azul: #003049; /* Azul Noche */
+    --naranja: #D4AF37;
+    --crema: #f1faee;
+    --accent1: #D4AF37;
+    --accent2: #5a189a;
+    --texto-principal: #000;
+    --texto-secundario: #444;
+    --borde-cabecera: var(--verde);
+    --gradiente-barra: linear-gradient(90deg, var(--verde) 0%, var(--rojo) 50%, var(--azul) 100%);
+    --fondo-calculadora: #fdfcdc;
+}
+[data-theme="reyes"] body {
+     background-image: radial-gradient(var(--rojo) 1px, transparent 1px), radial-gradient(var(--verde) 1px, transparent 1px);
+}
+
+
+/* -------------------------------------------
+  FIN DE TEMAS
+  ------------------------------------------- */
+
 
 /* GENERALES */
 *{box-sizing:border-box} 
@@ -25,13 +141,14 @@ html{ margin:0; padding:0; }
 body{ 
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
   background:var(--crema); 
-  color:#1d3557;
+  color:var(--texto-principal);
   background-image: radial-gradient(var(--accent1) 1px, transparent 1px), radial-gradient(var(--rojo) 1px, transparent 1px);
   background-position: 0 0, 25px 25px; 
   background-size: 50px 50px;
   overflow-x: hidden; 
   margin:0; 
   padding:0;
+  transition: background 0.3s, color 0.3s;
 }
 
 /* CONTENEDOR PRINCIPAL CENTRADO */
@@ -56,7 +173,8 @@ body{
     backdrop-filter: blur(5px);
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    border-bottom: 3px solid var(--rojo);
+    border-bottom: 3px solid var(--borde-cabecera);
+    transition: background 0.3s, border-bottom 0.3s;
 }
 
 .logo-box-wrapper{
@@ -79,15 +197,18 @@ body{
     padding: 0 15px;
 }
 
+/* CORRECCIÓN 1: Nuevo Título */
 .title { 
-  font-size: clamp(32px, 5vw, 48px); 
-  font-weight:900; 
-  color:var(--rojo); 
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 900; 
+  color: var(--rojo); 
   margin:0; 
-  animation: fiesta 4s linear infinite; 
   line-height: 1.1;
   text-transform: uppercase;
   letter-spacing: -1px;
+  text-shadow: 2px 2px #fff, 4px 4px var(--accent1);
+  animation: pulseTitle 2.5s infinite;
+  transition: color 0.3s, text-shadow 0.3s;
 }
 
 .subtitle { 
@@ -95,11 +216,16 @@ body{
   font-size: 15px;
   margin-top: 4px; 
   font-weight: 600;
+  text-shadow: 1px 1px #fff;
+  transition: color 0.3s, text-shadow 0.3s;
 }
 
-@keyframes fiesta { 
-  0%{ color:#e63946 } 25%{ color:#2a9d8f } 50%{ color:#e9c46a } 75%{ color:#f4a261 } 100%{ color:#e63946 } 
+/* Animación del nuevo título */
+@keyframes pulseTitle {
+  0%, 100% { color: var(--rojo); text-shadow: 2px 2px #fff, 4px 4px var(--accent1); }
+  50% { color: var(--verde); text-shadow: 2px 2px #fff, 4px 4px var(--rojo); }
 }
+
 
 /* MAIN GRID */
 .main-grid{ 
@@ -120,10 +246,12 @@ body{
   border: none;
   position: relative;
   overflow: hidden;
+  transition: background 0.3s;
 }
 .mex-frame::before, .mex-frame-small::before {
     content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px;
-    background: linear-gradient(90deg, var(--verde) 0%, var(--crema) 50%, var(--rojo) 100%);
+    background: var(--gradiente-barra);
+    transition: background 0.3s;
 }
 
 /* CONTROLES HEADER */
@@ -143,6 +271,7 @@ body{
   background: var(--crema); 
   border-radius: 8px; 
   border: 2px solid var(--accent1); 
+  transition: background 0.3s;
 }
 .bolsa-compact .label{ 
   font-size:14px; 
@@ -180,6 +309,7 @@ body{
   display: flex; 
   flex-direction: column; 
   justify-content: flex-start; 
+  transition: background 0.3s, border-color 0.3s;
 }
 .player-card:hover{ transform:translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.12); border-color: var(--accent1); }
 .player-name{ 
@@ -223,7 +353,8 @@ body{
 .controls { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:10px; }
 .btn{ 
   padding:10px 16px; border-radius:8px; font-weight:800; border:none; cursor:pointer; color:white;
-  transition: transform .1s active, box-shadow .2s ease; text-transform: uppercase; letter-spacing: 0.5px; font-size: 14px;
+  transition: transform .1s active, box-shadow .2s ease, background-color 0.3s; 
+  text-transform: uppercase; letter-spacing: 0.5px; font-size: 14px;
 }
 .btn:active { transform: scale(0.98); }
 .btn:disabled { background: #999; cursor: not-allowed; opacity: 0.7; }
@@ -234,13 +365,14 @@ body{
   height:240px; border-radius:12px; display:flex; align-items:center; justify-content:center; 
   background: #fff; 
   border: 2px dashed #ddd; margin-top: 10px; overflow: hidden;
+  transition: background 0.3s;
 }
 .current-card-img { width: 100%; height: 100%; background-size: contain; background-position: center; background-repeat: no-repeat; }
 
 /* ADMIN */
 .admin-row{ display:flex; gap:10px; flex-wrap: wrap; }
 .admin-col{ flex:1; min-width: 300px; }
-.input{ width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; margin-bottom: 8px; font-family: inherit; }
+.input{ width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; margin-bottom: 8px; font-family: inherit; transition: background 0.3s, color 0.3s, border-color 0.3s; }
 .input:focus { outline: 2px solid var(--azul); border-color: transparent; }
 
 .admin-col.mex-frame-small .input { text-align: center; }
@@ -258,7 +390,7 @@ body{
 }
 #budget-helper {
     font-size: 13px; 
-    color: #555; 
+    color: var(--texto-secundario); 
     margin-top: 10px; 
     min-height: 20px; 
     text-align: center;
@@ -278,7 +410,7 @@ body{
 
 .table-wrap{ overflow-x:auto; background: #fff; border-radius: 8px; border: 1px solid #eee; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { background: var(--azul); color: white; text-align: left; padding: 8px; position: sticky; top: 0; }
+th { background: var(--azul); color: white; text-align: left; padding: 8px; position: sticky; top: 0; transition: background 0.3s; }
 td { border-bottom: 1px solid #eee; padding: 8px; }
 tr:hover { background: #f9f9f9; }
 
@@ -434,7 +566,7 @@ tr:hover { background: #f9f9f9; }
         <h3>🎮 CONTROL DE JUEGO</h3>
 
         <div style="margin-bottom: 15px;">
-            <label for="select-modality" style="display:block; text-align:center; font-size:12px; color:#666; margin-bottom:5px;">Modalidad Actual:</label>
+            <label for="select-modality" style="display:block; text-align:center; font-size:12px; color:var(--texto-secundario); margin-bottom:5px;">Modalidad Actual:</label>
             <select id="select-modality" class="input" style="text-align:center; font-weight:bold; font-size:16px;">
                 <option value="4">4 cartas</option>
                 <option value="6">6 cartas</option>
@@ -451,7 +583,7 @@ tr:hover { background: #f9f9f9; }
 
         <button id="btn-reset-win" class="btn btn-red w-full hidden" style="background: var(--verde); padding: 15px; font-size: 18px; animation: pulse 2s infinite;">🔄 REINICIAR PARTIDA</button>
 
-        <div class="text-center mt-2" style="color:#666; font-size:13px; display: none;">
+        <div class="text-center mt-2" style="color:var(--texto-secundario); font-size:13px; display: none;">
             Cartas restantes: <strong id="deck-count" style="color:var(--rojo)">54</strong>
         </div>
       </div>
@@ -459,12 +591,12 @@ tr:hover { background: #f9f9f9; }
       <div style="margin-top:20px">
         <h3 class="text-center" style="margin-bottom:10px; color:var(--azul)">CARTA EN JUEGO</h3>
         <div id="current-card" class="current-card">
-            <div class="small-muted">Esperando barajeo...</div>
+            <div class="small-muted" style="color:var(--texto-secundario);">Esperando barajeo...</div>
         </div>
       </div>
 
       <div style="margin-top:20px">
-        <h4 class="text-center" style="margin:0 0 10px 0; color:#999; font-size:14px;">ANTERIORES</h4>
+        <h4 class="text-center" style="margin:0 0 10px 0; color:var(--texto-secundario); font-size:14px;">ANTERIORES</h4>
         <div id="last-cards" style="display:flex; gap:5px; justify-content:center; min-height:60px;"></div>
       </div>
 
@@ -500,6 +632,18 @@ tr:hover { background: #f9f9f9; }
           <button id="save-prices" class="btn btn-green">Guardar</button>
           <button id="reset-prices" class="btn btn-muted">Reset</button>
         </div>
+        
+        <div style="border-top: 2px solid #eee; margin-top: 15px; padding-top: 10px;">
+            <label for="theme-switcher" style="display:block; text-align:center; font-weight:bold; color:var(--azul); margin-bottom:5px;">🎨 Apariencia (Skin)</label>
+            <select id="theme-switcher" class="input" style="text-align:center;">
+                <option value="original">Original (Defecto)</option>
+                <option value="mexicano1">Mexicano 1 (Fiesta)</option>
+                <option value="halloween">Halloween</option>
+                <option value="navidad">Navidad</option>
+                <option value="pascua">Pascua</option>
+                <option value="reyes">Santos Reyes</option>
+            </select>
+        </div>
       </div>
 
       <div class="admin-col mex-frame-small">
@@ -517,7 +661,7 @@ tr:hover { background: #f9f9f9; }
             </div>
         </div>
         
-        <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-top:10px;">
+        <div style="background:var(--fondo-calculadora); padding:10px; border-radius:8px; margin-top:10px;">
             <label style="font-size:13px; font-weight:bold; color:var(--azul)">🔢 Calculadora Rápida:</label>
             <input id="input-budget" placeholder="Ingresa Presupuesto MXN" class="input" type="number" min="0">
         </div>
@@ -534,10 +678,10 @@ tr:hover { background: #f9f9f9; }
             <button id="btn-register" class="btn btn-green" style="flex:1.5; height: 42px;">✅ REGISTRAR</button>
         </div>
         
-        <div id="budget-helper" style="font-size:13px; color:#555; margin-top:10px; min-height:20px; text-align: center;">
+        <div id="budget-helper" style="font-size:13px; color:var(--texto-secundario); margin-top:10px; min-height:20px; text-align: center;">
             Ingresa un presupuesto para ver opciones.
         </div>
-        <div id="calc-info" style="font-size:14px; color:#333; margin-top:12px; min-height:20px; text-align: center; font-weight: bold;">
+        <div id="calc-info" style="font-size:14px; color:var(--texto-principal); margin-top:12px; min-height:20px; text-align: center; font-weight: bold;">
             Costo Total: $0.00
         </div>
       </div>
@@ -634,12 +778,12 @@ tr:hover { background: #f9f9f9; }
 
 
 <script>
-/* index_v11.8_pulido - code block */
+/* index_v12.0_pulido - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
 const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg",49:"49 el pino-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
 
-const Kp='ganya_v90_prices', Kg='ganya_v90_game', Kpu='ganya_v90_purchases', Ktx='ganya_v90_tx', Kw='ganya_v90_winners', Kdig='ganya_v90_dig', Kmod='ganya_v90_mod';
+const Kp='ganya_v90_prices', Kg='ganya_v90_game', Kpu='ganya_v90_purchases', Ktx='ganya_v90_tx', Kw='ganya_v90_winners', Kdig='ganya_v90_dig', Kmod='ganya_v90_mod', Kthm = 'ganya_v90_theme';
 const Kid='ganya_v90_id_counter'; 
 const defaultsPrices=()=>({price4:10,profit4:2,price6:12,profit6:3});
 const defaultsGame=()=>({deck:Array.from({length:54},(_,i)=>i+1),drawn:[],current:0,pending:[], winnerPending: false});
@@ -654,6 +798,7 @@ let currentMode = Number(localStorage.getItem(Kmod) || 4);
 if(currentMode===8) currentMode=4; 
 let currentIdCounter = Number(localStorage.getItem(Kid) || 233); 
 let adminSearch = '';
+let currentTheme = localStorage.getItem(Kthm) || 'original';
 
 let isAuto=false, autoInterval=null, animShuffling=false;
 let audioCtx=null;
@@ -859,13 +1004,13 @@ function renderAll(){
     if(game.current && cur) {
         cur.innerHTML=`<div class="current-card-img" style="background-image:url('${cardImageUrl(game.current)}')"></div>`; 
     } else if(cur) {
-        cur.innerHTML='<div style="opacity:0.4; font-weight:bold; color:#999;">LISTO PARA JUGAR</div>';
+        cur.innerHTML='<div style="opacity:0.4; font-weight:bold; color:var(--texto-secundario);">LISTO PARA JUGAR</div>';
     }
     
     const last=(game.drawn||[]).slice(-4, -1).reverse();
     const lastEl=$q('#last-cards'); 
     if(lastEl) lastEl.innerHTML = last.length? 
-        last.map(id=> `<div class="card-thumb" style="width:40px;height:55px;background-image:url('${cardImageUrl(id)}')"></div>`).join('') : '<div class="small-muted">...</div>';
+        last.map(id=> `<div class="card-thumb" style="width:40px;height:55px;background-image:url('${cardImageUrl(id)}')"></div>`).join('') : '<div class="small-muted" style="color:var(--texto-secundario);">...</div>';
 
     const winnerPending = game.winnerPending || false;
     $q('#game-controls').classList.toggle('hidden', !!winnerPending);
@@ -921,7 +1066,7 @@ function renderWinnersList(){
                 <span>${escapeHtml(player.playerName)}</span>
                 <span style="color:${paidColor}; font-size: 11px; font-weight: 700;">${paidText}</span>
             </div>
-            <div style="display:flex; justify-content:space-between; color:#666; margin-top: 4px; align-items: center;">
+            <div style="display:flex; justify-content:space-between; color:var(--texto-secundario); margin-top: 4px; align-items: center;">
                 <span>${formatMoney(w.prize)}</span>
                 <span style="font-size: 11px; color: #555;">${modalityText}</span>
             </div>
@@ -1241,7 +1386,8 @@ function processCard(cardId){
         const firstWinner = winnersFound[0];
         const winningModality = purchases[firstWinner.idx].modality;
         
-        const activeForPot = purchases.filter(p=> (p.state==='JUGANDO' || p.state === 'POR PAGAR') && p.modality === winningModality );
+        // CORRECCIÓN 2: El pozo solo debe incluir a los que están 'JUGANDO'
+        const activeForPot = purchases.filter(p=> p.state==='JUGANDO' && p.modality === winningModality );
         activeForPot.forEach(p => initializePurchaseData(p));
         const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
         
@@ -1292,11 +1438,13 @@ function showWinnerDetailModal(purchaseId, cardId){
     }
     
     if(!cardId) {
+        // CORRECCIÓN 2: Lógica para 'VER'
         const winnerRec = winners.find(w => w.purchaseId === purchaseId && !w.paid);
         if(!winnerRec) {
+             // Si no está pendiente, buscar CUALQUIER registro de ganador (para 'VER' en pagados)
              const anyWinnerRec = winners.find(w => w.purchaseId === purchaseId);
              if(anyWinnerRec) cardId = anyWinnerRec.cardId;
-             else return;
+             else return; // No hay registro de ganador para este ID
         } else {
              cardId = winnerRec.cardId;
         }
@@ -1510,7 +1658,7 @@ async function resetGame(){
                 p.state = 'FINALIZADO';
                 p.gamesLeft = 0; 
             }
-            // (El 'gamesLeft' del ganador 'POR PAGAR' ya se puso a 0 al ganar)
+            // 'POR PAGAR' se queda como 'POR PAGAR', pero su 'gamesLeft' ya es 0
         }
         p.markedCards=[]; 
     });
@@ -1624,6 +1772,14 @@ function exportPdf(){
     printWindow.print();
 }
 
+// CORRECCIÓN 2: Aplicar Tema
+function applyTheme(themeName) {
+    document.documentElement.dataset.theme = themeName;
+    localStorage.setItem(Kthm, themeName);
+    currentTheme = themeName;
+    $q('#theme-switcher').value = themeName;
+}
+
 // --- INICIALIZACIÓN Y EVENT LISTENERS --- 
 document.addEventListener('DOMContentLoaded', ()=>{
     
@@ -1636,7 +1792,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     $q('#price6').value = prices.price6;
     $q('#profit6').value = prices.profit6;
     $q('#select-modality').value = currentMode;
-
+    
+    applyTheme(currentTheme); // Aplicar tema guardado al cargar
     renderAll();
     
     $q('#btn-shuffle').addEventListener('click', animateShuffle);
@@ -1662,6 +1819,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
         saveAll();
         renderAll();
         showAlert('Precios reseteados a los valores por defecto.');
+    });
+    
+    // CORRECCIÓN 2: Listener para el selector de temas
+    $q('#theme-switcher').addEventListener('change', (e) => {
+        applyTheme(e.target.value);
     });
 
     $q('#btn-register').addEventListener('click', async () => { await registerPlayer(); });

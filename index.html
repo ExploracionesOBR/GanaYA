@@ -1,10 +1,11 @@
-<!doctype html><html lang="es" data-theme="original"> <head>
+<!doctype html><html lang="es" data-theme="original">
+<head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎴 GANA YA! - Lotería Interactiva (v13.0)</title>
+<title>🎴 GANA YA! - Lotería Interactiva (v13.1)</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ff6bcb'/%3E%3Ctext x='50%25' y='55%25' font-size='18' font-family='Arial' fill='white' text-anchor='middle' font-weight='700'%3EG%3C/text%3E%3C/svg%3E">
 <style>
-/* --- INICIO DE ESTILO (v13.0) --- */
+/* --- INICIO DE ESTILO (v13.1) --- */
 
 /* -------------------------------------------
   DEFINICIÓN DE TEMAS (SKINS)
@@ -47,7 +48,6 @@
     --marco-color: var(--verde);
     --marco-sombra: var(--rojo);
 }
-/* Efecto Banderas (Mexicano 1) */
 [data-theme="mexicano1"] .mex-frame::before, 
 [data-theme="mexicano1"] .mex-frame-small::before {
     content: '🇲🇽';
@@ -75,7 +75,7 @@
     --verde: #008000;
     --azul: #0077b6;
     --naranja: #f77f00;
-    --crema: #fff8ec;
+    --crema: #fff8ec; /* CORRECCIÓN 1: Tema claro */
     --accent1: #ffd60a;
     --accent2: #e63946;
     --texto-principal: #222;
@@ -86,7 +86,6 @@
     --marco-color: var(--verde);
     --marco-sombra: var(--rojo);
 }
-/* Efecto Neón (Mexicano 2) */
 @keyframes neonGlow {
     0%, 100% { box-shadow: 0 0 5px var(--verde), 0 0 10px var(--verde), 0 0 15px #fff, 0 0 20px #fff, 0 0 25px var(--rojo), 0 0 30px var(--rojo); }
     50% { box-shadow: 0 0 10px var(--verde), 0 0 15px var(--verde), 0 0 20px #fff, 0 0 30px #fff, 0 0 40px var(--rojo), 0 0 50px var(--rojo); transform: scale(1.1); }
@@ -105,7 +104,7 @@
     --verde: #5e0873;
     --azul: #9400D3; 
     --naranja: #FF8C00;
-    --crema: #fdfbf5;
+    --crema: #fdfbf5; /* CORRECCIÓN 1: Tema claro */
     --accent1: #adff02;
     --accent2: #FF4500;
     --texto-principal: #1a1a1a;
@@ -119,7 +118,6 @@
 [data-theme="halloween"] body {
     background-image: radial-gradient(var(--naranja) 0.5px, transparent 0.5px), radial-gradient(var(--azul) 0.5px, transparent 0.5px);
 }
-/* Efecto Telaraña en botones y cartas */
 [data-theme="halloween"] .btn::after,
 [data-theme="halloween"] .player-card::after {
     content: '🕸️';
@@ -130,7 +128,6 @@
     z-index: 1;
     pointer-events: none;
 }
-/* Efecto Mancha de Sangre */
 [data-theme="halloween"] body::after {
     content: '🩸';
     position: fixed;
@@ -464,16 +461,17 @@ body{
   padding:0;
   transition: background 0.3s, color 0.3s;
 }
-/* CORRECCIÓN 3: Marco de pantalla por tema */
+/* CORRECCIÓN 4: Marco de pantalla por tema */
 body::before {
     content: '';
     position: fixed;
-    inset: 0;
-    border: 10px solid var(--marco-color);
-    box-shadow: 0 0 20px var(--marco-sombra) inset;
+    inset: 5px;
+    border: 5px solid var(--marco-color);
+    box-shadow: 0 0 15px var(--marco-sombra) inset, 0 0 10px var(--marco-color);
     pointer-events: none;
     z-index: 9997;
     transition: border-color 0.3s, box-shadow 0.3s;
+    border-radius: 15px;
 }
 
 /* CONTENEDOR PRINCIPAL CENTRADO */
@@ -517,28 +515,6 @@ body::before {
   object-fit:contain; 
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
 }
-
-/* CORRECCIÓN 1: Contenedor del selector de skin */
-.skin-switcher-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-left: 15px;
-}
-.skin-switcher-wrapper label {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--texto-secundario);
-}
-.skin-switcher-wrapper select {
-    padding: 2px 5px;
-    font-size: 12px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    background: #fff;
-    margin-top: 2px;
-}
-
 
 .title-container {
     flex-grow: 1;
@@ -765,6 +741,24 @@ th { background: var(--azul); color: white; text-align: left; padding: 8px; posi
 td { border-bottom: 1px solid #eee; padding: 8px; }
 tr:hover { background: #f9f9f9; }
 
+/* CORRECCIÓN 5: Paginación */
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+}
+.pagination-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+}
+.pagination-info {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--texto-secundario);
+}
+
+
 /* MODALES */
 .modal-back{ position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter: blur(3px); display:flex; align-items:center; justify-content:center; z-index:9999; opacity: 1; pointer-events: all; transition: opacity 0.3s ease; }
 .modal{ background:#fff; border-radius:15px; padding:20px; width:90%; max-width:500px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); position: relative; transform: translateY(0); transition: transform 0.3s ease; max-height: 90vh; overflow-y: auto; }
@@ -909,19 +903,6 @@ tr:hover { background: #f9f9f9; }
           <div class="logo-box"><img id="logo-img" src="logo_1_entrada.png" alt="logo"></div>
       </div>
 
-      <div class="skin-switcher-wrapper">
-          <label for="theme-switcher">Skin</label>
-          <select id="theme-switcher">
-                <option value="original">Original</option>
-                <option value="mexicano1">Mexicano 1</option>
-                <option value="mexicano2">Mexicano 2</option>
-                <option value="halloween">Halloween</option>
-                <option value="navidad">Navidad</option>
-                <option value="pascua">Pascua</option>
-                <option value="reyes">Santos Reyes</option>
-          </select>
-      </div>
-
       <div class="title-container">
           <div class="title">🎉 GANA YA!</div>
           <div class="subtitle">Lotería Interactiva Mexicana</div>
@@ -1026,6 +1007,18 @@ tr:hover { background: #f9f9f9; }
           <button id="reset-prices" class="btn btn-muted">Reset</button>
         </div>
         
+        <div style="border-top: 2px solid #eee; margin-top: 15px; padding-top: 10px;">
+            <label for="theme-switcher" style="display:block; text-align:center; font-weight:bold; color:var(--azul); margin-bottom:5px;">🎨 Apariencia (Skin)</label>
+            <select id="theme-switcher" class="input" style="text-align:center;">
+                <option value="original">Original (Defecto)</option>
+                <option value="mexicano1">Mexicano 1 (Fiesta)</option>
+                <option value="mexicano2">Mexicano 2 (Neón)</option>
+                <option value="halloween">Halloween</option>
+                <option value="navidad">Navidad</option>
+                <option value="pascua">Pascua</option>
+                <option value="reyes">Santos Reyes</option>
+            </select>
+        </div>
       </div>
 
       <div class="admin-col mex-frame-small">
@@ -1094,6 +1087,8 @@ tr:hover { background: #f9f9f9; }
                     </tbody>
             </table>
         </div>
+        <div id="pagination-controls" class="pagination">
+            </div>
     </div>
   </section>
   
@@ -1160,7 +1155,7 @@ tr:hover { background: #f9f9f9; }
 
 
 <script>
-/* index_v13.0_pulido - code block */
+/* index_v13.1_pulido - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
 const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg",49:"49 el pino-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
@@ -1170,33 +1165,48 @@ const Kid='ganya_v90_id_counter';
 const defaultsPrices=()=>({price4:10,profit4:2,price6:12,profit6:3});
 const defaultsGame=()=>({deck:Array.from({length:54},(_,i)=>i+1),drawn:[],current:0,pending:[], winnerPending: false});
 
-let prices = load(Kp) || defaultsPrices();
-let game = load(Kg) || defaultsGame();
-let purchases = load(Kpu) || [];
-let tx = load(Ktx) || [];
-let winners = load(Kw) || [];
-let drawnInGame = load(Kdig) || [];
-let currentMode = Number(localStorage.getItem(Kmod) || 4);
-if(currentMode===8) currentMode=4; 
-let currentIdCounter = Number(localStorage.getItem(Kid) || 233); 
-let adminSearch = '';
-let currentTheme = localStorage.getItem(Kthm) || 'original';
+// --- Estado de la Aplicación (APP) ---
+let APP = {
+    prices: load(Kp) || defaultsPrices(),
+    game: load(Kg) || defaultsGame(),
+    purchases: load(Kpu) || [],
+    tx: load(Ktx) || [],
+    winners: load(Kw) || [],
+    drawnInGame: load(Kdig) || [],
+    currentMode: Number(localStorage.getItem(Kmod) || 4),
+    currentTheme: localStorage.getItem(Kthm) || 'original',
+    currentIdCounter: Number(localStorage.getItem(Kid) || 233),
+    adminSearch: '',
+    adminPage: 1, // CORRECCIÓN 5: Estado de paginación
+    adminRowsPerPage: 10, // CORRECCIÓN 5: Filas por página
+    isAuto: false,
+    autoInterval: null,
+    animShuffling: false,
+    audioCtx: null
+};
 
-let isAuto=false, autoInterval=null, animShuffling=false;
-let audioCtx=null;
-try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ audioCtx=null; }
+try{ APP.audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ APP.audioCtx=null; }
+if(APP.currentMode===8) APP.currentMode=4; // Antigua migración
 
 // --- Helpers --- 
 function $q(sel){return document.querySelector(sel)}
 function $qa(sel){return Array.from(document.querySelectorAll(sel))}
 function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
 function load(k){ try{ const v=localStorage.getItem(k); return v? JSON.parse(v): null;}catch(e){return null;} }
-function saveAll(){ save(Kp,prices); save(Kg,game); save(Kpu,purchases); save(Ktx,tx); save(Kw,winners); save(Kdig,drawnInGame); localStorage.setItem(Kmod,String(currentMode)); localStorage.setItem(Kid,String(currentIdCounter)); }
+function saveAll(){ 
+    save(Kp, APP.prices); 
+    save(Kg, APP.game); 
+    save(Kpu, APP.purchases); 
+    save(Ktx, APP.tx); 
+    save(Kw, APP.winners); 
+    save(Kdig, APP.drawnInGame); 
+    localStorage.setItem(Kmod, String(APP.currentMode)); 
+    localStorage.setItem(Kid, String(APP.currentIdCounter)); 
+}
 
 function getNextPurchaseId() {
-    currentIdCounter += 1;
-    localStorage.setItem(Kid, String(currentIdCounter));
-    return `GanaYA!-` + String(currentIdCounter).padStart(4, '0');
+    APP.currentIdCounter += 1;
+    return `GanaYA!-` + String(APP.currentIdCounter).padStart(4, '0');
 }
 
 function uuid(){ return 'id-'+Math.random().toString(36).slice(2,10); } 
@@ -1222,17 +1232,17 @@ function playWinSound(){
 }
 
 function playShuffleSound(){ 
-    if(!audioCtx) return; 
-    const now=audioCtx.currentTime; 
-    const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*0.22,audioCtx.sampleRate); 
+    if(!APP.audioCtx) return; 
+    const now=APP.audioCtx.currentTime; 
+    const buf=APP.audioCtx.createBuffer(1,APP.audioCtx.sampleRate*0.22,APP.audioCtx.sampleRate); 
     const d=buf.getChannelData(0); 
     for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length); 
-    const s=audioCtx.createBufferSource(); 
+    const s=APP.audioCtx.createBufferSource(); 
     s.buffer=buf;
-    const g=audioCtx.createGain();
+    const g=APP.audioCtx.createGain();
     g.gain.setValueAtTime(0.04,now);
     s.connect(g);
-    g.connect(audioCtx.destination);
+    g.connect(APP.audioCtx.destination);
     s.start(0); 
 }
 
@@ -1271,8 +1281,7 @@ function showConfirm(message, confirmText = "Confirmar") {
 // --- Confetti / Efectos de Tema --- 
 let confettiInstance = null;
 function startConfettiFullScreen(){
-    // Lógica condicional de efectos
-    if (currentTheme === 'mexicano2') {
+    if (APP.currentTheme === 'mexicano2') {
         startFireworksAnimation();
         startSerpentinaAnimation();
         return;
@@ -1286,27 +1295,13 @@ function startConfettiFullScreen(){
     confettiInstance=confetti.create(canvas,{ resize:true, useWorker:true });
     const defaults = { origin: { y: 0.7 }, zIndex: 9998 };
     
-    // Confetti normal
-    if (currentTheme === 'original' || currentTheme === 'mexicano1') {
+    if (APP.currentTheme === 'original' || APP.currentTheme === 'mexicano1') {
         confettiInstance({ ...defaults, particleCount: 50, spread: 150, startVelocity: 40, scalar: 0.8 });
         confettiInstance({ ...defaults, particleCount: 40, spread: 90, startVelocity: 60, scalar: 1.0 });
     }
 
-    // Confetti de temporada
-    if (currentTheme === 'halloween') {
-        confettiInstance({
-            ...defaults,
-            particleCount: 100,
-            spread: 120,
-            origin: { y: 0.6 },
-            colors: ['#FF4500', '#9400D3', '#adff02', '#000000', '#ffffff'],
-            shapes: ['circle', 'square'],
-            scalar: 1.2,
-            drift: 0.5,
-            gravity: 0.8,
-        });
-        // Emojis
-        confetti({ ...defaults, particleCount: 30, scalar: 2, shapes: ['emoji'], emoji: ['🎃', '👻', '🕷️', '🦇'] });
+    if (APP.currentTheme === 'halloween') {
+        confetti({ ...defaults, particleCount: 50, scalar: 2, shapes: ['emoji'], emoji: ['🎃', '👻', '🕷️', '🦇'] });
     }
 }
 function stopConfettiFullScreen(){
@@ -1352,7 +1347,7 @@ function startFireworksAnimation() {
 
 function startSerpentinaAnimation() {
     const overlay = $q('#serpentina-overlay');
-    overlay.innerHTML = ''; // Limpiar anteriores
+    overlay.innerHTML = '';
     overlay.classList.add('animate');
     const colors = ['var(--verde)', 'var(--accent1)', 'var(--rojo)'];
     for(let i = 0; i < 20; i++) {
@@ -1369,26 +1364,26 @@ function startSerpentinaAnimation() {
 
 // --- Control de Juego --- 
 function stopAuto(){
-    if(autoInterval){ clearInterval(autoInterval); autoInterval=null; }
-    isAuto=false;
+    if(APP.autoInterval){ clearInterval(APP.autoInterval); APP.autoInterval=null; }
+    APP.isAuto=false;
     const btn=$q('#btn-auto');
     if(btn){ btn.textContent='🤖 AUTO'; btn.classList.remove('btn-muted'); btn.classList.add('btn-green'); }
     renderAll();
 }
 function startAuto(){
-    if(animShuffling || game.winnerPending) return;
-    isAuto=true;
+    if(APP.animShuffling || APP.game.winnerPending) return;
+    APP.isAuto=true;
     const btn=$q('#btn-auto');
     if(btn){ btn.textContent='⏹ DETENER'; btn.classList.remove('btn-green'); btn.classList.add('btn-muted'); }
     
-    autoInterval=setInterval(drawOne, 1500); 
+    APP.autoInterval=setInterval(drawOne, 1500); 
     renderAll();
 }
 
 function disableControls(disable){
     $q('#btn-shuffle').disabled = disable;
     $q('#btn-draw').disabled = disable;
-    if (!isAuto) {
+    if (!APP.isAuto) {
         $q('#btn-auto').disabled = disable;
     }
 }
@@ -1400,7 +1395,7 @@ function renderPlayerCard(p){
     html+=`<div class="player-cards" style="display:grid;grid-template-columns:repeat(${p.modality===4?2:3},1fr);gap:3px;justify-items:center;">`;
     (p.card||[]).forEach(cid=>{ 
         const isMarked = (p.markedCards||[]).includes(cid);
-        const isDrawn = drawnInGame.includes(cid);
+        const isDrawn = APP.drawnInGame.includes(cid);
         const sticker = isMarked? `<div class="sticker"><img src="logo_1_entrada.png" alt="lg"/></div>` : '';
         const drawnClass = isDrawn ? 'drawn' : ''; 
         html+=`<div class="card-thumb ${drawnClass}" style="background-image:url('${cardImageUrl(cid)}')">${sticker}</div>`;
@@ -1429,17 +1424,17 @@ function renderAll(){
 
     let potAmount = 0;
     let potLabelText = '💰 Bolsa';
-    purchases.forEach(p => initializePurchaseData(p));
+    APP.purchases.forEach(p => initializePurchaseData(p));
     
     if (isAdminView) {
-        const totalHouseProfit = purchases.reduce((s, p) => s + (p.casa || 0), 0);
+        const totalHouseProfit = APP.purchases.reduce((s, p) => s + (p.casa || 0), 0);
         potAmount = totalHouseProfit;
         potLabelText = '🏦 CASA TOTAL';
     } else {
-        const activeForPot = purchases.filter(p=> p.state==='JUGANDO' && p.modality === currentMode );
+        const activeForPot = APP.purchases.filter(p=> p.state==='JUGANDO' && p.modality === APP.currentMode );
         const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
         potAmount = totalEnJuego;
-        potLabelText = `💰 BOLSA (${currentMode} CARTAS)`;
+        potLabelText = `💰 BOLSA (${APP.currentMode} CARTAS)`;
     }
 
     animateBolsa(potAmount);
@@ -1447,45 +1442,45 @@ function renderAll(){
     if(bolsaLabelEl) bolsaLabelEl.textContent = potLabelText;
     
     const deckCount=$q('#deck-count');
-    if(deckCount) deckCount.textContent=game.deck.length;
+    if(deckCount) deckCount.textContent=APP.game.deck.length;
     
     const area=$q('#players-area');
-    const active = purchases.filter(p=> p.state==='JUGANDO' && p.modality===currentMode);
+    const active = APP.purchases.filter(p=> p.state==='JUGANDO' && p.modality===APP.currentMode);
     const hasActivePlayers = active.length > 0;
     
     let finalHtml = active.map(p=> renderPlayerCard(p)).join('');
     
     if (!hasActivePlayers) {
-        area.innerHTML = '<div class="text-center small-muted" style="grid-column:1/-1; padding:30px; opacity:0.5;">No hay jugadores activos para '+currentMode+' cartas.</div>';
+        area.innerHTML = `<div class="text-center small-muted" style="grid-column:1/-1; padding:30px; opacity:0.5;">No hay jugadores activos para ${APP.currentMode} cartas.</div>`;
     } else {
         area.innerHTML = finalHtml;
     }
     
     const cur=$q('#current-card');
-    if(game.current && cur) {
-        cur.innerHTML=`<div class="current-card-img" style="background-image:url('${cardImageUrl(game.current)}')"></div>`; 
+    if(APP.game.current && cur) {
+        cur.innerHTML=`<div class="current-card-img" style="background-image:url('${cardImageUrl(APP.game.current)}')"></div>`; 
     } else if(cur) {
         cur.innerHTML='<div style="opacity:0.4; font-weight:bold; color:var(--texto-secundario);">LISTO PARA JUGAR</div>';
     }
     
-    const last=(game.drawn||[]).slice(-4, -1).reverse();
+    const last=(APP.game.drawn||[]).slice(-4, -1).reverse();
     const lastEl=$q('#last-cards'); 
     if(lastEl) lastEl.innerHTML = last.length? 
         last.map(id=> `<div class="card-thumb" style="width:40px;height:55px;background-image:url('${cardImageUrl(id)}')"></div>`).join('') : '<div class="small-muted" style="color:var(--texto-secundario);">...</div>';
 
-    const winnerPending = game.winnerPending || false;
+    const winnerPending = APP.game.winnerPending || false;
     $q('#game-controls').classList.toggle('hidden', !!winnerPending);
     $q('#btn-reset-win').classList.toggle('hidden', !winnerPending);
     
-    const gameInProgress = (game.drawn && game.drawn.length > 0);
+    const gameInProgress = (APP.game.drawn && APP.game.drawn.length > 0);
     
-    $q('#select-modality').disabled = (isAuto || winnerPending || gameInProgress);
+    $q('#select-modality').disabled = (APP.isAuto || winnerPending || gameInProgress);
     
-    $q('#btn-draw').disabled = !hasActivePlayers || isAuto || animShuffling || winnerPending;
-    $q('#btn-shuffle').disabled = !hasActivePlayers || isAuto || animShuffling || winnerPending;
-    $q('#btn-auto').disabled = !hasActivePlayers || animShuffling || winnerPending;
+    $q('#btn-draw').disabled = !hasActivePlayers || APP.isAuto || APP.animShuffling || winnerPending;
+    $q('#btn-shuffle').disabled = !hasActivePlayers || APP.isAuto || APP.animShuffling || winnerPending;
+    $q('#btn-auto').disabled = !hasActivePlayers || APP.animShuffling || winnerPending;
     
-    if (isAuto) {
+    if (APP.isAuto) {
         $q('#btn-draw').disabled = true;
         $q('#btn-shuffle').disabled = true;
         $q('#btn-auto').disabled = false; 
@@ -1505,7 +1500,7 @@ function renderAll(){
 
 function renderWinnersList(){
     const listEl=$q('#winners-list');
-    const sortedWinners = winners.slice().sort((a,b)=> b.ts-a.ts).slice(0,5);
+    const sortedWinners = APP.winners.slice().sort((a,b)=> b.ts-a.ts).slice(0,5);
     
     $qa('.winner-item.new').forEach(el => el.classList.remove('new'));
 
@@ -1513,7 +1508,7 @@ function renderWinnersList(){
     if(!sortedWinners.length){ listEl.innerHTML='<div class="text-center small-muted" style="padding: 20px; opacity: 0.6;">Sin ganadores hoy.</div>'; return; }
 
     const html = sortedWinners.map((w, index)=>{ 
-        const player=purchases.find(p=>p.id===w.purchaseId);
+        const player=APP.purchases.find(p=>p.id===w.purchaseId);
         if(!player) return ''; 
         const paidText = w.paid ? 'PAGADO' : 'PENDIENTE';
         const paidColor = w.paid ? 'var(--verde)' : 'var(--rojo)';
@@ -1542,12 +1537,12 @@ function renderWinnersList(){
 
 function renderPlayersTable(filter){
     const tbody=$q('#players-table');
-    let list = purchases.slice();
+    let list = APP.purchases.slice();
     
-    if (adminSearch) {
+    if (APP.adminSearch) {
         list = list.filter(p => 
-            p.playerName.toLowerCase().includes(adminSearch) || 
-            p.id.toLowerCase().includes(adminSearch)
+            p.playerName.toLowerCase().includes(APP.adminSearch) || 
+            p.id.toLowerCase().includes(APP.adminSearch)
         );
     }
     if (filter) {
@@ -1567,32 +1562,74 @@ function renderPlayersTable(filter){
     });
 
     if(!tbody) return;
-    if(!list.length){ 
-        tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:18px;color:#888">${adminSearch ? 'No hay resultados para "' + escapeHtml(adminSearch) + '"' : 'No hay operaciones.'}</td></tr>`; 
-        return; 
+    
+    // CORRECCIÓN 5: Lógica de Paginación
+    const totalRows = list.length;
+    const totalPages = Math.ceil(totalRows / APP.adminRowsPerPage);
+    if (APP.adminPage > totalPages) APP.adminPage = totalPages;
+    if (APP.adminPage < 1) APP.adminPage = 1;
+    
+    const paginatedList = list.slice((APP.adminPage - 1) * APP.adminRowsPerPage, APP.adminPage * APP.adminRowsPerPage);
+    
+    if(!paginatedList.length){ 
+        tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:18px;color:#888">${APP.adminSearch ? 'No hay resultados para "' + escapeHtml(APP.adminSearch) + '"' : 'No hay operaciones.'}</td></tr>`; 
+    } else {
+        tbody.innerHTML = paginatedList.map(p=>{
+            let stateClass = 'badge-finalizado';
+            if (p.state === 'JUGANDO') stateClass = 'badge-jugando';
+            if (p.state === 'POR PAGAR') stateClass = 'badge-porpagar';
+            if (p.state === 'PAGADO') stateClass = 'badge-pagado';
+
+            return `<tr>
+                <td style="padding:8px">${p.id}</td>
+                <td style="padding:8px"><strong>${escapeHtml(p.playerName)}</strong><br><small>${escapeHtml(p.cell||'—')}</small></td>
+                <td style="padding:8px;text-align:center">${p.modality}</td>
+                <td style="padding:8px;text-align:center">${formatMoney(p.enJuego||0)}</td>
+                <td style="padding:8px;text-align:center">${formatMoney(p.casa||0)}</td>
+                <td style="padding:8px;text-align:center"><span class="badge ${stateClass}">${p.state||'JUGANDO'}</span></td>
+                <td style="padding:8px;text-align:center"><button class="btn btn-blue" style="padding:4px 8px; font-size:11px;" onclick="openPurchaseDetail('${p.id}')">VER</button></td>
+            </tr>`
+        }).join('');
     }
     
-    tbody.innerHTML = list.map(p=>{
-        let stateClass = 'badge-finalizado';
-        if (p.state === 'JUGANDO') stateClass = 'badge-jugando';
-        if (p.state === 'POR PAGAR') stateClass = 'badge-porpagar';
-        if (p.state === 'PAGADO') stateClass = 'badge-pagado';
-
-        return `<tr>
-            <td style="padding:8px">${p.id}</td>
-            <td style="padding:8px"><strong>${escapeHtml(p.playerName)}</strong><br><small>${escapeHtml(p.cell||'—')}</small></td>
-            <td style="padding:8px;text-align:center">${p.modality}</td>
-            <td style="padding:8px;text-align:center">${formatMoney(p.enJuego||0)}</td>
-            <td style="padding:8px;text-align:center">${formatMoney(p.casa||0)}</td>
-            <td style="padding:8px;text-align:center"><span class="badge ${stateClass}">${p.state||'JUGANDO'}</span></td>
-            <td style="padding:8px;text-align:center"><button class="btn btn-blue" style="padding:4px 8px; font-size:11px;" onclick="openPurchaseDetail('${p.id}')">VER</button></td>
-        </tr>`
-    }).join('');
+    renderPaginationControls(totalPages, filter);
 }
+
+function renderPaginationControls(totalPages, filter) {
+    const controlsEl = $q('#pagination-controls');
+    if (!controlsEl) return;
+    
+    if (totalPages <= 1) {
+        controlsEl.innerHTML = '';
+        return;
+    }
+
+    let html = `
+        <button class="btn btn-muted pagination-btn" id="pagination-prev" ${APP.adminPage === 1 ? 'disabled' : ''}>Anterior</button>
+        <span class="pagination-info">Página ${APP.adminPage} de ${totalPages}</span>
+        <button class="btn btn-muted pagination-btn" id="pagination-next" ${APP.adminPage === totalPages ? 'disabled' : ''}>Siguiente</button>
+    `;
+    controlsEl.innerHTML = html;
+
+    $q('#pagination-prev').addEventListener('click', () => {
+        if (APP.adminPage > 1) {
+            APP.adminPage--;
+            renderPlayersTable(filter);
+        }
+    });
+
+    $q('#pagination-next').addEventListener('click', () => {
+        if (APP.adminPage < totalPages) {
+            APP.adminPage++;
+            renderPlayersTable(filter);
+        }
+    });
+}
+
 
 // --- Modales --- 
 function openPurchaseDetail(id){
-    const p=purchases.find(x=>x.id===id);
+    const p=APP.purchases.find(x=>x.id===id);
     if(!p) return showAlert('No se encontró al jugador.');
     initializePurchaseData(p);
     const modal=$q('#modal-player');
@@ -1625,7 +1662,7 @@ function openPurchaseDetail(id){
         actionsDiv.innerHTML += `<button class="btn btn-blue" onclick="copyClabe('${p.id}')">📋 Copiar CLABE/Cuenta</button>`;
     }
     if(isPending) {
-        const pendingWin = winners.find(w => w.purchaseId === id && !w.paid);
+        const pendingWin = APP.winners.find(w => w.purchaseId === id && !w.paid);
         if (pendingWin) {
             actionsDiv.innerHTML += `<button class="btn btn-green" onclick="markPaidById('${p.id}', ${pendingWin.ts})">💸 Marcar como PAGADO y Notificar</button>`;
         }
@@ -1640,7 +1677,7 @@ function openPurchaseDetail(id){
 }
 
 function copyClabe(id){
-    const p=purchases.find(x=>x.id===id);
+    const p=APP.purchases.find(x=>x.id===id);
     if(!p) return; 
     const text = p.clabe||'';
     if(!text) return showAlert('No hay CLABE registrada');
@@ -1648,7 +1685,7 @@ function copyClabe(id){
 }
 
 window.resendRegistrationWhatsapp = function(id){
-    const p=purchases.find(x=>x.id===id);
+    const p=APP.purchases.find(x=>x.id===id);
     if(!p) return; 
 
     const messageParts = [];
@@ -1660,7 +1697,7 @@ window.resendRegistrationWhatsapp = function(id){
 };
 
 function printPurchase(id){
-    const p=purchases.find(x=>x.id===id);
+    const p=APP.purchases.find(x=>x.id===id);
     if(!p) return showAlert('No encontrado');
     const html = `<html><head><title>Ticket ${p.id}</title><style>
                 body{ font-family:sans-serif; padding:12px; }
@@ -1695,8 +1732,12 @@ function printPurchase(id){
 }
 
 function initializePurchaseData(p){
-    p.price = p.price || (p.modality === 4 ? prices.price4 : prices.price6);
-    p.profit = p.profit || (p.modality === 4 ? prices.profit4 : prices.profit6);
+    p.price = p.price || (APP.prices.price4);
+    p.profit = p.profit || (APP.prices.profit4);
+    if (p.modality === 6) {
+        p.price = p.price || APP.prices.price6;
+        p.profit = p.profit || APP.prices.profit6;
+    }
     p.enJuego = p.price - p.profit;
     p.casa = p.profit;
     p.state = p.state || 'JUGANDO'; 
@@ -1724,8 +1765,8 @@ function animateBolsa(targetAmount){
 
 // --- FUNCIÓN DE ANIMACIÓN DE BARAJEO ---
 function animateShuffle(){
-  if(window.animShuffling) return; 
-  window.animShuffling=true;
+  if(APP.animShuffling) return; 
+  APP.animShuffling=true;
   stopAuto();
   disableControls(true);
   
@@ -1734,7 +1775,7 @@ function animateShuffle(){
   overlay.innerHTML='<div class="shuffle-center"></div>';
   const center = overlay.querySelector('.shuffle-center');
   
-  const pending = shuffle(game.deck.slice()); 
+  const pending = shuffle(APP.game.deck.slice()); 
   const sample = pending.slice(0, 20); 
   
   const cards = sample.map((cid,i)=>{
@@ -1799,28 +1840,28 @@ function animateShuffle(){
 }
 
 function shufflePending(){
-    game.deck = shuffle(game.deck);
-    tx.push({id:uuid(),type:'shuffle_remaining',ts:Date.now()});
+    APP.game.deck = shuffle(APP.game.deck);
+    APP.tx.push({id:uuid(),type:'shuffle_remaining',ts:Date.now()});
     saveAll();
 }
 // --- FIN ANIMACIÓN BARAJEO ---
 
 async function drawOne(){
-    if(animShuffling || game.winnerPending) return;
+    if(APP.animShuffling || APP.game.winnerPending) return;
 
-    if(game.deck.length === 0){
+    if(APP.game.deck.length === 0){
         await showAlert('El mazo está vacío. ¡Reinicia la partida para barajear de nuevo!');
         stopAuto();
         return;
     }
     
     playSound('snd-flip');
-    const card = game.deck.shift(); 
-    game.drawn.push(card);
-    game.current=card;
-    drawnInGame.push(card); 
+    const card = APP.game.deck.shift(); 
+    APP.game.drawn.push(card);
+    APP.game.current=card;
+    APP.drawnInGame.push(card); 
     
-    tx.push({id:uuid(),type:'draw',card:card,ts:Date.now()});
+    APP.tx.push({id:uuid(),type:'draw',card:card,ts:Date.now()});
     saveAll();
     processCard(card);
     renderAll();
@@ -1828,8 +1869,8 @@ async function drawOne(){
 
 function processCard(cardId){
     const winnersFound=[];
-    purchases.forEach((p,i)=>{
-        if(p.state !== 'JUGANDO' || p.modality !== currentMode) return;
+    APP.purchases.forEach((p,i)=>{
+        if(p.state !== 'JUGANDO' || p.modality !== APP.currentMode) return;
         
         if(p.card && p.card.includes(cardId) && !(p.markedCards||[]).includes(cardId)){
             p.markedCards = [...(p.markedCards||[]), cardId];
@@ -1842,22 +1883,22 @@ function processCard(cardId){
 
     if(winnersFound.length > 0){
         stopAuto();
-        game.winnerPending = true;
+        APP.game.winnerPending = true;
         
         const firstWinner = winnersFound[0];
-        const winningModality = purchases[firstWinner.idx].modality;
+        const winningModality = APP.purchases[firstWinner.idx].modality;
         
-        const activeForPot = purchases.filter(p=> (p.state==='JUGANDO' || p.state === 'POR PAGAR') && p.modality === winningModality );
+        const activeForPot = APP.purchases.filter(p=> (p.state==='JUGANDO' || p.state === 'POR PAGAR') && p.modality === winningModality );
         activeForPot.forEach(p => initializePurchaseData(p));
         const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
         
         const recs=[];
         
-        const p = purchases[firstWinner.idx];
+        const p = APP.purchases[firstWinner.idx];
         p.wins=(p.wins||0)+1;
         p.state='POR PAGAR'; 
         p.prize=totalEnJuego;
-        p.gamesLeft = 0; // CORRECCIÓN 2: Consumir la partida al ganar
+        p.gamesLeft = 0;
         
         const rec = {
             id: uuid(),
@@ -1869,16 +1910,16 @@ function processCard(cardId){
             paid: false,
             ts: Date.now()
         };
-        winners.push(rec);
+        APP.winners.push(rec);
         recs.push(rec);
-        tx.push({id:uuid(),type:'win',player:p.playerName,modality:p.modality,amount:totalEnJuego,card:cardId,purchaseId:p.id,ts:Date.now()});
+        APP.tx.push({id:uuid(),type:'win',player:p.playerName,modality:p.modality,amount:totalEnJuego,card:cardId,purchaseId:p.id,ts:Date.now()});
 
         saveAll();
         window._tempWinnerRecs = recs; 
 
         const modal = $q('#modal-winner');
         $q('#winner-title').textContent = `🎉 ¡LOTERÍA! 🎉`;
-        const winnerName = purchases[firstWinner.idx].playerName;
+        const winnerName = APP.purchases[firstWinner.idx].playerName;
         $q('#winner-body').innerHTML = `¡Ganador con la carta <strong>${cardName(cardId).toUpperCase()}</strong>!:<br><br><div style="color:var(--azul); font-weight:900; font-size:24px;">${escapeHtml(winnerName)}</div>`;
         $q('#winner-sub').innerHTML = `Premio: <strong style="color:var(--verde);">${formatMoney(totalEnJuego)}</strong>`;
         modal.classList.remove('hidden');
@@ -1898,9 +1939,9 @@ function showWinnerDetailModal(purchaseId, cardId){
     }
     
     if(!cardId) {
-        const winnerRec = winners.find(w => w.purchaseId === purchaseId && !w.paid);
+        const winnerRec = APP.winners.find(w => w.purchaseId === purchaseId && !w.paid);
         if(!winnerRec) {
-             const anyWinnerRec = winners.find(w => w.purchaseId === purchaseId);
+             const anyWinnerRec = APP.winners.find(w => w.purchaseId === purchaseId);
              if(anyWinnerRec) cardId = anyWinnerRec.cardId;
              else return;
         } else {
@@ -1908,7 +1949,7 @@ function showWinnerDetailModal(purchaseId, cardId){
         }
     }
 
-    const player = purchases.find(p=>p.id===purchaseId);
+    const player = APP.purchases.find(p=>p.id===purchaseId);
     if(!player) return;
 
     $q('#modal-winner').classList.add('hidden');
@@ -1943,31 +1984,31 @@ function closeWinnerDetailModal(){
 function escapeHtml(s){ return String(s||'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m])); }
 
 async function markPaidById(id, ts){
-    const p=purchases.find(x=>x.id===id);
+    const p=APP.purchases.find(x=>x.id===id);
     if(!p) return showAlert('No encontrado');
 
     let winnerRec;
     if (ts) {
-        winnerRec = winners.find(w => w.purchaseId === id && w.ts === ts && !w.paid);
+        winnerRec = APP.winners.find(w => w.purchaseId === id && w.ts === ts && !w.paid);
     } else {
-        winnerRec = winners.find(w => w.purchaseId === id && !w.paid); 
+        winnerRec = APP.winners.find(w => w.purchaseId === id && !w.paid); 
     }
     
     if(!winnerRec) return showAlert('No se encontró registro de premio pendiente de pago para esta compra.');
 
-    let winIndex = winners.findIndex(w => w.id === winnerRec.id);
+    let winIndex = APP.winners.findIndex(w => w.id === winnerRec.id);
     if (winIndex !== -1) {
-        winners[winIndex].paid = true;
+        APP.winners[winIndex].paid = true;
     }
 
-    const hasOtherPendingWins = winners.some(w => w.purchaseId === id && !w.paid);
+    const hasOtherPendingWins = APP.winners.some(w => w.purchaseId === id && !w.paid);
 
     if (!hasOtherPendingWins) {
         p.state = 'PAGADO';
         p.paidAt=Date.now();
     }
     
-    tx.push({id:uuid(),type:'mark_paid',purchaseId:id, winnerId: winnerRec.id, ts:Date.now()});
+    APP.tx.push({id:uuid(),type:'mark_paid',purchaseId:id, winnerId: winnerRec.id, ts:Date.now()});
     saveAll();
     renderAll();
     closeGroupModal();
@@ -2004,7 +2045,7 @@ function setActiveFilter(f){
 
 function generateCardForPurchase(modality){
     let cards = Array.from({length:54},(_,i)=>i+1);
-    const usedCards = purchases.filter(p => p.modality === modality && p.card).flatMap(p => p.card);
+    const usedCards = APP.purchases.filter(p => p.modality === modality && p.card).flatMap(p => p.card);
     const availableCards = cards.filter(c => !usedCards.includes(c));
     
     if (availableCards.length < modality) {
@@ -2016,7 +2057,7 @@ function generateCardForPurchase(modality){
 }
 
 function updateCalculatorInfo(autoFill = false){
-    const p4=prices.price4, p6=prices.price6;
+    const p4=APP.prices.price4, p6=APP.prices.price6;
     const budgetRaw=$q('#input-budget').value;
     const budget = budgetRaw===''?0:parseFloat(budgetRaw||0);
 
@@ -2056,15 +2097,15 @@ async function registerPlayer(){
     if(!cell || cell.length !== 10) return showAlert('Captura un número de celular de 10 dígitos.');
     if(q4+q6<=0) return showAlert('Selecciona al menos una partida (cantidad)');
     
-    const needed = q4*prices.price4 + q6*prices.price6;
+    const needed = q4*APP.prices.price4 + q6*APP.prices.price6;
     
     if(budget > 0 && budget < needed){
         return showAlert(`El presupuesto de ${formatMoney(budget)} no es suficiente. Se requiere ${formatMoney(needed)}.`);
     }
 
     const parts=[];
-    if(q4>0) parts.push({modality:4,qty:q4,price:prices.price4,profit:prices.profit4});
-    if(q6>0) parts.push({modality:6,qty:q6,price:prices.price6,profit:prices.profit6});
+    if(q4>0) parts.push({modality:4,qty:q4,price:APP.prices.price4,profit:APP.prices.profit4});
+    if(q6>0) parts.push({modality:6,qty:q6,price:APP.prices.price6,profit:APP.prices.profit6});
 
     const messageParts = []; 
     
@@ -2081,10 +2122,10 @@ async function registerPlayer(){
                 enJuego: ptEnJuego, casa: ptProfit
             };
             p.card=generateCardForPurchase(pt.modality);
-            purchases.push(p);
+            APP.purchases.push(p);
             const cardNames = p.card.map(cardName).join(', ');
             messageParts.push(`🎟️ *FOLIO ${p.id}* (${p.modality} Cartas):\n${cardNames}`);
-            tx.push({id:uuid(),type:'purchase',player:name,modality:pt.modality,amount:ptPrice,purchaseId:p.id,ts:Date.now()});
+            APP.tx.push({id:uuid(),type:'purchase',player:name,modality:pt.modality,amount:ptPrice,purchaseId:p.id,ts:Date.now()});
         }
     });
 
@@ -2107,32 +2148,32 @@ async function resetGame(){
     const confirm = await showConfirm('¿INICIAR NUEVA PARTIDA?<br><br>Esto finalizará la partida actual. Los ganadores quedarán "POR PAGAR" y los demás jugadores de esta modalidad pasarán a "FINALIZADO".<br>Se reiniciará el mazo completo.', 'Reiniciar Partida');
     if(!confirm) return;
     
-    game.winnerPending = false; 
+    APP.game.winnerPending = false; 
     stopAuto();
     
-    purchases.forEach(p=>{
-        if (p.modality === currentMode) {
+    APP.purchases.forEach(p=>{
+        if (p.modality === APP.currentMode) {
             if(p.state === 'JUGANDO'){
                 p.state = 'FINALIZADO';
                 p.gamesLeft = 0; 
             }
-            // (El 'gamesLeft' del ganador 'POR PAGAR' ya se puso a 0 al ganar)
         }
         p.markedCards=[]; 
     });
 
-    game.deck = shuffle(Array.from({length:54},(_,i)=>i+1));
-    game.drawn=[]; game.current=0; drawnInGame=[];
+    APP.game.deck = shuffle(Array.from({length:54},(_,i)=>i+1));
+    APP.game.drawn=[]; APP.game.current=0; APP.drawnInGame=[];
     
     $q('#shuffle-overlay').classList.remove('visible');
     $q('#shuffle-overlay').style.display='none';
-    tx.push({id:uuid(),type:'reset_full_deck',ts:Date.now()});
+    APP.tx.push({id:uuid(),type:'reset_full_deck',ts:Date.now()});
     saveAll();
     renderAll(); 
     showAlert('Partida anterior finalizada. Mazo reiniciado. ¡Listo para una nueva partida!');
 }
 
 function exportPdf(){
+    // CORRECCIÓN 2: Reporte PDF Agrupado
     const date=new Date(), header=`Reporte de partidas — GANA YA!`, logo='logo_1_entrada.png';
     let html=`<html><head><title>${header}</title><style>
         body{font-family:Arial;padding:12px;font-size:12px;}
@@ -2143,6 +2184,7 @@ function exportPdf(){
         .text-right{text-align:right;}
         .summary-table td{font-size: 14px; font-weight: bold; padding: 8px;}
         .summary-table tr:last-child td { border-top: 2px solid #333; }
+        .folios { font-size: 10px; color: #333; }
     </style></head><body>`;
     
     html+=`<div style="display:flex;gap:12px;align-items:center">
@@ -2151,13 +2193,30 @@ function exportPdf(){
     </div><hr>`;
 
     let totalRecaudado=0, totalPremios=0, totalCasa=0, totalPagado=0, totalPartidas=0;
-    purchases.forEach(p=>{ 
+    const purchasesByPhone = {};
+
+    APP.purchases.forEach(p=>{ 
         initializePurchaseData(p);
         totalRecaudado += (p.totalPaid||0); 
         totalCasa += (p.casa||0);
         totalPartidas++;
+        
+        const cell = p.cell || 'sin-celular';
+        if (!purchasesByPhone[cell]) {
+            purchasesByPhone[cell] = {
+                playerName: p.playerName,
+                cell: p.cell,
+                tickets: [],
+                totalSpent: 0
+            };
+        }
+        purchasesByPhone[cell].tickets.push(p.id);
+        purchasesByPhone[cell].totalSpent += p.totalPaid;
     });
-    winners.forEach(w => {
+    
+    const uniqueUsers = Object.keys(purchasesByPhone).length;
+    
+    APP.winners.forEach(w => {
         totalPremios += (w.prize || 0);
         if(w.paid) { totalPagado += (w.prize || 0); }
     });
@@ -2172,6 +2231,7 @@ function exportPdf(){
             <tr><td style="font-size:12px; font-weight:normal;">Total Apartado por la Casa (Bruto):</td><td class="text-right" style="font-size:12px; font-weight:normal;">${formatMoney(totalCasa)}</td></tr>
             <tr><td style="font-size:12px; font-weight:normal;">Total de Premios Pendientes:</td><td class="text-right" style="font-size:12px; font-weight:normal;">${formatMoney(totalPremios - totalPagado)}</td></tr>
             <tr><td style="font-size:12px; font-weight:normal;">Total de Partidas Vendidas:</td><td class="text-right" style="font-size:12px; font-weight:normal;">${totalPartidas}</td></tr>
+            <tr><td style="font-size:12px; font-weight:normal;">Total de Usuarios Únicos:</td><td class="text-right" style="font-size:12px; font-weight:normal;">${uniqueUsers}</td></tr>
         </table>
     </div>`;
 
@@ -2179,24 +2239,23 @@ function exportPdf(){
         <h3>Configuración de Precios</h3>
         <table>
             <tr><th>Modalidad</th><th>Precio</th><th>Ganancia Casa</th><th>Monto en Juego</th></tr>
-            <tr><td class="text-center">4 Cartas</td><td class="text-center">${formatMoney(prices.price4)}</td><td class="text-center">${formatMoney(prices.profit4)}</td><td class="text-center">${formatMoney(prices.price4 - prices.profit4)}</td></tr>
-            <tr><td class="text-center">6 Cartas</td><td class="text-center">${formatMoney(prices.price6)}</td><td class="text-center">${formatMoney(prices.profit6)}</td><td class="text-center">${formatMoney(prices.price6 - prices.profit6)}</td></tr>
+            <tr><td class="text-center">4 Cartas</td><td class="text-center">${formatMoney(APP.prices.price4)}</td><td class="text-center">${formatMoney(APP.prices.profit4)}</td><td class="text-center">${formatMoney(APP.prices.price4 - APP.prices.profit4)}</td></tr>
+            <tr><td class="text-center">6 Cartas</td><td class="text-center">${formatMoney(APP.prices.price6)}</td><td class="text-center">${formatMoney(APP.prices.profit6)}</td><td class="text-center">${formatMoney(APP.prices.price6 - APP.prices.profit6)}</td></tr>
         </table>
     </div>`;
 
     const playersHtml = `<div style="margin-top:20px;">
-        <h3>Detalle de Jugadores y Compras</h3>
+        <h3>Detalle de Jugadores (Agrupado)</h3>
         <table>
-            <thead><tr><th>ID</th><th>Jugador</th><th>Mod</th><th>En Juego</th><th>Casa</th><th>Estado</th></tr></thead>
+            <thead><tr><th>Jugador</th><th>Celular</th><th>Partidas</th><th>Total Gastado</th><th>Folios</th></tr></thead>
             <tbody>
-                ${purchases.map(p=>{ 
+                ${Object.values(purchasesByPhone).map(user => { 
                     return `<tr>
-                        <td style="padding:4px">${p.id}</td>
-                        <td style="padding:4px">${escapeHtml(p.playerName)}<br><span style="color:#777">${escapeHtml(p.cell||'—')}</span></td>
-                        <td class="text-center">${p.modality}</td>
-                        <td class="text-center">${formatMoney(p.enJuego||0)}</td>
-                        <td class="text-center">${formatMoney(p.casa||0)}</td>
-                        <td class="text-center">${p.state||'JUGANDO'}</td>
+                        <td style="padding:4px">${escapeHtml(user.playerName)}</td>
+                        <td style="padding:4px">${escapeHtml(user.cell||'—')}</td>
+                        <td class="text-center">${user.tickets.length}</td>
+                        <td class="text-center">${formatMoney(user.totalSpent)}</td>
+                        <td style="padding:4px"><span class="folios">${user.tickets.join(', ')}</span></td>
                     </tr>`;
                 }).join('')}
             </tbody>
@@ -2208,7 +2267,7 @@ function exportPdf(){
         <table>
             <thead><tr><th>Fecha</th><th>Jugador</th><th>Carta Ganadora</th><th>Premio</th><th>Estado</th></tr></thead>
             <tbody>
-                ${winners.slice().sort((a,b)=>b.ts-a.ts).map(w=>{ 
+                ${APP.winners.slice().sort((a,b)=>b.ts-a.ts).map(w=>{ 
                     return `<tr>
                         <td style="padding:4px">${new Date(w.ts).toLocaleString()}</td>
                         <td style="padding:4px">${escapeHtml(w.playerName)}</td>
@@ -2233,10 +2292,9 @@ function exportPdf(){
 function applyTheme(themeName) {
     document.documentElement.dataset.theme = themeName;
     localStorage.setItem(Kthm, themeName);
-    currentTheme = themeName;
+    APP.currentTheme = themeName;
     $q('#theme-switcher').value = themeName;
 
-    // Activar/Desactivar Overlays de efectos
     $q('#webs-overlay').classList.toggle('hidden', themeName !== 'halloween');
     $q('#snow-overlay').classList.toggle('hidden', themeName !== 'navidad');
     $q('#lights-overlay').classList.toggle('hidden', themeName !== 'navidad');
@@ -2251,35 +2309,35 @@ document.addEventListener('DOMContentLoaded', ()=>{
     script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
     document.head.appendChild(script);
 
-    $q('#price4').value = prices.price4;
-    $q('#profit4').value = prices.profit4;
-    $q('#price6').value = prices.price6;
-    $q('#profit6').value = prices.profit6;
-    $q('#select-modality').value = currentMode;
+    $q('#price4').value = APP.prices.price4;
+    $q('#profit4').value = APP.prices.profit4;
+    $q('#price6').value = APP.prices.price6;
+    $q('#profit6').value = APP.prices.profit6;
+    $q('#select-modality').value = APP.currentMode;
     
-    applyTheme(currentTheme); 
+    applyTheme(APP.currentTheme); 
     renderAll();
     
     $q('#btn-shuffle').addEventListener('click', animateShuffle);
     $q('#btn-draw').addEventListener('click', drawOne);
-    $q('#btn-auto').addEventListener('click', ()=>{ isAuto? stopAuto() : startAuto(); });
+    $q('#btn-auto').addEventListener('click', ()=>{ APP.isAuto? stopAuto() : startAuto(); });
     $q('#btn-reset-win').addEventListener('click', async () => { await resetGame(); });
     
     $q('#save-prices').addEventListener('click', async ()=>{
-        prices.price4=parseFloat($q('#price4').value||0);
-        prices.profit4=parseFloat($q('#profit4').value||0);
-        prices.price6=parseFloat($q('#price6').value||0);
-        prices.profit6=parseFloat($q('#profit6').value||0);
+        APP.prices.price4=parseFloat($q('#price4').value||0);
+        APP.prices.profit4=parseFloat($q('#profit4').value||0);
+        APP.prices.price6=parseFloat($q('#price6').value||0);
+        APP.prices.profit6=parseFloat($q('#profit6').value||0);
         saveAll();
         renderAll();
         showAlert('Precios guardados.');
     });
     $q('#reset-prices').addEventListener('click', async ()=>{
-        prices=defaultsPrices();
-        $q('#price4').value=prices.price4;
-        $q('#profit4').value=prices.profit4;
-        $q('#price6').value=prices.price6;
-        $q('#profit6').value=prices.profit6;
+        APP.prices=defaultsPrices();
+        $q('#price4').value=APP.prices.price4;
+        $q('#profit4').value=APP.prices.profit4;
+        $q('#price6').value=APP.prices.price6;
+        $q('#profit6').value=APP.prices.profit6;
         saveAll();
         renderAll();
         showAlert('Precios reseteados a los valores por defecto.');
@@ -2341,8 +2399,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
     
     $q('#select-modality').addEventListener('change', (e)=>{ 
-        currentMode = Number(e.target.value); 
-        localStorage.setItem(Kmod,String(currentMode)); 
+        APP.currentMode = Number(e.target.value); 
+        localStorage.setItem(Kmod,String(APP.currentMode)); 
         renderAll(); 
     });
 
@@ -2351,18 +2409,19 @@ document.addEventListener('DOMContentLoaded', ()=>{
         const confirm = await showConfirm('¿BORRAR TODAS LAS COMPRAS Y GANADORES DEL DÍA?<br><br>Esta acción no se puede deshacer.', 'Borrar Día');
         if(!confirm) return;
         
-        purchases=[];
-        tx.push({id:uuid(),type:'clear',ts:Date.now()});
-        game=defaultsGame();
-        winners=[];
-        drawnInGame=[];
+        APP.purchases=[];
+        APP.tx.push({id:uuid(),type:'clear',ts:Date.now()});
+        APP.game=defaultsGame();
+        APP.winners=[];
+        APP.drawnInGame=[];
         saveAll();
         renderAll();
         showAlert('Día reiniciado. Todos los datos de compras y ganancias se borraron.');
     });
 
     $q('#admin-search').addEventListener('input', (e) => {
-        adminSearch = e.target.value.toLowerCase().trim();
+        APP.adminSearch = e.target.value.toLowerCase().trim();
+        APP.adminPage = 1; // Resetear a página 1
         const currentFilter = $q('.toggle-btn[id^="filter-"][style*="background: var(--azul)"]');
         let filterValue = null;
         if (currentFilter) {
@@ -2372,9 +2431,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
         renderPlayersTable(filterValue);
     });
 
-    $q('#filter-all').addEventListener('click', ()=>{ setActiveFilter('all'); renderPlayersTable(); });
-    $q('#filter-4').addEventListener('click', ()=>{ setActiveFilter(4); renderPlayersTable(4); });
-    $q('#filter-6').addEventListener('click', ()=>{ setActiveFilter(6); renderPlayersTable(6); });
+    $q('#filter-all').addEventListener('click', ()=>{ setActiveFilter('all'); APP.adminPage = 1; renderPlayersTable(); });
+    $q('#filter-4').addEventListener('click', ()=>{ setActiveFilter(4); APP.adminPage = 1; renderPlayersTable(4); });
+    $q('#filter-6').addEventListener('click', ()=>{ setActiveFilter(6); APP.adminPage = 1; renderPlayersTable(6); });
 
     // --- Cierres de Modales ---
     $qa('.modal-back').forEach(modalBack => {
@@ -2397,7 +2456,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     
     $q('#modal-alert-ok').addEventListener('click', () => $q('#modal-alert').classList.add('hidden'));
 
-    // CORRECCIÓN 1: Flujo de 'ESC'
     document.addEventListener('keydown', (e)=>{
         if(e.key !== 'Escape') return;
 
@@ -2416,7 +2474,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
         } else if (!detailModal.classList.contains('hidden')) {
             closeWinnerDetailModal();
         } else if (!winnerModal.classList.contains('hidden')) {
-            // ESC en "FELICIDADES" abre el detalle
             showWinnerDetailModal(); 
         }
     });

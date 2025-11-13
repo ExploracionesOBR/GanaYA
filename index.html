@@ -1830,7 +1830,7 @@ function animateShuffle(){
     $qa('#players-grid .card-thumb').forEach(c=>{ c.classList.add('shine'); setTimeout(()=>c.classList.remove('shine'),2600); });
     overlay.style.display='none'; 
     overlay.innerHTML=''; 
-    window.animShuffling=false; 
+    APP.animShuffling=false; // <--- ✅ ¡ESTA ES LA CORRECCIÓN! 
     
     shufflePending(); 
     

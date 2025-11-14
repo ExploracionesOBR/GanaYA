@@ -5,7 +5,7 @@
 <title>🎴 GANA YA! - Lotería Interactiva (v13.5)</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ff6bcb'/%3E%3Ctext x='50%25' y='55%25' font-size='18' font-family='Arial' fill='white' text-anchor='middle' font-weight='700'%3EG%3C/text%3E%3C/svg%3E">
 <style>
-/* --- INICIO DE ESTILO (v13.1) --- */
+/* --- INICIO DE ESTILO (v13.5) --- */
 
 /* -------------------------------------------
   DEFINICIÓN DE TEMAS (SKINS)
@@ -25,6 +25,13 @@
     --borde-cabecera: #d00000; --gradiente-barra: linear-gradient(90deg, var(--verde) 0%, var(--accent1) 50%, var(--rojo) 100%);
     --fondo-calculadora: #fffbe6; --marco-color: var(--verde); --marco-sombra: var(--rojo);
 }
+/* MEJORA SKINS: Fondo de "papel picado" */
+[data-theme="mexicano1"] body {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 5 L55 5 L55 55 L5 55 Z' stroke='%23008000' stroke-width='1' fill='none' opacity='0.1'/%3E%3Ccircle cx='30' cy='30' r='5' fill='%23d00000' opacity='0.1'/%3E%3C/svg%3E");
+    animation: slide 10s linear infinite;
+}
+@keyframes slide { 0% { background-position: 0 0; } 100% { background-position: 120px 60px; } }
+
 [data-theme="mexicano1"] .mex-frame::before, 
 [data-theme="mexicano1"] .mex-frame-small::before {
     content: '🇲🇽'; position: absolute; top: -5px; left: 10px; font-size: 20px;
@@ -46,7 +53,15 @@
     50% { box-shadow: 0 0 10px var(--verde), 0 0 15px var(--verde), 0 0 20px #fff, 0 0 30px #fff, 0 0 40px var(--rojo), 0 0 50px var(--rojo); transform: scale(1.1); }
 }
 [data-theme="mexicano2"] .winner-card { animation: neonGlow 1.5s infinite ease-in-out; }
-[data-theme="mexicano2"] body::before { box-shadow: 0 0 30px var(--rojo) inset, 0 0 20px var(--accent1) inset !important; }
+/* MEJORA SKINS: Animación de parpadeo (flicker) para el marco */
+@keyframes flicker {
+  0%, 100% { opacity: 1; box-shadow: 0 0 30px var(--rojo) inset, 0 0 20px var(--accent1) inset; }
+  50% { opacity: 0.8; box-shadow: 0 0 25px var(--rojo) inset, 0 0 15px var(--accent1) inset; }
+}
+[data-theme="mexicano2"] body::before { 
+    box-shadow: 0 0 30px var(--rojo) inset, 0 0 20px var(--accent1) inset !important; 
+    animation: flicker 3s linear infinite;
+}
 
 [data-theme="halloween"] {
     --rojo: #FF4500; --verde: #5e0873; --azul: #9400D3; --naranja: #FF8C00; --crema: #fdfbf5;
@@ -112,6 +127,27 @@
 .web-bottom-left { left: -20px; transform: scaleY(-1); }
 .web-bottom-right { right: -20px; transform: scale(-1, -1); }
 
+/* MEJORA SKINS: Nuevo overlay para Halloween */
+.halloween-overlay { display: none; }
+[data-theme="halloween"] .halloween-overlay {
+    display: block; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none; z-index: 9989;
+}
+.halloween-overlay .item {
+    position: absolute; top: -20px; font-size: 20px;
+    animation: falling 12s linear infinite;
+}
+.halloween-overlay .item:nth-child(2) { left: 10%; animation-duration: 12s; animation-delay: 1s; font-size: 15px;}
+.halloween-overlay .item:nth-child(3) { left: 20%; animation-duration: 8s; animation-delay: 2s; font-size: 10px;}
+.halloween-overlay .item:nth-child(4) { left: 30%; animation-duration: 11s; animation-delay: 3s; font-size: 24px;}
+.halloween-overlay .item:nth-child(5) { left: 40%; animation-duration: 9s; animation-delay: 4s; font-size: 12px;}
+.halloween-overlay .item:nth-child(6) { left: 50%; animation-duration: 10s; animation-delay: 2s; font-size: 20px;}
+.halloween-overlay .item:nth-child(7) { left: 60%; animation-duration: 8s; animation-delay: 1.5s; font-size: 14px;}
+.halloween-overlay .item:nth-child(8) { left: 70%; animation-duration: 13s; animation-delay: 3s; font-size: 22px;}
+.halloween-overlay .item:nth-child(9) { left: 80%; animation-duration: 7s; animation-delay: 2.5s; font-size: 16px;}
+.halloween-overlay .item:nth-child(10) { left: 90%; animation-duration: 10s; animation-delay: 0s; font-size: 20px;}
+
+
 .snow-overlay, .stars-overlay, .pascua-overlay { display: none; }
 [data-theme="navidad"] .snow-overlay,
 [data-theme="reyes"] .stars-overlay,
@@ -129,6 +165,7 @@
     font-size: 40px; left: 10%;
     animation: falling 15s linear infinite, pulseTitle 2s infinite;
 }
+/* MEJORA SKINS: Aumentada la cantidad de partículas */
 .snow-overlay .snow:nth-child(2), .stars-overlay .star:nth-child(2), .pascua-overlay .item:nth-child(2) { left: 10%; animation-duration: 12s; animation-delay: 1s; font-size: 15px;}
 .snow-overlay .snow:nth-child(3), .stars-overlay .star:nth-child(3), .pascua-overlay .item:nth-child(3) { left: 20%; animation-duration: 8s; animation-delay: 2s; font-size: 10px;}
 .snow-overlay .snow:nth-child(4), .stars-overlay .star:nth-child(4), .pascua-overlay .item:nth-child(4) { left: 30%; animation-duration: 11s; animation-delay: 3s; font-size: 24px;}
@@ -143,6 +180,17 @@
 .snow-overlay .snow:nth-child(13), .stars-overlay .star:nth-child(13), .pascua-overlay .item:nth-child(13) { left: 45%; animation-duration: 11s; animation-delay: 7s; font-size: 24px;}
 .snow-overlay .snow:nth-child(14), .stars-overlay .star:nth-child(14), .pascua-overlay .item:nth-child(14) { left: 55%; animation-duration: 9s; animation-delay: 8s; font-size: 12px;}
 .snow-overlay .snow:nth-child(15), .stars-overlay .star:nth-child(15), .pascua-overlay .item:nth-child(15) { left: 65%; animation-duration: 10s; animation-delay: 6s; font-size: 20px;}
+.snow-overlay .snow:nth-child(16), .stars-overlay .star:nth-child(16), .pascua-overlay .item:nth-child(16) { left: 5%; animation-duration: 11s; animation-delay: 8s; font-size: 18px;}
+.snow-overlay .snow:nth-child(17), .stars-overlay .star:nth-child(17), .pascua-overlay .item:nth-child(17) { left: 15%; animation-duration: 9s; animation-delay: 9s; font-size: 14px;}
+.snow-overlay .snow:nth-child(18), .stars-overlay .star:nth-child(18), .pascua-overlay .item:nth-child(18) { left: 75%; animation-duration: 10s; animation-delay: 7s; font-size: 22px;}
+.snow-overlay .snow:nth-child(19), .stars-overlay .star:nth-child(19), .pascua-overlay .item:nth-child(19) { left: 85%; animation-duration: 8s; animation-delay: 9s; font-size: 16px;}
+.snow-overlay .snow:nth-child(20), .stars-overlay .star:nth-child(20), .pascua-overlay .item:nth-child(20) { left: 95%; animation-duration: 12s; animation-delay: 8s; font-size: 20px;}
+.snow-overlay .snow:nth-child(21), .stars-overlay .star:nth-child(21), .pascua-overlay .item:nth-child(21) { left: 8%; animation-duration: 10s; animation-delay: 10s; font-size: 18px;}
+.snow-overlay .snow:nth-child(22), .stars-overlay .star:nth-child(22), .pascua-overlay .item:nth-child(22) { left: 18%; animation-duration: 9s; animation-delay: 11s; font-size: 14px;}
+.snow-overlay .snow:nth-child(23), .stars-overlay .star:nth-child(23), .pascua-overlay .item:nth-child(23) { left: 28%; animation-duration: 10s; animation-delay: 10s; font-size: 22px;}
+.snow-overlay .snow:nth-child(24), .stars-overlay .star:nth-child(24), .pascua-overlay .item:nth-child(24) { left: 38%; animation-duration: 8s; animation-delay: 11s; font-size: 16px;}
+.snow-overlay .snow:nth-child(25), .stars-overlay .star:nth-child(25), .pascua-overlay .item:nth-child(25) { left: 48%; animation-duration: 12s; animation-delay: 10s; font-size: 20px;}
+
 @keyframes falling {
     0% { transform: translateY(0) rotate(0); opacity: 1; }
     100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
@@ -497,7 +545,6 @@ body::before {
 .current-card-img { width: 100%; height: 100%; background-size: contain; background-position: center; background-repeat: no-repeat; }
 
 /* ADMIN */
-/* CORRECCIÓN 3: Cambiado a 3 columnas */
 .admin-row{ 
     display:grid; 
     grid-template-columns: 1fr 1.5fr 1fr;
@@ -506,7 +553,6 @@ body::before {
 }
 @media(max-width: 1200px) {
     .admin-row { grid-template-columns: 1fr 1.5fr; }
-    /* El nuevo panel se moverá abajo */
     #pending-payments-panel { grid-column: 1 / -1; }
 }
 @media(max-width: 850px) {
@@ -520,11 +566,10 @@ body::before {
 .admin-col.mex-frame-small .input { text-align: center; }
 .admin-col.mex-frame-small label { display: block; text-align: center; }
 
-/* CORRECCIÓN 3: Estilos para el nuevo panel */
 #pending-payments-panel h3 {
     margin-top: 0;
     color: var(--accent1);
-    text-shadow: 1px 1px #000;
+    text-shadow: 1px 1px #8c7400;
 }
 .pending-item {
     display: flex;
@@ -717,20 +762,30 @@ tr:hover { background: #f9f9f9; }
     <div class="web-bottom-left"></div>
     <div class="web-bottom-right"></div>
 </div>
+<div id="halloween-overlay" class="halloween-overlay hidden">
+    <div class="item">🎃</div><div class="item">👻</div><div class="item">🎃</div><div class="item">👻</div><div class="item">🎃</div>
+    <div class="item">👻</div><div class="item">🎃</div><div class="item">👻</div><div class="item">🎃</div><div class="item">👻</div>
+</div>
 <div id="snow-overlay" class="snow-overlay hidden">
     <div class="snow">❄️</div><div class="snow">🎄</div><div class="snow">🎁</div><div class="snow">❄️</div><div class="snow">🎁</div>
     <div class="snow">🎄</div><div class="snow">❄️</div><div class="snow">🎁</div><div class="snow">🎄</div><div class="snow">❄️</div>
     <div class="snow">🎁</div><div class="snow">🎄</div><div class="snow">❄️</div><div class="snow">🎁</div><div class="snow">🎄</div>
+    <div class="snow">❄️</div><div class="snow">🎄</div><div class="snow">🎁</div><div class="snow">❄️</div><div class="snow">🎁</div>
+    <div class="snow">🎄</div><div class="snow">❄️</div><div class="snow">🎁</div><div class="snow">🎄</div><div class="snow">❄️</div>
 </div>
 <div id="stars-overlay" class="stars-overlay hidden">
     <div class="star lucero">🌟</div><div class="star">✨</div><div class="star">🎁</div><div class="star">✨</div><div class="star">🎁</div>
     <div class="star">✨</div><div class="star">🌟</div><div class="star">🎁</div><div class="star">✨</div><div class="star">🎁</div>
+    <div class="star">✨</div><div class="star">🌟</div><div class="star">🎁</div><div class="star">✨</div><div class="star">🎁</div>
+    <div class="star">🌟</div><div class="star">✨</div><div class="star">🎁</div><div class="star">✨</div><div class="star">🎁</div>
     <div class="star">✨</div><div class="star">🌟</div><div class="star">🎁</div><div class="star">✨</div><div class="star">🎁</div>
 </div>
 <div id="pascua-overlay" class="pascua-overlay hidden">
     <div class="item">🐇</div><div class="item">🥚</div><div class="item">🍬</div><div class="item">🍭</div><div class="item">🐇</div>
     <div class="item">🥚</div><div class="item">🍬</div><div class="item">🍭</div><div class="item">🐇</div><div class="item">🥚</div>
     <div class="item">🍬</div><div class="item">🍭</div><div class="item">🐇</div><div class="item">🥚</div><div class="item">🍬</div>
+    <div class="item">🐇</div><div class="item">🥚</div><div class="item">🍬</div><div class="item">🍭</div><div class="item">🐇</div>
+    <div class="item">🥚</div><div class="item">🍬</div><div class="item">🍭</div><div class="item">🐇</div><div class="item">🥚</div>
 </div>
 <div id="fireworks-overlay" class="fireworks-overlay hidden"></div>
 <div id="serpentina-overlay" class="serpentina-overlay hidden"></div>
@@ -771,7 +826,7 @@ tr:hover { background: #f9f9f9; }
 
     <aside class="mex-frame-small winners" id="winners-panel" aria-label="Últimos Ganadores">
       <h3 class="text-center" style="color: var(--verde); margin-top:0;">🏆 Ganadores Recientes</h3>
-      <div class_alias="winners-list" id="winners-list" style="margin-top:4px"><div class="small-muted" style="text-align:center">Aún no hay ganadores.</div></div>
+      <div class="winners-list" id="winners-list" style="margin-top:4px"><div class="small-muted" style="text-align:center">Aún no hay ganadores.</div></div>
     </aside>
 
     <section class="mex-frame" id="players-section">
@@ -1452,18 +1507,17 @@ function renderPendingPayments() {
                     <span style="font-size:12px; color:var(--texto-secundario);">${escapeHtml(p.cell)}</span>
                 </div>
                 <span class="balance">${formatMoney(p.totalBalance)}</span>
-                <button class="btn-blue" style="margin-left:10px;" onclick="openPurchaseDetailByCell('${p.cell}')">Gestionar</button>
+                <button class="btn-blue" style="margin-left:10px;" onclick="openPaymentModal('${p.cell}')">Gestionar</button>
             </div>
         `;
     }).join('');
 }
 
 // CORRECCIÓN 3: Nueva función helper
-function openPurchaseDetailByCell(cell) {
-    // Abrir el modal usando el ID de la *primera* compra que coincida
+function openPaymentModal(cell) {
     const p = APP.purchases.find(p => p.cell === cell);
     if (p) {
-        openPurchaseDetail(p.id);
+        openPurchaseDetail(p.id, true); // Abrir en modo "Gestión"
     } else {
         showAlert('Error: No se encontró al jugador.');
     }
@@ -1562,7 +1616,7 @@ function renderPaginationControls(totalPages, filter) {
 
 
 // --- Modales --- 
-function openPurchaseDetail(id){
+function openPurchaseDetail(id, isManaging = false){ // isManaging es el nuevo flag
     const p=APP.purchases.find(x=>x.id===id);
     if(!p) return showAlert('No se encontró al jugador.');
     initializePurchaseData(p);
@@ -1573,7 +1627,7 @@ function openPurchaseDetail(id){
     
     $q('#modal-player-name').textContent=`${p.playerName}`;
     actionsDiv.innerHTML = '';
-    winningsDiv.classList.add('hidden');
+    winningsDiv.classList.add('hidden'); // Ocultar por defecto
     
     const isPending = p.state === 'POR PAGAR';
     const isPlaying = p.state === 'JUGANDO';
@@ -1595,8 +1649,8 @@ function openPurchaseDetail(id){
     </div>`;
     $q('#modal-body').innerHTML = bodyHtml;
 
-    if(isPending && p.cell) {
-        // CORRECCIÓN 1: Buscar TODAS las ganancias pendientes de este JUGADOR (por cel)
+    // CORRECCIÓN 3: Lógica de pago/saldo solo si isManaging es true
+    if(isManaging && p.cell) {
         const playerPurchases = APP.purchases.filter(purchase => purchase.cell === p.cell && purchase.state === 'POR PAGAR');
         const purchaseIds = playerPurchases.map(purchase => purchase.id);
         const pendingWins = APP.winners.filter(w => purchaseIds.includes(w.purchaseId) && !w.paid);
@@ -1606,7 +1660,7 @@ function openPurchaseDetail(id){
             // Opción de "Marcar como Pagado" (Consolidado)
             actionsDiv.innerHTML += `<button class="btn btn-green" onclick="markAllPaid('${p.cell}')">💸 Pagar Saldo Total (${formatMoney(totalBalance)}) y Notificar</button>`;
             
-            // CORRECCIÓN 1: Mostrar la sección "Usar Saldo"
+            // Mostrar la sección "Usar Saldo"
             winningsDiv.classList.remove('hidden');
             $q('#winnings-balance').textContent = formatMoney(totalBalance);
             
@@ -1624,6 +1678,7 @@ function openPurchaseDetail(id){
                 calcInfoEl.textContent = `Costo Total: ${formatMoney(totalCost)}`;
                 if (totalCost > totalBalance) {
                     calcInfoEl.style.color = 'var(--rojo)';
+                    calcInfoEl.textContent += ` (Saldo Insuficiente)`;
                 } else {
                     calcInfoEl.style.color = 'var(--verde)';
                 }
@@ -2254,8 +2309,6 @@ async function resetGame(){
     APP.game.winnerPending = false; 
     stopAuto();
     
-    // CORRECCIÓN 2: Lógica de resetGame simplificada.
-    
     APP.game.deck = shuffle(Array.from({length:54},(_,i)=>i+1));
     APP.game.drawn=[]; APP.game.current=0; APP.drawnInGame=[];
     
@@ -2394,6 +2447,7 @@ function applyTheme(themeName) {
     $q('#theme-switcher').value = themeName;
 
     $q('#webs-overlay').classList.toggle('hidden', themeName !== 'halloween');
+    $q('#halloween-overlay').classList.toggle('hidden', themeName !== 'halloween'); // MEJORA SKINS
     $q('#snow-overlay').classList.toggle('hidden', themeName !== 'navidad');
     $q('#lights-overlay').classList.toggle('hidden', themeName !== 'navidad');
     $q('#stars-overlay').classList.toggle('hidden', themeName !== 'reyes');
@@ -2583,7 +2637,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             if (target && !target.classList.contains('simulated')) {
                 const playerId = target.getAttribute('data-player-id');
                 if (playerId) {
-                    openPurchaseDetail(playerId);
+                    openPurchaseDetail(playerId, false); // CORRECCIÓN 3: Llamar con 'false'
                 }
             } 
         });

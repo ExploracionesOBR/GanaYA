@@ -2,7 +2,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎴 GANA YA! - Lotería Interactiva (v13.3)</title>
+<title>🎴 GANA YA! - Lotería Interactiva (v13.5)</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ff6bcb'/%3E%3Ctext x='50%25' y='55%25' font-size='18' font-family='Arial' fill='white' text-anchor='middle' font-weight='700'%3EG%3C/text%3E%3C/svg%3E">
 <style>
 /* --- INICIO DE ESTILO (v13.1) --- */
@@ -902,6 +902,24 @@ tr:hover { background: #f9f9f9; }
         <button class="close-modal-x" id="modal-close-x">×</button>
         <h3 id="modal-player-name" style="color:var(--azul); margin-top:0;">Detalle de Jugador</h3>
         <div id="modal-body" class="text-center"></div>
+        
+        <div id="modal-use-winnings" class="hidden" style="background:#f0f8ff; border:1px solid #ddd; border-radius:8px; padding:10px; margin-top:15px;">
+            <h4 style="margin-top:0; color:var(--azul);">Comprar con Saldo Pendiente</h4>
+            <p style="font-size:14px;">Saldo Total Pendiente: <strong id="winnings-balance" style="color:var(--verde);"></strong></p>
+            <div style="display:flex; gap:10px; align-items: flex-end;">
+                <div style="flex:1">
+                    <label style="font-size:12px;">Cant. 4 Cartas</label>
+                    <input id="winnings-qty4" type="number" min="0" value="0" class="input text-center">
+                </div>
+                <div style="flex:1">
+                    <label style="font-size:12px;">Cant. 6 Cartas</label>
+                    <input id="winnings-qty6" type="number" min="0" value="0" class="input text-center">
+                </div>
+            </div>
+            <p id="winnings-calc-info" style="font-size:13px; font-weight:bold; min-height:18px; margin-top:5px;"></p>
+            <button id="btn-buy-with-winnings" class="btn btn-blue w-full mt-2" style="font-size:14px;">Confirmar Compra con Saldo</button>
+        </div>
+
         <div id="modal-player-actions" class="mt-2" style="display:flex; flex-direction:column; gap:8px;">
         </div>
         <button id="modal-close" class="btn btn-muted mt-2 w-full">Cerrar</button>
@@ -956,7 +974,7 @@ tr:hover { background: #f9f9f9; }
 
 
 <script>
-/* index_v13.2_pulido - code block */
+/* index_v13.4_pulido - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
 const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg",49:"49 el pino-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
@@ -1432,8 +1450,14 @@ function openPurchaseDetail(id){
     const p=APP.purchases.find(x=>x.id===id);
     if(!p) return showAlert('No se encontró al jugador.');
     initializePurchaseData(p);
+    
     const modal=$q('#modal-player');
+    const actionsDiv = $q('#modal-player-actions');
+    const winningsDiv = $q('#modal-use-winnings');
+    
     $q('#modal-player-name').textContent=`${p.playerName}`;
+    actionsDiv.innerHTML = '';
+    winningsDiv.classList.add('hidden');
     
     const isPending = p.state === 'POR PAGAR';
     const isPlaying = p.state === 'JUGANDO';
@@ -1455,17 +1479,53 @@ function openPurchaseDetail(id){
     </div>`;
     $q('#modal-body').innerHTML = bodyHtml;
 
-    const actionsDiv = $q('#modal-player-actions');
-    actionsDiv.innerHTML = '';
+    if(isPending && p.cell) {
+        // CORRECCIÓN 1: Buscar TODAS las ganancias pendientes de este JUGADOR (por cel)
+        const playerPurchases = APP.purchases.filter(purchase => purchase.cell === p.cell && purchase.state === 'POR PAGAR');
+        const purchaseIds = playerPurchases.map(purchase => purchase.id);
+        const pendingWins = APP.winners.filter(w => purchaseIds.includes(w.purchaseId) && !w.paid);
+        const totalBalance = pendingWins.reduce((sum, w) => sum + w.prize, 0);
+
+        if (totalBalance > 0) {
+            // Opción de "Marcar como Pagado" (Consolidado)
+            actionsDiv.innerHTML += `<button class="btn btn-green" onclick="markAllPaid('${p.cell}')">💸 Pagar Saldo Total (${formatMoney(totalBalance)}) y Notificar</button>`;
+            
+            // CORRECCIÓN 1: Mostrar la sección "Usar Saldo"
+            winningsDiv.classList.remove('hidden');
+            $q('#winnings-balance').textContent = formatMoney(totalBalance);
+            
+            const qty4El = $q('#winnings-qty4');
+            const qty6El = $q('#winnings-qty6');
+            const calcInfoEl = $q('#winnings-calc-info');
+            qty4El.value = '0';
+            qty6El.value = '0';
+            calcInfoEl.textContent = 'Costo Total: $0.00';
+
+            const updateWinningsCalc = () => {
+                const q4 = parseInt(qty4El.value) || 0;
+                const q6 = parseInt(qty6El.value) || 0;
+                const totalCost = (q4 * APP.prices.price4) + (q6 * APP.prices.price6);
+                calcInfoEl.textContent = `Costo Total: ${formatMoney(totalCost)}`;
+                if (totalCost > totalBalance) {
+                    calcInfoEl.style.color = 'var(--rojo)';
+                } else {
+                    calcInfoEl.style.color = 'var(--verde)';
+                }
+            };
+            
+            qty4El.oninput = updateWinningsCalc;
+            qty6El.oninput = updateWinningsCalc;
+
+            const newBtn = $q('#btn-buy-with-winnings').cloneNode(true);
+            $q('#btn-buy-with-winnings').parentNode.replaceChild(newBtn, $q('#btn-buy-with-winnings'));
+            newBtn.addEventListener('click', () => {
+                buyWithWinnings(p, pendingWins, totalBalance);
+            });
+        }
+    }
 
     if(p.clabe && isPending) {
         actionsDiv.innerHTML += `<button class="btn btn-blue" onclick="copyClabe('${p.id}')">📋 Copiar CLABE/Cuenta</button>`;
-    }
-    if(isPending) {
-        const pendingWin = APP.winners.find(w => w.purchaseId === id && !w.paid);
-        if (pendingWin) {
-            actionsDiv.innerHTML += `<button class="btn btn-green" onclick="markPaidById('${p.id}', ${pendingWin.ts})">💸 Marcar como PAGADO y Notificar</button>`;
-        }
     }
     if(isPlaying || isPending) {
         actionsDiv.innerHTML += `<button class="btn btn-muted" onclick="resendRegistrationWhatsapp('${p.id}')">📱 Reenviar Cartas (WhatsApp)</button>`;
@@ -1475,6 +1535,125 @@ function openPurchaseDetail(id){
     $q('#modal-close').onclick=closeGroupModal;
     $q('#modal-close-x').onclick=closeGroupModal;
 }
+
+// CORRECCIÓN 1: Nueva función para comprar con saldo
+async function buyWithWinnings(player, pendingWins, totalBalance) {
+    const q4 = parseInt($q('#winnings-qty4').value) || 0;
+    const q6 = parseInt($q('#winnings-qty6').value) || 0;
+    
+    if (q4 + q6 <= 0) {
+        return showAlert('Debes ingresar una cantidad de partidas.');
+    }
+
+    const totalCost = (q4 * APP.prices.price4) + (q6 * APP.prices.price6);
+
+    if (totalCost > totalBalance) {
+        return showAlert(`Saldo insuficiente. Tu saldo es de ${formatMoney(totalBalance)} y la compra es de ${formatMoney(totalCost)}.`);
+    }
+
+    // --- Lógica de creación de boletos (similar a registerPlayer) ---
+    const parts=[];
+    if(q4>0) parts.push({modality:4,qty:q4,price:APP.prices.price4,profit:APP.prices.profit4});
+    if(q6>0) parts.push({modality:6,qty:q6,price:APP.prices.price6,profit:APP.prices.profit6});
+
+    const newPurchases = [];
+    const messageParts = []; // Para el mensaje de WhatsApp
+    
+    parts.forEach(pt=>{
+        const ptPrice = pt.price, ptProfit = pt.profit, ptEnJuego = ptPrice - ptProfit;
+        for(let i=0;i<pt.qty;i++){
+            const id = getNextPurchaseId(); 
+            const p={
+                id:id, playerName: player.playerName, cell: player.cell, clabe: player.clabe,
+                modality:pt.modality, 
+                initialGames:1, gamesLeft:1, 
+                totalPaid:ptPrice, wins:0,state:'JUGANDO',card:[],markedCards:[],
+                createdAt:Date.now(), price: ptPrice, profit: ptProfit, 
+                enJuego: ptEnJuego, casa: ptProfit
+            };
+            p.card=generateCardForPurchase(pt.modality);
+            newPurchases.push(p);
+            APP.tx.push({id:uuid(),type:'purchase_with_winnings',player:p.playerName,modality:pt.modality,amount:ptPrice,purchaseId:p.id,ts:Date.now()});
+            
+            // Para el mensaje de WhatsApp
+            const cardNames = p.card.map(cardName).join(', ');
+            messageParts.push(`🎟️ *FOLIO ${p.id}* (${p.modality} Cartas):\n${cardNames}`);
+        }
+    });
+    
+    APP.purchases.push(...newPurchases);
+    
+    // --- Actualizar el premio (descontar el saldo) ---
+    let costToDeduct = totalCost;
+    let newBalance = totalBalance;
+    
+    pendingWins.sort((a,b) => a.ts - b.ts);
+    
+    for (const win of pendingWins) {
+        if (costToDeduct <= 0) break;
+
+        const prize = win.prize;
+        if (costToDeduct >= prize) {
+            costToDeduct -= prize;
+            win.prize = 0;
+            win.paid = true;
+        } else {
+            win.prize -= costToDeduct;
+            costToDeduct = 0;
+        }
+    }
+    newBalance = totalBalance - totalCost;
+
+    if (newBalance <= 0) {
+        const playerPurchases = APP.purchases.filter(purchase => purchase.cell === player.cell && purchase.state === 'POR PAGAR');
+        playerPurchases.forEach(p => p.state = 'PAGADO');
+    }
+    
+    saveAll();
+    closeGroupModal();
+    renderAll();
+    
+    // --- Enviar Notificación de WhatsApp ---
+    const finalMsg = `🎉 ¡HOLA ${player.playerName.toUpperCase()}! 🎉\n\nHas utilizado parte de tus ganancias para la compra de nuevos boletos:\n\n💰 *SALDO ACUMULADO:* ${formatMoney(totalBalance)}\n💸 *UTILIZADO:* ${formatMoney(totalCost)}\n🏦 *RESTANTE:* ${formatMoney(newBalance)}\n\n--- *Nuevos Boletos* ---\n\n${messageParts.join('\n\n')}\n\n🍀 ¡MUCHA SUERTE Y A GANAR! 🍀`;
+    window.open(`https://wa.me/52${player.cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
+
+    await showAlert(`¡Compra exitosa! Se compraron ${q4+q6} partidas.<br><br>Saldo Anterior: ${formatMoney(totalBalance)}<br>Costo: ${formatMoney(totalCost)}<br>Saldo Restante: <strong>${formatMoney(newBalance)}</strong><br><br>Se abrió WhatsApp para notificar.`);
+}
+
+// CORRECCIÓN 1: Nueva función para marcar TODO pagado
+async function markAllPaid(cell) {
+    if (!cell) return showAlert('Error: No se encontró el celular del jugador.');
+
+    const playerPurchases = APP.purchases.filter(p => p.cell === cell && p.state === 'POR PAGAR');
+    const purchaseIds = playerPurchases.map(p => p.id);
+    const pendingWins = APP.winners.filter(w => purchaseIds.includes(w.purchaseId) && !w.paid);
+    const totalBalance = pendingWins.reduce((sum, w) => sum + w.prize, 0);
+
+    if (pendingWins.length === 0) {
+        return showAlert('Error: No se encontraron premios pendientes para este jugador.');
+    }
+
+    pendingWins.forEach(w => {
+        w.paid = true;
+    });
+
+    playerPurchases.forEach(p => {
+        p.state = 'PAGADO';
+        p.paidAt = Date.now();
+    });
+
+    APP.tx.push({id:uuid(),type:'mark_all_paid',playerCell: cell, amount: totalBalance, ts:Date.now()});
+    saveAll();
+    renderAll();
+    closeGroupModal();
+    
+    const p = playerPurchases[0];
+    const message = `🤑 ¡FELICIDADES ${p.playerName.toUpperCase()}! 🤑\n\n💸 TU PAGO HA SIDO ENVIADO 💸\n\n💰 Monto Total: *${formatMoney(totalBalance)}*\n🏦 Destino: Enviado ${p.clabe ? 'a la cuenta con terminación *' + p.clabe.slice(-4) + '*' : 'a tu cuenta registrada'}\n⏰ Hora: ${new Date().toLocaleTimeString('es-MX')}\n\n🥳 ¡Que siga la racha!`;
+    window.open(`https://wa.me/52${p.cell}?text=${encodeURIComponent(message)}`, '_blank');
+    
+    await showAlert(`Marcado como PAGADO. Se pagó un total de ${formatMoney(totalBalance)} a ${p.playerName}.`);
+}
+
 
 function copyClabe(id){
     const p=APP.purchases.find(x=>x.id===id);
@@ -1575,7 +1754,7 @@ function animateShuffle(){
   overlay.innerHTML='<div class="shuffle-center"></div>';
   const center = overlay.querySelector('.shuffle-center');
   
-  const pending = shuffle(APP.game.deck.slice()); 
+  const pending = shuffle(Array.from({length:54},(_,i)=>i+1)); // Barajear mazo completo
   const sample = pending.slice(0, 20); 
   
   const cards = sample.map((cid,i)=>{
@@ -1630,18 +1809,17 @@ function animateShuffle(){
     $qa('#players-grid .card-thumb').forEach(c=>{ c.classList.add('shine'); setTimeout(()=>c.classList.remove('shine'),2600); });
     overlay.style.display='none'; 
     overlay.innerHTML=''; 
-    // CORRECCIÓN 1: El bug estaba aquí
-    APP.animShuffling=false; 
+    APP.animShuffling=false; // Bug v13.1/v13.2 corregido
     
-    shufflePending(); 
+    shufflePending(pending); // Usar el mazo 'pending' que ya se barajeó
     
     disableControls(false); 
     renderAll();
   }, 5200); 
 }
 
-function shufflePending(){
-    APP.game.deck = shuffle(Array.from({length:54},(_,i)=>i+1));
+function shufflePending(newDeck){
+    APP.game.deck = newDeck;
     APP.game.drawn = [];
     APP.game.current = 0;
     APP.drawnInGame = [];
@@ -1698,25 +1876,38 @@ function processCard(cardId){
         
         const recs=[];
         
-        const p = APP.purchases[firstWinner.idx];
-        p.wins=(p.wins||0)+1;
-        p.state='POR PAGAR'; 
-        p.prize=totalEnJuego;
-        p.gamesLeft = 0;
-        
-        const rec = {
-            id: uuid(),
-            purchaseId: p.id,
-            playerName: p.playerName,
-            modality: p.modality,
-            cardId: cardId, 
-            prize: totalEnJuego,
-            paid: false,
-            ts: Date.now()
-        };
-        APP.winners.push(rec);
-        recs.push(rec);
-        APP.tx.push({id:uuid(),type:'win',player:p.playerName,modality:p.modality,amount:totalEnJuego,card:cardId,purchaseId:p.id,ts:Date.now()});
+        // CORRECCIÓN 2: Finalizar a todos los jugadores de la ronda
+        APP.purchases.forEach(p => {
+            if (p.state === 'JUGANDO' && p.modality === winningModality) {
+                // Comprobar si este es un ganador
+                if (winnersFound.some(w => w.purchaseId === p.id)) {
+                    // Es un ganador
+                    p.wins = (p.wins || 0) + 1;
+                    p.state = 'POR PAGAR'; 
+                    p.prize = totalEnJuego; // (Asumiendo que el pozo se reparte, si no, ajustar)
+                    p.gamesLeft = 0;
+                    
+                    const rec = {
+                        id: uuid(),
+                        purchaseId: p.id,
+                        playerName: p.playerName,
+                        modality: p.modality,
+                        cardId: cardId, 
+                        prize: totalEnJuego,
+                        paid: false,
+                        ts: Date.now()
+                    };
+                    APP.winners.push(rec);
+                    recs.push(rec);
+                    APP.tx.push({id:uuid(),type:'win',player:p.playerName,modality:p.modality,amount:totalEnJuego,card:cardId,purchaseId:p.id,ts:Date.now()});
+                } else {
+                    // Es un perdedor de esta ronda
+                    p.state = 'FINALIZADO';
+                    p.gamesLeft = 0;
+                }
+            }
+        });
+
 
         saveAll();
         window._tempWinnerRecs = recs; 
@@ -1787,46 +1978,8 @@ function closeWinnerDetailModal(){
 
 function escapeHtml(s){ return String(s||'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m])); }
 
-async function markPaidById(id, ts){
-    const p=APP.purchases.find(x=>x.id===id);
-    if(!p) return showAlert('No encontrado');
-
-    let winnerRec;
-    if (ts) {
-        winnerRec = APP.winners.find(w => w.purchaseId === id && w.ts === ts && !w.paid);
-    } else {
-        winnerRec = APP.winners.find(w => w.purchaseId === id && !w.paid); 
-    }
-    
-    if(!winnerRec) return showAlert('No se encontró registro de premio pendiente de pago para esta compra.');
-
-    let winIndex = APP.winners.findIndex(w => w.id === winnerRec.id);
-    if (winIndex !== -1) {
-        APP.winners[winIndex].paid = true;
-    }
-
-    const hasOtherPendingWins = APP.winners.some(w => w.purchaseId === id && !w.paid);
-
-    if (!hasOtherPendingWins) {
-        p.state = 'PAGADO';
-        p.paidAt=Date.now();
-    }
-    
-    APP.tx.push({id:uuid(),type:'mark_paid',purchaseId:id, winnerId: winnerRec.id, ts:Date.now()});
-    saveAll();
-    renderAll();
-    closeGroupModal();
-
-    const prizeAmount = formatMoney(winnerRec.prize);
-    const datePaid = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
-    const winningCardName = cardName(winnerRec.cardId);
-    
-    const message = `🤑 ¡FELICIDADES ${p.playerName.toUpperCase()}! 🤑\n\n💸 TU PAGO HA SIDO ENVIADO 💸\n\n💰 Monto: *${prizeAmount}*\n🏦 Destino: Enviado ${p.clabe ? 'a la cuenta con terminación *' + p.clabe.slice(-4) + '*' : 'a tu cuenta registrada'}\n⏰ Hora: ${new Date().toLocaleTimeString('es-MX')}\n\n🃏 Carta Ganadora: *${winningCardName.toUpperCase()}*\n\n🥳 ¡Que siga la racha!`;
-
-    window.open(`https://wa.me/52${p.cell}?text=${encodeURIComponent(message)}`, '_blank');
-
-    await showAlert('Marcado como PAGADO y mensaje de confirmación de pago enviado por WhatsApp.');
-};
+// ¡Esta función ya no se usa! Es reemplazada por markAllPaid
+// async function markPaidById(id, ts){ ... }
 
 function closeGroupModal(){
     const modal=$q('#modal-player');
@@ -1949,31 +2102,25 @@ async function registerPlayer(){
 }
 
 async function resetGame(){
-    const confirm = await showConfirm('¿INICIAR NUEVA PARTIDA?<br><br>Esto finalizará la partida actual. Los ganadores quedarán "POR PAGAR" y los demás jugadores de esta modalidad pasarán a "FINALIZADO".<br>Se reiniciará el mazo completo.', 'Reiniciar Partida');
+    const confirm = await showConfirm('¿INICIAR NUEVA PARTIDA?<br><br>Esto limpiará el mazo y el tablero. Los jugadores "JUGANDO" y "POR PAGAR" no se verán afectados.', 'Reiniciar Partida');
     if(!confirm) return;
     
     APP.game.winnerPending = false; 
     stopAuto();
     
-    APP.purchases.forEach(p=>{
-        if (p.modality === APP.currentMode) {
-            if(p.state === 'JUGANDO'){
-                p.state = 'FINALIZADO';
-                p.gamesLeft = 0; 
-            }
-        }
-        p.markedCards=[]; 
-    });
-
     APP.game.deck = shuffle(Array.from({length:54},(_,i)=>i+1));
     APP.game.drawn=[]; APP.game.current=0; APP.drawnInGame=[];
     
+    APP.purchases.forEach(p => {
+        p.markedCards=[]; 
+    });
+
     $q('#shuffle-overlay').classList.remove('visible');
     $q('#shuffle-overlay').style.display='none';
     APP.tx.push({id:uuid(),type:'reset_full_deck',ts:Date.now()});
     saveAll();
     renderAll(); 
-    showAlert('Partida anterior finalizada. Mazo reiniciado. ¡Listo para una nueva partida!');
+    showAlert('Mazo reiniciado. ¡Listo para una nueva partida!');
 }
 
 function exportPdf(){

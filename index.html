@@ -1,8 +1,8 @@
 <!doctype html><html lang="es" data-theme="original">
 <head>
-<meta charset="UTF-8" />
+<meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎴 GANA YA! - Lotería Interactiva (v13.5)</title>
+<title>\uD83C\uDCC4 GANA YA! - Lotería Interactiva (v13.6)</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ff6bcb'/%3E%3Ctext x='50%25' y='55%25' font-size='18' font-family='Arial' fill='white' text-anchor='middle' font-weight='700'%3EG%3C/text%3E%3C/svg%3E">
 <style>
 /* --- INICIO DE ESTILO (v13.5) --- */
@@ -34,12 +34,12 @@
 
 [data-theme="mexicano1"] .mex-frame::before, 
 [data-theme="mexicano1"] .mex-frame-small::before {
-    content: '🇲🇽'; position: absolute; top: -5px; left: 10px; font-size: 20px;
+    content: '\1F1F2\1F1FD'; position: absolute; top: -5px; left: 10px; font-size: 20px;
     transform: rotate(-15deg); z-index: 1; background: none; height: auto;
 }
 [data-theme="mexicano1"] .mex-frame::after,
 [data-theme="mexicano1"] .mex-frame-small::after {
-    content: '🎉'; position: absolute; top: 0; right: 10px; font-size: 20px;
+    content: '\1F389'; position: absolute; top: 0; right: 10px; font-size: 20px;
     transform: rotate(15deg); z-index: 1;
 }
 [data-theme="mexicano2"] {
@@ -53,7 +53,6 @@
     50% { box-shadow: 0 0 10px var(--verde), 0 0 15px var(--verde), 0 0 20px #fff, 0 0 30px #fff, 0 0 40px var(--rojo), 0 0 50px var(--rojo); transform: scale(1.1); }
 }
 [data-theme="mexicano2"] .winner-card { animation: neonGlow 1.5s infinite ease-in-out; }
-/* MEJORA SKINS: Animación de parpadeo (flicker) para el marco */
 @keyframes flicker {
   0%, 100% { opacity: 1; box-shadow: 0 0 30px var(--rojo) inset, 0 0 20px var(--accent1) inset; }
   50% { opacity: 0.8; box-shadow: 0 0 25px var(--rojo) inset, 0 0 15px var(--accent1) inset; }
@@ -72,11 +71,11 @@
 [data-theme="halloween"] body { background-image: radial-gradient(var(--naranja) 0.5px, transparent 0.5px), radial-gradient(var(--azul) 0.5px, transparent 0.5px); }
 [data-theme="halloween"] .btn::after,
 [data-theme="halloween"] .player-card::after {
-    content: '🕸️'; position: absolute; top: -5px; right: -5px;
+    content: '\1F578\FE0F'; position: absolute; top: -5px; right: -5px;
     font-size: 20px; opacity: 0.15; z-index: 1; pointer-events: none;
 }
 [data-theme="halloween"] body::after {
-    content: '🩸'; position: fixed; bottom: -20px; right: -20px;
+    content: '\1FA78'; position: fixed; bottom: -20px; right: -20px;
     font-size: 150px; opacity: 0.2; transform: rotate(-15deg); z-index: -1;
 }
 
@@ -117,12 +116,12 @@
     pointer-events: none; z-index: 9990;
 }
 .webs-overlay::before, .webs-overlay::after {
-    content: '🕸️'; font-size: 150px; position: absolute; opacity: 0.15;
+    content: '\1F578\FE0F'; font-size: 150px; position: absolute; opacity: 0.15;
 }
 .webs-overlay::before { top: -20px; left: -20px; }
 .webs-overlay::after { top: -20px; right: -20px; transform: scaleX(-1); }
 #webs-overlay .web-bottom-left, #webs-overlay .web-bottom-right {
-    content: '🕸️'; font-size: 100px; position: absolute; opacity: 0.15; bottom: -20px;
+    content: '\1F578\FE0F'; font-size: 100px; position: absolute; opacity: 0.15; bottom: -20px;
 }
 .web-bottom-left { left: -20px; transform: scaleY(-1); }
 .web-bottom-right { right: -20px; transform: scale(-1, -1); }
@@ -763,29 +762,29 @@ tr:hover { background: #f9f9f9; }
     <div class="web-bottom-right"></div>
 </div>
 <div id="halloween-overlay" class="halloween-overlay hidden">
-    <div class="item">🎃</div><div class="item">👻</div><div class="item">🎃</div><div class="item">👻</div><div class="item">🎃</div>
-    <div class="item">👻</div><div class="item">🎃</div><div class="item">👻</div><div class="item">🎃</div><div class="item">👻</div>
+    <div class="item">\uD83C\uDF83</div><div class="item">\uD83D\uDC7B</div><div class="item">\uD83C\uDF83</div><div class="item">\uD83D\uDC7B</div><div class="item">\uD83C\uDF83</div>
+    <div class="item">\uD83D\uDC7B</div><div class="item">\uD83C\uDF83</div><div class="item">\uD83D\uDC7B</div><div class="item">\uD83C\uDF83</div><div class="item">\uD83D\uDC7B</div>
 </div>
 <div id="snow-overlay" class="snow-overlay hidden">
-    <div class="snow">❄️</div><div class="snow">🎄</div><div class="snow">🎁</div><div class="snow">❄️</div><div class="snow">🎁</div>
-    <div class="snow">🎄</div><div class="snow">❄️</div><div class="snow">🎁</div><div class="snow">🎄</div><div class="snow">❄️</div>
-    <div class="snow">🎁</div><div class="snow">🎄</div><div class="snow">❄️</div><div class="snow">🎁</div><div class="snow">🎄</div>
-    <div class="snow">❄️</div><div class="snow">🎄</div><div class="snow">🎁</div><div class="snow">❄️</div><div class="snow">🎁</div>
-    <div class="snow">🎄</div><div class="snow">❄️</div><div class="snow">🎁</div><div class="snow">🎄</div><div class="snow">❄️</div>
+    <div class="snow">\u2744\uFE0F</div><div class="snow">\uD83C\uDF84</div><div class="snow">\uD83C\uDF81</div><div class="snow">\u2744\uFE0F</div><div class="snow">\uD83C\uDF81</div>
+    <div class="snow">\uD83C\uDF84</div><div class="snow">\u2744\uFE0F</div><div class="snow">\uD83C\uDF81</div><div class="snow">\uD83C\uDF84</div><div class="snow">\u2744\uFE0F</div>
+    <div class="snow">\uD83C\uDF81</div><div class="snow">\uD83C\uDF84</div><div class="snow">\u2744\uFE0F</div><div class="snow">\uD83C\uDF81</div><div class="snow">\uD83C\uDF84</div>
+    <div class="snow">\u2744\uFE0F</div><div class="snow">\uD83C\uDF84</div><div class="snow">\uD83C\uDF81</div><div class="snow">\u2744\uFE0F</div><div class="snow">\uD83C\uDF81</div>
+    <div class="snow">\uD83C\uDF84</div><div class="snow">\u2744\uFE0F</div><div class="snow">\uD83C\uDF81</div><div class="snow">\uD83C\uDF84</div><div class="snow">\u2744\uFE0F</div>
 </div>
 <div id="stars-overlay" class="stars-overlay hidden">
-    <div class="star lucero">🌟</div><div class="star">✨</div><div class="star">🎁</div><div class="star">✨</div><div class="star">🎁</div>
-    <div class="star">✨</div><div class="star">🌟</div><div class="star">🎁</div><div class="star">✨</div><div class="star">🎁</div>
-    <div class="star">✨</div><div class="star">🌟</div><div class="star">🎁</div><div class="star">✨</div><div class="star">🎁</div>
-    <div class="star">🌟</div><div class="star">✨</div><div class="star">🎁</div><div class="star">✨</div><div class="star">🎁</div>
-    <div class="star">✨</div><div class="star">🌟</div><div class="star">🎁</div><div class="star">✨</div><div class="star">🎁</div>
+    <div class="star lucero">\uD83C\uDF1F</div><div class="star">\u2728</div><div class="star">\uD83C\uDF81</div><div class="star">\u2728</div><div class="star">\uD83C\uDF81</div>
+    <div class="star">\u2728</div><div class="star">\uD83C\uDF1F</div><div class="star">\uD83C\uDF81</div><div class="star">\u2728</div><div class="star">\uD83C\uDF81</div>
+    <div class="star">\u2728</div><div class="star">\uD83C\uDF1F</div><div class="star">\uD83C\uDF81</div><div class="star">\u2728</div><div class="star">\uD83C\uDF81</div>
+    <div class="star">\uD83C\uDF1F</div><div class="star">\u2728</div><div class="star">\uD83C\uDF81</div><div class="star">\u2728</div><div class="star">\uD83C\uDF81</div>
+    <div class="star">\u2728</div><div class="star">\uD83C\uDF1F</div><div class="star">\uD83C\uDF81</div><div class="star">\u2728</div><div class="star">\uD83C\uDF81</div>
 </div>
 <div id="pascua-overlay" class="pascua-overlay hidden">
-    <div class="item">🐇</div><div class="item">🥚</div><div class="item">🍬</div><div class="item">🍭</div><div class="item">🐇</div>
-    <div class="item">🥚</div><div class="item">🍬</div><div class="item">🍭</div><div class="item">🐇</div><div class="item">🥚</div>
-    <div class="item">🍬</div><div class="item">🍭</div><div class="item">🐇</div><div class="item">🥚</div><div class="item">🍬</div>
-    <div class="item">🐇</div><div class="item">🥚</div><div class="item">🍬</div><div class="item">🍭</div><div class="item">🐇</div>
-    <div class="item">🥚</div><div class="item">🍬</div><div class="item">🍭</div><div class="item">🐇</div><div class="item">🥚</div>
+    <div class="item">\uD83D\uDC07</div><div class="item">\uD83E\uDD5A</div><div class="item">\uD83C\uDF6C</div><div class="item">\uD83C\uDF6D</div><div class="item">\uD83D\uDC07</div>
+    <div class="item">\uD83E\uDD5A</div><div class="item">\uD83C\uDF6C</div><div class="item">\uD83C\uDF6D</div><div class="item">\uD83D\uDC07</div><div class="item">\uD83E\uDD5A</div>
+    <div class="item">\uD83C\uDF6C</div><div class="item">\uD83C\uDF6D</div><div class="item">\uD83D\uDC07</div><div class="item">\uD83E\uDD5A</div><div class="item">\uD83C\uDF6C</div>
+    <div class="item">\uD83D\uDC07</div><div class="item">\uD83E\uDD5A</div><div class="item">\uD83C\uDF6C</div><div class="item">\uD83C\uDF6D</div><div class="item">\uD83D\uDC07</div>
+    <div class="item">\uD83E\uDD5A</div><div class="item">\uD83C\uDF6C</div><div class="item">\uD83C\uDF6D</div><div class="item">\uD83D\uDC07</div><div class="item">\uD83E\uDD5A</div>
 </div>
 <div id="fireworks-overlay" class="fireworks-overlay hidden"></div>
 <div id="serpentina-overlay" class="serpentina-overlay hidden"></div>
@@ -808,24 +807,24 @@ tr:hover { background: #f9f9f9; }
       </div>
 
       <div class="title-container">
-          <div class="title">🎉 GANA YA!</div>
+          <div class="title">\uD83C\uDF89 GANA YA!</div>
           <div class="subtitle">Lotería Interactiva Mexicana</div>
       </div>
       
       <div class="header-controls-wrapper">
           <div class="bolsa-compact">
-              <span class="label" id="bolsa-label">💰 Bolsa</span>
+              <span class="label" id="bolsa-label">\uD83D\uDCB0 Bolsa</span>
               <span class="amount" id="bolsa-amount">$0.00</span>
           </div>
           <button id="btn-view-play" class="toggle-btn toggle-play">EN JUEGO</button>
-          <button id="btn-view-admin" class="toggle-btn toggle-admin">⚙️</button>
+          <button id="btn-view-admin" class="toggle-btn toggle-admin">\u2699\uFE0F</button>
       </div>
   </header>
   
   <div class="main-grid" id="main-grid">
 
     <aside class="mex-frame-small winners" id="winners-panel" aria-label="Últimos Ganadores">
-      <h3 class="text-center" style="color: var(--verde); margin-top:0;">🏆 Ganadores Recientes</h3>
+      <h3 class="text-center" style="color: var(--verde); margin-top:0;">\uD83C\uDFC6 Ganadores Recientes</h3>
       <div class="winners-list" id="winners-list" style="margin-top:4px"><div class="small-muted" style="text-align:center">Aún no hay ganadores.</div></div>
     </aside>
 
@@ -841,7 +840,7 @@ tr:hover { background: #f9f9f9; }
       
       <div id="control-partida">
  
-        <h3>🎮 CONTROL DE JUEGO</h3>
+        <h3>\uD83C\uDFAE CONTROL DE JUEGO</h3>
 
         <div style="margin-bottom: 15px;">
             <label for="select-modality" style="display:block; text-align:center; font-size:12px; color:var(--texto-secundario); margin-bottom:5px;">Modalidad Actual:</label>
@@ -852,14 +851,14 @@ tr:hover { background: #f9f9f9; }
         </div>
 
         <div id="game-controls" class="controls">
-            <button id="btn-shuffle" class="btn btn-blue w-full">🔀 BARAJEAR</button>
+            <button id="btn-shuffle" class="btn btn-blue w-full">\uD83D\uDD00 BARAJEAR</button>
             <div style="display:flex; gap:8px; width:100%;">
-                <button id="btn-draw" class="btn btn-red" style="flex:1;">🃏 TIRAR</button>
-                <button id="btn-auto" class="btn btn-green" style="flex:1;">🤖 AUTO</button>
+                <button id="btn-draw" class="btn btn-red" style="flex:1;">\uD83C\uDCCF TIRAR</button>
+                <button id="btn-auto" class="btn btn-green" style="flex:1;">\uD83E\uDD16 AUTO</button>
             </div>
         </div>
 
-        <button id="btn-reset-win" class="btn btn-red w-full hidden" style="background: var(--verde); padding: 15px; font-size: 18px; animation: pulse 2s infinite;">🔄 REINICIAR PARTIDA</button>
+        <button id="btn-reset-win" class="btn btn-red w-full hidden" style="background: var(--verde); padding: 15px; font-size: 18px; animation: pulse 2s infinite;">\uD83D\uDD04 REINICIAR PARTIDA</button>
 
         <div class="text-center mt-2" style="color:var(--texto-secundario); font-size:13px; display: none;">
             Cartas restantes: <strong id="deck-count" style="color:var(--rojo)">54</strong>
@@ -883,7 +882,7 @@ tr:hover { background: #f9f9f9; }
   </div> 
   
   <section id="view-admin" class="mex-frame hidden" style="margin-top:10px;">
-    <h2 style="color:var(--azul); margin-top:0; border-bottom:2px solid #eee; padding-bottom:10px;">⚙️ Administración de Caja</h2>
+    <h2 style="color:var(--azul); margin-top:0; border-bottom:2px solid #eee; padding-bottom:10px;">\u2699\uFE0F Administración de Caja</h2>
     
     <div class="admin-row">
       <div class="admin-col mex-frame-small">
@@ -912,7 +911,7 @@ tr:hover { background: #f9f9f9; }
         </div>
         
         <div style="border-top: 2px solid #eee; margin-top: 15px; padding-top: 10px;">
-            <label for="theme-switcher" style="display:block; text-align:center; font-weight:bold; color:var(--azul); margin-bottom:5px;">🎨 Apariencia (Skin)</label>
+            <label for="theme-switcher" style="display:block; text-align:center; font-weight:bold; color:var(--azul); margin-bottom:5px;">\uD83C\uDFA8 Apariencia (Skin)</label>
             <select id="theme-switcher" class="input" style="text-align:center;">
                 <option value="original">Original (Defecto)</option>
                 <option value="mexicano1">Mexicano 1 (Fiesta)</option>
@@ -926,7 +925,7 @@ tr:hover { background: #f9f9f9; }
       </div>
 
       <div class="admin-col mex-frame-small">
-        <h3 style="margin-top:0; color:var(--rojo)">📝 Registrar Jugador</h3>
+        <h3 style="margin-top:0; color:var(--rojo)">\uD83D\uDCDD Registrar Jugador</h3>
         <input id="input-name" placeholder="Nombre Completo" class="input">
         
         <div style="display:flex; gap:10px;">
@@ -941,7 +940,7 @@ tr:hover { background: #f9f9f9; }
         </div>
         
         <div style="background:var(--fondo-calculadora); padding:10px; border-radius:8px; margin-top:10px;">
-            <label style="font-size:13px; font-weight:bold; color:var(--azul)">🔢 Calculadora Rápida:</label>
+            <label style="font-size:13px; font-weight:bold; color:var(--azul)">\uD83D\uDD22 Calculadora Rápida:</label>
             <input id="input-budget" placeholder="Ingresa Presupuesto MXN" class="input" type="number" min="0">
         </div>
 
@@ -954,7 +953,7 @@ tr:hover { background: #f9f9f9; }
                 <label style="font-size:12px;">Cant. 6 Cartas</label>
                 <input id="qty6" type="number" min="0" value="0" class="input text-center">
             </div>
-            <button id="btn-register" class="btn btn-green" style="flex:1.5; height: 42px;">✅ REGISTRAR</button>
+            <button id="btn-register" class="btn btn-green" style="flex:1.5; height: 42px;">\u2705 REGISTRAR</button>
         </div>
         
         <div id="budget-helper" style="font-size:13px; color:var(--texto-secundario); margin-top:10px; min-height:20px; text-align: center;">
@@ -966,7 +965,7 @@ tr:hover { background: #f9f9f9; }
       </div>
       
       <div id="pending-payments-panel" class="admin-col mex-frame-small">
-         <h3 style="margin-top:0; color:var(--accent1); text-shadow: 1px 1px #8c7400;">💰 Pagos Pendientes</h3>
+         <h3 style="margin-top:0; color:var(--accent1); text-shadow: 1px 1px #8c7400;">\uD83D\uDCB0 Pagos Pendientes</h3>
          <div id="pending-payments-list" style="max-height: 450px; overflow-y: auto;">
             <div class="small-muted" style="padding:18px; text-align:center">No hay pagos pendientes.</div>
          </div>
@@ -983,11 +982,11 @@ tr:hover { background: #f9f9f9; }
                 <button class="toggle-btn" id="filter-6" style="background:#eee">6 Cartas</button>
             </div>
             <div style="flex-grow: 1; max-width: 300px;">
-                <input id="admin-search" placeholder="🔍 Buscar por Folio o Nombre..." class="input" style="margin-bottom: 0; text-align:left;">
+                <input id="admin-search" placeholder="\uD83D\uDD0D Buscar por Folio o Nombre..." class="input" style="margin-bottom: 0; text-align:left;">
             </div>
             <div style="display:flex; gap:10px;">
-                 <button id="btn-export" class="btn btn-blue">📄 Reporte PDF</button>
-                 <button id="btn-reset-day" class="btn btn-red">🗑️ BORRAR DÍA</button>
+                 <button id="btn-export" class="btn btn-blue">\uD83D\uDCC4 Reporte PDF</button>
+                 <button id="btn-reset-day" class="btn btn-red">\uD83D\uDDD1\uFE0F BORRAR DÍA</button>
             </div>
         </div>
         <div class="table-wrap">
@@ -1040,7 +1039,7 @@ tr:hover { background: #f9f9f9; }
 <div class="modal-back hidden" id="modal-winner">
     <div class="modal text-center" style="border: 5px solid var(--accent1);">
         <button class="close-modal-x" id="winner-close">×</button>
-        <h1 id="winner-title" style="color:var(--rojo); font-size: 40px; margin:10px 0;">🎉 ¡LOTERÍA! 🎉</h1>
+        <h1 id="winner-title" style="color:var(--rojo); font-size: 40px; margin:10px 0;">\uD83C\uDF89 ¡LOTERÍA! \uD83C\uDF89</h1>
         <div id="winner-body" style="font-size:22px; margin-bottom:10px;"></div>
         <div id="winner-sub" style="font-size:18px; margin-bottom:20px; color: var(--verde); font-weight: bold;"></div>
         <button id="winner-ok" class="btn btn-green" style="font-size:20px; padding:15px 30px;">¡VER GANADOR!</button>
@@ -1050,7 +1049,7 @@ tr:hover { background: #f9f9f9; }
 <div class="modal-back hidden" id="modal-winner-detail">
     <div class="modal text-center">
         <button class="close-modal-x" id="winner-detail-close-x">×</button>
-        <h2 style="color:var(--verde); margin-top:0; font-size: 28px;">👑 ¡TENEMOS GANADOR!</h2>
+        <h2 style="color:var(--verde); margin-top:0; font-size: 28px;">\uD83D\uDC51 ¡TENEMOS GANADOR!</h2>
         <h3 id="winner-detail-player-name" style="color:var(--azul); font-size: 22px;"></h3>
         <div id="winner-detail-card-name" style="font-weight:700; color:var(--rojo); margin-bottom: 15px; font-size: 20px;"></div>
         <div id="winner-detail-player-cards" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:20px 0;">
@@ -1231,7 +1230,7 @@ function startConfettiFullScreen(){
     }
 
     if (APP.currentTheme === 'halloween') {
-        confetti({ ...defaults, particleCount: 50, scalar: 2, shapes: ['emoji'], emoji: ['🎃', '👻', '🕷️', '🦇'] });
+        confetti({ ...defaults, particleCount: 50, scalar: 2, shapes: ['emoji'], emoji: ['\uD83C\uDF83', '\uD83D\uDC7B', '\uD83D\uDD77\uFE0F', '\uD83E\uDD87'] });
     }
 }
 function stopConfettiFullScreen(){
@@ -1297,7 +1296,7 @@ function stopAuto(){
     if(APP.autoInterval){ clearInterval(APP.autoInterval); APP.autoInterval=null; }
     APP.isAuto=false;
     const btn=$q('#btn-auto');
-    if(btn){ btn.textContent='🤖 AUTO'; btn.classList.remove('btn-muted'); btn.classList.add('btn-green'); }
+    if(btn){ btn.textContent='\uD83E\uDD16 AUTO'; btn.classList.remove('btn-muted'); btn.classList.add('btn-green'); }
     renderAll();
 }
 function startAuto(){
@@ -1355,7 +1354,7 @@ function renderAll(){
     }
 
     let potAmount = 0;
-    let potLabelText = '💰 Bolsa';
+    let potLabelText = '\uD83D\uDCB0 Bolsa';
     APP.purchases.forEach(p => initializePurchaseData(p));
     
     if (isAdminView) {
@@ -1366,7 +1365,7 @@ function renderAll(){
         const activeForPot = APP.purchases.filter(p=> p.state==='JUGANDO' && p.modality === APP.currentMode );
         const totalEnJuego = activeForPot.reduce((s,p)=> s + (p.enJuego||0),0);
         potAmount = totalEnJuego;
-        potLabelText = `💰 BOLSA (${APP.currentMode} CARTAS)`;
+        potLabelText = `\uD83D\uDCB0 BOLSA (${APP.currentMode} CARTAS)`;
     }
 
     animateBolsa(potAmount);
@@ -1575,7 +1574,7 @@ function renderPlayersTable(filter){
                 <td style="padding:8px;text-align:center">${formatMoney(p.enJuego||0)}</td>
                 <td style="padding:8px;text-align:center">${formatMoney(p.casa||0)}</td>
                 <td style="padding:8px;text-align:center"><span class="badge ${stateClass}">${p.state||'JUGANDO'}</span></td>
-                <td style="padding:8px;text-align:center"><button class="btn btn-blue" style="padding:4px 8px; font-size:11px;" onclick="openPurchaseDetail('${p.id}')">VER</button></td>
+                <td style="padding:8px;text-align:center"><button class="btn btn-blue" style="padding:4px 8px; font-size:11px;" onclick="openPurchaseDetail('${p.id}', false)">VER</button></td>
             </tr>`
         }).join('');
     }
@@ -1627,7 +1626,7 @@ function openPurchaseDetail(id, isManaging = false){ // isManaging es el nuevo f
     
     $q('#modal-player-name').textContent=`${p.playerName}`;
     actionsDiv.innerHTML = '';
-    winningsDiv.classList.add('hidden'); // Ocultar por defecto
+    winningsDiv.classList.add('hidden');
     
     const isPending = p.state === 'POR PAGAR';
     const isPlaying = p.state === 'JUGANDO';
@@ -1658,9 +1657,9 @@ function openPurchaseDetail(id, isManaging = false){ // isManaging es el nuevo f
 
         if (totalBalance > 0) {
             // Opción de "Marcar como Pagado" (Consolidado)
-            actionsDiv.innerHTML += `<button class="btn btn-green" onclick="markAllPaid('${p.cell}')">💸 Pagar Saldo Total (${formatMoney(totalBalance)}) y Notificar</button>`;
+            actionsDiv.innerHTML += `<button class="btn btn-green" onclick="markAllPaid('${p.cell}')">\uD83D\uDCB8 Pagar Saldo Total (${formatMoney(totalBalance)}) y Notificar</button>`;
             
-            // Mostrar la sección "Usar Saldo"
+            // CORRECCIÓN 1: Mostrar la sección "Usar Saldo"
             winningsDiv.classList.remove('hidden');
             $q('#winnings-balance').textContent = formatMoney(totalBalance);
             
@@ -1696,10 +1695,10 @@ function openPurchaseDetail(id, isManaging = false){ // isManaging es el nuevo f
     }
 
     if(p.clabe && isPending) {
-        actionsDiv.innerHTML += `<button class="btn btn-blue" onclick="copyClabe('${p.id}')">📋 Copiar CLABE/Cuenta</button>`;
+        actionsDiv.innerHTML += `<button class="btn btn-blue" onclick="copyClabe('${p.id}')">\uD83D\uDCCB Copiar CLABE/Cuenta</button>`;
     }
     if(isPlaying || isPending) {
-        actionsDiv.innerHTML += `<button class="btn btn-muted" onclick="resendRegistrationWhatsapp('${p.id}')">📱 Reenviar Cartas (WhatsApp)</button>`;
+        actionsDiv.innerHTML += `<button class="btn btn-muted" onclick="resendRegistrationWhatsapp('${p.id}')">\uD83D\uDCF1 Reenviar Cartas (WhatsApp)</button>`;
     }
 
     modal.classList.remove('hidden');
@@ -1748,7 +1747,7 @@ async function buyWithWinnings(player, pendingWins, totalBalance) {
             
             // Para el mensaje de WhatsApp
             const cardNames = p.card.map(cardName).join(', ');
-            messageParts.push(`🎟️ *FOLIO ${p.id}* (${p.modality} Cartas):\n${cardNames}`);
+            messageParts.push(`\uD83C\uDFAB\uFE0F *FOLIO ${p.id}* (${p.modality} Cartas):\n${cardNames}`);
         }
     });
     
@@ -1775,7 +1774,8 @@ async function buyWithWinnings(player, pendingWins, totalBalance) {
     }
     newBalance = totalBalance - totalCost;
 
-    if (newBalance <= 0) {
+    if (newBalance <= 0.01) { // Usar <= 0.01 para problemas de precisión de decimales
+        newBalance = 0;
         const playerPurchases = APP.purchases.filter(purchase => purchase.cell === player.cell && purchase.state === 'POR PAGAR');
         playerPurchases.forEach(p => p.state = 'PAGADO');
     }
@@ -1785,7 +1785,7 @@ async function buyWithWinnings(player, pendingWins, totalBalance) {
     renderAll();
     
     // --- Enviar Notificación de WhatsApp ---
-    const finalMsg = `🎉 ¡HOLA ${player.playerName.toUpperCase()}! 🎉\n\nHas utilizado parte de tus ganancias para la compra de nuevos boletos:\n\n💰 *SALDO ACUMULADO:* ${formatMoney(totalBalance)}\n💸 *UTILIZADO:* ${formatMoney(totalCost)}\n🏦 *RESTANTE:* ${formatMoney(newBalance)}\n\n--- *Nuevos Boletos* ---\n\n${messageParts.join('\n\n')}\n\n🍀 ¡MUCHA SUERTE Y A GANAR! 🍀`;
+    const finalMsg = `\uD83C\uDF89 ¡HOLA ${player.playerName.toUpperCase()}! \uD83C\uDF89\n\nHas utilizado parte de tus ganancias para la compra de nuevos boletos:\n\n\uD83D\uDCB0 *SALDO ACUMULADO:* ${formatMoney(totalBalance)}\n\uD83D\uDCB8 *UTILIZADO:* ${formatMoney(totalCost)}\n\uD83C\uDFE6 *RESTANTE:* ${formatMoney(newBalance)}\n\n--- *Nuevos Boletos* ---\n\n${messageParts.join('\n\n')}\n\n\uD83C\uDF40 ¡MUCHA SUERTE Y A GANAR! \uD83C\uDF40`;
     window.open(`https://wa.me/52${player.cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
 
     await showAlert(`¡Compra exitosa! Se compraron ${q4+q6} partidas.<br><br>Saldo Anterior: ${formatMoney(totalBalance)}<br>Costo: ${formatMoney(totalCost)}<br>Saldo Restante: <strong>${formatMoney(newBalance)}</strong><br><br>Se abrió WhatsApp para notificar.`);
@@ -1819,7 +1819,7 @@ async function markAllPaid(cell) {
     closeGroupModal();
     
     const p = playerPurchases[0];
-    const message = `🤑 ¡FELICIDADES ${p.playerName.toUpperCase()}! 🤑\n\n💸 TU PAGO HA SIDO ENVIADO 💸\n\n💰 Monto Total: *${formatMoney(totalBalance)}*\n🏦 Destino: Enviado ${p.clabe ? 'a la cuenta con terminación *' + p.clabe.slice(-4) + '*' : 'a tu cuenta registrada'}\n⏰ Hora: ${new Date().toLocaleTimeString('es-MX')}\n\n🥳 ¡Que siga la racha!`;
+    const message = `\uD83E\uDD11 ¡FELICIDADES ${p.playerName.toUpperCase()}! \uD83E\uDD11\n\n\uD83D\uDCB8 TU PAGO HA SIDO ENVIADO \uD83D\uDCB8\n\n\uD83D\uDCB0 Monto Total: *${formatMoney(totalBalance)}*\n\uD83C\uDFE6 Destino: Enviado ${p.clabe ? 'a la cuenta con terminación *' + p.clabe.slice(-4) + '*' : 'a tu cuenta registrada'}\n⏰ Hora: ${new Date().toLocaleTimeString('es-MX')}\n\n🥳 ¡Que siga la racha!`;
     window.open(`https://wa.me/52${p.cell}?text=${encodeURIComponent(message)}`, '_blank');
     
     await showAlert(`Marcado como PAGADO. Se pagó un total de ${formatMoney(totalBalance)} a ${p.playerName}.`);
@@ -1840,9 +1840,10 @@ window.resendRegistrationWhatsapp = function(id){
 
     const messageParts = [];
     const cardNames = (p.card||[]).map(cardName).join(', ');
-    messageParts.push(`🎟️ *FOLIO ${p.id}* (${p.modality} Cartas):\n${cardNames}`);
+    messageParts.push(`\uD83C\uDFAB\uFE0F *FOLIO ${p.id}* (${p.modality} Cartas):\n${cardNames}`);
     
-    const finalMsg = `🎉 ¡HOLA ${p.playerName.toUpperCase()}! BIENVENIDO A GANA YA! 🎉\n\n✅ Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${messageParts.join('\n\n')}\n\n🍀 ¡MUCHA SUERTE Y A GANAR! 🍀`;
+    // CORRECCIÓN 2: Añadido salto de línea
+    const finalMsg = `\uD83C\uDF89 ¡HOLA ${p.playerName.toUpperCase()}! \uD83C\uDF89\n\n\u2705 Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${messageParts.join('\n\n')}\n\n\uD83C\uDF40 ¡MUCHA SUERTE Y A GANAR! \uD83C\uDF40`;
     window.open(`https://wa.me/52${p.cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
 };
 
@@ -2084,7 +2085,7 @@ function processCard(cardId){
         window._tempWinnerRecs = recs; 
 
         const modal = $q('#modal-winner');
-        $q('#winner-title').textContent = `🎉 ¡LOTERÍA! 🎉`;
+        $q('#winner-title').textContent = `\uD83C\uDF89 ¡LOTERÍA! \uD83C\uDF89`;
         const winnerName = APP.purchases[firstWinner.idx].playerName;
         $q('#winner-body').innerHTML = `¡Ganador con la carta <strong>${cardName(cardId).toUpperCase()}</strong>!:<br><br><div style="color:var(--azul); font-weight:900; font-size:24px;">${escapeHtml(winnerName)}</div>`;
         $q('#winner-sub').innerHTML = `Premio: <strong style="color:var(--verde);">${formatMoney(totalEnJuego)}</strong>`;
@@ -2176,7 +2177,7 @@ async function markAllPaid(cell) {
     closeGroupModal();
     
     const p = playerPurchases[0];
-    const message = `🤑 ¡FELICIDADES ${p.playerName.toUpperCase()}! 🤑\n\n💸 TU PAGO HA SIDO ENVIADO 💸\n\n💰 Monto Total: *${formatMoney(totalBalance)}*\n🏦 Destino: Enviado ${p.clabe ? 'a la cuenta con terminación *' + p.clabe.slice(-4) + '*' : 'a tu cuenta registrada'}\n⏰ Hora: ${new Date().toLocaleTimeString('es-MX')}\n\n🥳 ¡Que siga la racha!`;
+    const message = `\uD83E\uDD11 ¡FELICIDADES ${p.playerName.toUpperCase()}! \uD83E\uDD11\n\n\uD83D\uDCB8 TU PAGO HA SIDO ENVIADO \uD83D\uDCB8\n\n\uD83D\uDCB0 Monto Total: *${formatMoney(totalBalance)}*\n\uD83C\uDFE6 Destino: Enviado ${p.clabe ? 'a la cuenta con terminación *' + p.clabe.slice(-4) + '*' : 'a tu cuenta registrada'}\n⏰ Hora: ${new Date().toLocaleTimeString('es-MX')}\n\n🥳 ¡Que siga la racha!`;
     window.open(`https://wa.me/52${p.cell}?text=${encodeURIComponent(message)}`, '_blank');
     
     await showAlert(`Marcado como PAGADO. Se pagó un total de ${formatMoney(totalBalance)} a ${p.playerName}.`);
@@ -2282,7 +2283,7 @@ async function registerPlayer(){
             p.card=generateCardForPurchase(pt.modality);
             APP.purchases.push(p);
             const cardNames = p.card.map(cardName).join(', ');
-            messageParts.push(`🎟️ *FOLIO ${p.id}* (${p.modality} Cartas):\n${cardNames}`);
+            messageParts.push(`\uD83C\uDFAB\uFE0F *FOLIO ${p.id}* (${p.modality} Cartas):\n${cardNames}`);
             APP.tx.push({id:uuid(),type:'purchase',player:name,modality:pt.modality,amount:ptPrice,purchaseId:p.id,ts:Date.now()});
         }
     });
@@ -2296,7 +2297,8 @@ async function registerPlayer(){
     $q('#clabe-hint').textContent = '';
     $q('#cell-hint').textContent = '';
 
-    const finalMsg = `🎉 ¡HOLA ${name.toUpperCase()}! BIENVENIDO A GANA YA! 🎉\n\n✅ Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${messageParts.join('\n\n')}\n\n🍀 ¡MUCHA SUERTE Y A GANAR! 🍀`;
+    // CORRECCIÓN 2: Mensaje de WhatsApp con salto de línea
+    const finalMsg = `\uD83C\uDF89 ¡HOLA ${name.toUpperCase()}! \uD83C\uDF89\n\n\u2705 Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${messageParts.join('\n\n')}\n\n\uD83C\uDF40 ¡MUCHA SUERTE Y A GANAR! \uD83C\uDF40`;
     window.open(`https://wa.me/52${cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
     await showAlert(`¡${name} registrado con éxito! (${q4+q6} partidas totales). Se abrió WhatsApp para enviar el registro.`);
     renderAll();

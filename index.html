@@ -497,13 +497,61 @@ body::before {
 .current-card-img { width: 100%; height: 100%; background-size: contain; background-position: center; background-repeat: no-repeat; }
 
 /* ADMIN */
-.admin-row{ display:flex; gap:10px; flex-wrap: wrap; }
+/* CORRECCIÓN 3: Cambiado a 3 columnas */
+.admin-row{ 
+    display:grid; 
+    grid-template-columns: 1fr 1.5fr 1fr;
+    gap:10px; 
+    align-items: start;
+}
+@media(max-width: 1200px) {
+    .admin-row { grid-template-columns: 1fr 1.5fr; }
+    /* El nuevo panel se moverá abajo */
+    #pending-payments-panel { grid-column: 1 / -1; }
+}
+@media(max-width: 850px) {
+    .admin-row { grid-template-columns: 1fr; }
+}
+
 .admin-col{ flex:1; min-width: 300px; }
 .input{ width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; margin-bottom: 8px; font-family: inherit; transition: background 0.3s, color 0.3s, border-color 0.3s; }
 .input:focus { outline: 2px solid var(--azul); border-color: transparent; }
 
 .admin-col.mex-frame-small .input { text-align: center; }
 .admin-col.mex-frame-small label { display: block; text-align: center; }
+
+/* CORRECCIÓN 3: Estilos para el nuevo panel */
+#pending-payments-panel h3 {
+    margin-top: 0;
+    color: var(--accent1);
+    text-shadow: 1px 1px #000;
+}
+.pending-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+.pending-item .balance {
+    font-weight: 700;
+    color: var(--verde);
+}
+.pending-item button {
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    border: none;
+    border-radius: 5px;
+    background: var(--azul);
+    color: white;
+    cursor: pointer;
+}
+.pending-item button:hover {
+    opacity: 0.8;
+}
+
 
 #calc-info { 
     font-size: 16px; 
@@ -723,7 +771,7 @@ tr:hover { background: #f9f9f9; }
 
     <aside class="mex-frame-small winners" id="winners-panel" aria-label="Últimos Ganadores">
       <h3 class="text-center" style="color: var(--verde); margin-top:0;">🏆 Ganadores Recientes</h3>
-      <div class="winners-list" id="winners-list" style="margin-top:4px"><div class="small-muted" style="text-align:center">Aún no hay ganadores.</div></div>
+      <div class_alias="winners-list" id="winners-list" style="margin-top:4px"><div class="small-muted" style="text-align:center">Aún no hay ganadores.</div></div>
     </aside>
 
     <section class="mex-frame" id="players-section">
@@ -861,6 +909,14 @@ tr:hover { background: #f9f9f9; }
             Costo Total: $0.00
         </div>
       </div>
+      
+      <div id="pending-payments-panel" class="admin-col mex-frame-small">
+         <h3 style="margin-top:0; color:var(--accent1); text-shadow: 1px 1px #8c7400;">💰 Pagos Pendientes</h3>
+         <div id="pending-payments-list" style="max-height: 450px; overflow-y: auto;">
+            <div class="small-muted" style="padding:18px; text-align:center">No hay pagos pendientes.</div>
+         </div>
+      </div>
+
     </div>
 
     <div class="mex-frame-small" style="margin-top:15px;">
@@ -974,7 +1030,7 @@ tr:hover { background: #f9f9f9; }
 
 
 <script>
-/* index_v13.4_pulido - code block */
+/* index_v13.5_pulido - code block */
 const CARD_IMAGE_BASE_PATH='Cartas_baraja_loteria/';
 const CARD_NAME_MAP = {1:"1 el gallo-min.jpg",2:"2 el diablito-min.jpg",3:"3 la dama-min.jpg",4:"4 el catrin-min.jpg",5:"5 el paraguas-min.jpg",6:"6 la sirena-min.jpg",7:"7 la escalera-min.jpg",8:"8 la botella-min.jpg",9:"9 el barril-min.jpg",10:"10 arbol-min.jpg",11:"11 melon-min.jpg",12:"12 el valiente-min.jpg",13:"13 el gorrito-min.jpg",14:"14 la muerte-min.jpg",15:"15 la pera-min.jpg",16:"16 la bandera-min.jpg",17:"17 el bandolon-min.jpg",18:"18 el violoncello-min.jpg",19:"19 la garza-min.jpg",20:"20 el pajaro-min.jpg",21:"21 la mano-min.jpg",22:"22 la bota-min.jpg",23:"23 la luna-min.jpg",24:"24 el cotorro-min.jpg",25:"25 el borracho-min.jpg",26:"26 el negrito-min.jpg",27:"27 el corazon-min.jpg",28:"28 la sandia-min.jpg",29:"29 el tambor-min.jpg",30:"30 el camaron-min.jpg",31:"31 las jaras-min.jpg",32:"32 el musico-min.jpg",33:"33 la araña-min.jpg",34:"34 el soldado-min.jpg",35:"35 la estrella-min.jpg",36:"36 el cazo-min.jpg",37:"37 el mundo-min.jpg",38:"38 el apache-min.jpg",39:"39 el nopal-min.jpg",40:"40 el alacran-min.jpg",41:"41 la rosa-min.jpg",42:"42 la calavera-min.jpg",43:"43 la campana-min.jpg",44:"44 el cantarito-min.jpg",45:"45 el venado-min.jpg",46:"46 el sol-min.jpg",47:"47 la corona-min.jpg",48:"48 la chalupa-min.jpg",50:"50 el pescado-min.jpg",51:"51 la palma-min.jpg",52:"52 la maceta-min.jpg",53:"53 el arpa-min.jpg",54:"54 la rana-min.jpg",49:"49 el pino-min.jpg"};
 const cardImageUrl = id => CARD_IMAGE_BASE_PATH + (CARD_NAME_MAP[id] ? CARD_NAME_MAP[id] : `${id}.jpg`);
@@ -1233,6 +1289,8 @@ function renderAll(){
         $q('#btn-view-admin').classList.remove('toggle-admin');
         $q('#btn-view-play').classList.remove('toggle-play');
         $q('#btn-view-play').classList.add('toggle-admin');
+        
+        renderPendingPayments(); // CORRECCIÓN 3: Renderizar el nuevo panel
     } else {
         if (mainGridEl) mainGridEl.style.display = 'grid';
         $q('#btn-view-play').classList.add('toggle-play');
@@ -1353,6 +1411,64 @@ function renderWinnersList(){
 
     setTimeout(() => { listEl.innerHTML = html; }, 0);
 }
+
+// CORRECCIÓN 3: Nueva función para el panel de pagos
+function renderPendingPayments() {
+    const listEl=$q('#pending-payments-list');
+    if (!listEl) return;
+
+    // 1. Encontrar todos los premios no pagados
+    const unpaidWins = APP.winners.filter(w => !w.paid);
+    // 2. Agruparlos por jugador (usando el celular como id único)
+    const playersWithBalance = {};
+
+    for (const win of unpaidWins) {
+        const purchase = APP.purchases.find(p => p.id === win.purchaseId);
+        if (purchase && purchase.cell) {
+            const cell = purchase.cell;
+            if (!playersWithBalance[cell]) {
+                playersWithBalance[cell] = {
+                    playerName: purchase.playerName,
+                    cell: purchase.cell,
+                    totalBalance: 0
+                };
+            }
+            playersWithBalance[cell].totalBalance += win.prize;
+        }
+    }
+
+    const playerList = Object.values(playersWithBalance).sort((a,b) => b.totalBalance - a.totalBalance);
+
+    if(!playerList.length){ 
+        listEl.innerHTML='<div class="small-muted" style="padding:18px; text-align:center">No hay pagos pendientes.</div>';
+        return; 
+    }
+
+    listEl.innerHTML = playerList.map(p => {
+        return `
+            <div class="pending-item">
+                <div style="flex:1;">
+                    <span style="font-weight:bold; color:var(--azul); display:block;">${escapeHtml(p.playerName)}</span>
+                    <span style="font-size:12px; color:var(--texto-secundario);">${escapeHtml(p.cell)}</span>
+                </div>
+                <span class="balance">${formatMoney(p.totalBalance)}</span>
+                <button class="btn-blue" style="margin-left:10px;" onclick="openPurchaseDetailByCell('${p.cell}')">Gestionar</button>
+            </div>
+        `;
+    }).join('');
+}
+
+// CORRECCIÓN 3: Nueva función helper
+function openPurchaseDetailByCell(cell) {
+    // Abrir el modal usando el ID de la *primera* compra que coincida
+    const p = APP.purchases.find(p => p.cell === cell);
+    if (p) {
+        openPurchaseDetail(p.id);
+    } else {
+        showAlert('Error: No se encontró al jugador.');
+    }
+}
+
 
 function renderPlayersTable(filter){
     const tbody=$q('#players-table');
@@ -1978,8 +2094,38 @@ function closeWinnerDetailModal(){
 
 function escapeHtml(s){ return String(s||'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m])); }
 
-// ¡Esta función ya no se usa! Es reemplazada por markAllPaid
-// async function markPaidById(id, ts){ ... }
+async function markAllPaid(cell) {
+    if (!cell) return showAlert('Error: No se encontró el celular del jugador.');
+
+    const playerPurchases = APP.purchases.filter(p => p.cell === cell && p.state === 'POR PAGAR');
+    const purchaseIds = playerPurchases.map(p => p.id);
+    const pendingWins = APP.winners.filter(w => purchaseIds.includes(w.purchaseId) && !w.paid);
+    const totalBalance = pendingWins.reduce((sum, w) => sum + w.prize, 0);
+
+    if (pendingWins.length === 0) {
+        return showAlert('Error: No se encontraron premios pendientes para este jugador.');
+    }
+
+    pendingWins.forEach(w => {
+        w.paid = true;
+    });
+
+    playerPurchases.forEach(p => {
+        p.state = 'PAGADO';
+        p.paidAt = Date.now();
+    });
+
+    APP.tx.push({id:uuid(),type:'mark_all_paid',playerCell: cell, amount: totalBalance, ts:Date.now()});
+    saveAll();
+    renderAll();
+    closeGroupModal();
+    
+    const p = playerPurchases[0];
+    const message = `🤑 ¡FELICIDADES ${p.playerName.toUpperCase()}! 🤑\n\n💸 TU PAGO HA SIDO ENVIADO 💸\n\n💰 Monto Total: *${formatMoney(totalBalance)}*\n🏦 Destino: Enviado ${p.clabe ? 'a la cuenta con terminación *' + p.clabe.slice(-4) + '*' : 'a tu cuenta registrada'}\n⏰ Hora: ${new Date().toLocaleTimeString('es-MX')}\n\n🥳 ¡Que siga la racha!`;
+    window.open(`https://wa.me/52${p.cell}?text=${encodeURIComponent(message)}`, '_blank');
+    
+    await showAlert(`Marcado como PAGADO. Se pagó un total de ${formatMoney(totalBalance)} a ${p.playerName}.`);
+}
 
 function closeGroupModal(){
     const modal=$q('#modal-player');
@@ -2107,6 +2253,8 @@ async function resetGame(){
     
     APP.game.winnerPending = false; 
     stopAuto();
+    
+    // CORRECCIÓN 2: Lógica de resetGame simplificada.
     
     APP.game.deck = shuffle(Array.from({length:54},(_,i)=>i+1));
     APP.game.drawn=[]; APP.game.current=0; APP.drawnInGame=[];

@@ -1002,7 +1002,7 @@ tr:hover { background: #f9f9f9; }
   
   <footer style="text-align:center; margin-top:12px; padding: 10px; font-size: 13px; color: #777;" class="small-muted">
       GanaYa!® <strong>un juego de caracter interactivo</strong>, <strong> y de fines falimiares<br>
-      Consiera que todo jugador <strong>es mayor de edad y juega bajo su libertad/</strong> A divertirse.
+      Consiera que todo jugador <strong>es mayor de edad y juega bajo su libertad </strong> A divertirse.
   </footer>
 </div> <div class="modal-back hidden" id="modal-player">
     <div class="modal">
@@ -1781,9 +1781,11 @@ async function buyWithWinnings(player, pendingWins, totalBalance) {
     closeGroupModal();
     renderAll();
     
-    // --- Enviar Notificación de WhatsApp ---
+// --- Enviar Notificación de WhatsApp ---
     const finalMsg = `\uD83C\uDF89 ¡HOLA ${player.playerName.toUpperCase()}! \uD83C\uDF89\n\nHas utilizado parte de tus ganancias para la compra de nuevos boletos:\n\n\uD83D\uDCB0 *SALDO ACUMULADO:* ${formatMoney(totalBalance)}\n\uD83D\uDCB8 *UTILIZADO:* ${formatMoney(totalCost)}\n\uD83C\uDFE6 *RESTANTE:* ${formatMoney(newBalance)}\n\n--- *Nuevos Boletos* ---\n\n${messageParts.join('\n\n')}\n\n\uD83C\uDF40 ¡MUCHA SUERTE Y A GANAR! \uD83C\uDF40`;
-    window.open(`https://wa.me/+52${player.cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
+    
+    // CORRECCIÓN: Usar api.whatsapp.com y encodeURIComponent
+    window.open(`https://api.whatsapp.com/send?phone=52${player.cell}&text=${encodeURIComponent(finalMsg)}`, '_blank');
 
     await showAlert(`¡Compra exitosa! Se compraron ${q4+q6} partidas.<br><br>Saldo Anterior: ${formatMoney(totalBalance)}<br>Costo: ${formatMoney(totalCost)}<br>Saldo Restante: <strong>${formatMoney(newBalance)}</strong><br><br>Se abrió WhatsApp para notificar.`);
 }
@@ -1815,9 +1817,13 @@ async function markAllPaid(cell) {
     renderAll();
     closeGroupModal();
     
+ // ... (código anterior de la función)
+    
     const p = playerPurchases[0];
     const message = `\uD83E\uDD11 ¡FELICIDADES ${p.playerName.toUpperCase()}! \uD83E\uDD11\n\n\uD83D\uDCB8 TU PAGO HA SIDO ENVIADO \uD83D\uDCB8\n\n\uD83D\uDCB0 Monto Total: *${formatMoney(totalBalance)}*\n\uD83C\uDFE6 Destino: Enviado ${p.clabe ? 'a la cuenta con terminación *' + p.clabe.slice(-4) + '*' : 'a tu cuenta registrada'}\n\u23F0 Hora: ${new Date().toLocaleTimeString('es-MX')}\n\n\uD83E\uDD73 ¡Que siga la racha!`;
-    window.open(`https://wa.me/+52${p.cell}?text=${encodeURIComponent(message)}`, '_blank');
+    
+    // CORRECCIÓN: Usar api.whatsapp.com y encodeURIComponent
+    window.open(`https://api.whatsapp.com/send?phone=52${p.cell}&text=${encodeURIComponent(message)}`, '_blank');
     
     await showAlert(`Marcado como PAGADO. Se pagó un total de ${formatMoney(totalBalance)} a ${p.playerName}.`);
 }
@@ -1839,9 +1845,11 @@ window.resendRegistrationWhatsapp = function(id){
     const cardNames = (p.card||[]).map(cardName).join(', ');
     messageParts.push(`\uD83C\uDFAB\uFE0F *FOLIO ${p.id}* (${p.modality} Cartas):\n${cardNames}`);
     
-    // CORRECCIÓN 2: Mensaje de WhatsApp con salto de línea
+    // Mensaje de WhatsApp con salto de línea
     const finalMsg = `\uD83C\uDF89 ¡HOLA ${p.playerName.toUpperCase()}! \uD83C\uDF89\n\n\u2705 Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${messageParts.join('\n\n')}\n\n\uD83C\uDF40 ¡MUCHA SUERTE Y A GANAR! \uD83C\uDF40`;
-    window.open(`https://wa.me/+52${p.cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
+    
+    // CORRECCIÓN: Usar api.whatsapp.com y encodeURIComponent
+    window.open(`https://api.whatsapp.com/send?phone=52${p.cell}&text=${encodeURIComponent(finalMsg)}`, '_blank');
 };
 
 function printPurchase(id){
@@ -2294,13 +2302,17 @@ async function registerPlayer(){
     $q('#clabe-hint').textContent = '';
     $q('#cell-hint').textContent = '';
 
-    // CORRECCIÓN 2: Mensaje de WhatsApp con salto de línea
+ // ... (código anterior de la función)
+
+    // Mensaje de WhatsApp con salto de línea
     const finalMsg = `\uD83C\uDF89 ¡HOLA ${name.toUpperCase()}! \uD83C\uDF89\n\n\u2705 Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${messageParts.join('\n\n')}\n\n\uD83C\uDF40 ¡MUCHA SUERTE Y A GANAR! \uD83C\uDF40`;
-    window.open(`https://wa.me/+52${cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
+    
+    // CORRECCIÓN: Usar api.whatsapp.com y encodeURIComponent
+    window.open(`https://api.whatsapp.com/send?phone=52${cell}&text=${encodeURIComponent(finalMsg)}`, '_blank');
+    
     await showAlert(`¡${name} registrado con éxito! (${q4+q6} partidas totales). Se abrió WhatsApp para enviar el registro.`);
     renderAll();
 }
-
 async function resetGame(){
     const confirm = await showConfirm('¿INICIAR NUEVA PARTIDA?<br><br>Esto limpiará el mazo y el tablero. Los jugadores "JUGANDO" y "POR PAGAR" no se verán afectados.', 'Reiniciar Partida');
     if(!confirm) return;

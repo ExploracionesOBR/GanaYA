@@ -804,8 +804,8 @@ tr:hover { background: #f9f9f9; }
       </div>
 
       <div class="title-container">
-          <div class="title">🎉 GANA YA!</div>
-          <div class="subtitle">Lotería Interactiva Mexicana</div>
+          <div class="title">🎉 GANA YA! 🎉</div>
+          <div class="subtitle">   Lotería Interactiva Mexicana</div>
       </div>
       
       <div class="header-controls-wrapper">
@@ -891,7 +891,7 @@ tr:hover { background: #f9f9f9; }
               <input id="price4" class="input" type="number" value="10" min="1" title="Precio">
               <input id="profit4" class="input" type="number" value="2" min="0" title="Ganancia">
             </div>
-            <div class="small-muted" style="margin-top:4px">Precio • Ganancia</div>
+            <div class="small-muted" style="margin-top:4px">Precio    •    Ganancia</div>
           </div>
           <div class="price-box" style="padding:10px; border:1px solid #eee; border-radius:8px;">
             <div style="font-size:16px">6 Cartas</div>
@@ -899,7 +899,7 @@ tr:hover { background: #f9f9f9; }
               <input id="price6" class="input" type="number" value="12" min="1" title="Precio">
               <input id="profit6" class="input" type="number" value="3" min="0" title="Ganancia">
             </div>
-            <div class="small-muted" style="margin-top:4px">Precio • Ganancia</div>
+            <div class="small-muted" style="margin-top:4px">Precio    •    Ganancia</div>
           </div>
         </div>
         <div style="display:flex; gap:8px; margin-top:10px;">
@@ -1783,7 +1783,7 @@ async function buyWithWinnings(player, pendingWins, totalBalance) {
     
     // --- Enviar Notificación de WhatsApp ---
     const finalMsg = `\uD83C\uDF89 ¡HOLA ${player.playerName.toUpperCase()}! \uD83C\uDF89\n\nHas utilizado parte de tus ganancias para la compra de nuevos boletos:\n\n\uD83D\uDCB0 *SALDO ACUMULADO:* ${formatMoney(totalBalance)}\n\uD83D\uDCB8 *UTILIZADO:* ${formatMoney(totalCost)}\n\uD83C\uDFE6 *RESTANTE:* ${formatMoney(newBalance)}\n\n--- *Nuevos Boletos* ---\n\n${messageParts.join('\n\n')}\n\n\uD83C\uDF40 ¡MUCHA SUERTE Y A GANAR! \uD83C\uDF40`;
-    window.open(`https://wa.me/52${player.cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
+    window.open(`https://wa.me/+52${player.cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
 
     await showAlert(`¡Compra exitosa! Se compraron ${q4+q6} partidas.<br><br>Saldo Anterior: ${formatMoney(totalBalance)}<br>Costo: ${formatMoney(totalCost)}<br>Saldo Restante: <strong>${formatMoney(newBalance)}</strong><br><br>Se abrió WhatsApp para notificar.`);
 }
@@ -1817,7 +1817,7 @@ async function markAllPaid(cell) {
     
     const p = playerPurchases[0];
     const message = `\uD83E\uDD11 ¡FELICIDADES ${p.playerName.toUpperCase()}! \uD83E\uDD11\n\n\uD83D\uDCB8 TU PAGO HA SIDO ENVIADO \uD83D\uDCB8\n\n\uD83D\uDCB0 Monto Total: *${formatMoney(totalBalance)}*\n\uD83C\uDFE6 Destino: Enviado ${p.clabe ? 'a la cuenta con terminación *' + p.clabe.slice(-4) + '*' : 'a tu cuenta registrada'}\n\u23F0 Hora: ${new Date().toLocaleTimeString('es-MX')}\n\n\uD83E\uDD73 ¡Que siga la racha!`;
-    window.open(`https://wa.me/52${p.cell}?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/+52${p.cell}?text=${encodeURIComponent(message)}`, '_blank');
     
     await showAlert(`Marcado como PAGADO. Se pagó un total de ${formatMoney(totalBalance)} a ${p.playerName}.`);
 }
@@ -1841,7 +1841,7 @@ window.resendRegistrationWhatsapp = function(id){
     
     // CORRECCIÓN 2: Mensaje de WhatsApp con salto de línea
     const finalMsg = `\uD83C\uDF89 ¡HOLA ${p.playerName.toUpperCase()}! \uD83C\uDF89\n\n\u2705 Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${messageParts.join('\n\n')}\n\n\uD83C\uDF40 ¡MUCHA SUERTE Y A GANAR! \uD83C\uDF40`;
-    window.open(`https://wa.me/52${p.cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
+    window.open(`https://wa.me/+52${p.cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
 };
 
 function printPurchase(id){
@@ -2175,7 +2175,7 @@ async function markAllPaid(cell) {
     
     const p = playerPurchases[0];
     const message = `\uD83E\uDD11 ¡FELICIDADES ${p.playerName.toUpperCase()}! \uD83E\uDD11\n\n\uD83D\uDCB8 TU PAGO HA SIDO ENVIADO \uD83D\uDCB8\n\n\uD83D\uDCB0 Monto Total: *${formatMoney(totalBalance)}*\n\uD83C\uDFE6 Destino: Enviado ${p.clabe ? 'a la cuenta con terminación *' + p.clabe.slice(-4) + '*' : 'a tu cuenta registrada'}\n\u23F0 Hora: ${new Date().toLocaleTimeString('es-MX')}\n\n\uD83E\uDD73 ¡Que siga la racha!`;
-    window.open(`https://wa.me/52${p.cell}?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/+52${p.cell}?text=${encodeURIComponent(message)}`, '_blank');
     
     await showAlert(`Marcado como PAGADO. Se pagó un total de ${formatMoney(totalBalance)} a ${p.playerName}.`);
 }
@@ -2296,7 +2296,7 @@ async function registerPlayer(){
 
     // CORRECCIÓN 2: Mensaje de WhatsApp con salto de línea
     const finalMsg = `\uD83C\uDF89 ¡HOLA ${name.toUpperCase()}! \uD83C\uDF89\n\n\u2705 Tu registro fue exitoso. Aquí están tus tableros para hoy:\n\n${messageParts.join('\n\n')}\n\n\uD83C\uDF40 ¡MUCHA SUERTE Y A GANAR! \uD83C\uDF40`;
-    window.open(`https://wa.me/52${cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
+    window.open(`https://wa.me/+52${cell}?text=${encodeURIComponent(finalMsg)}`, '_blank');
     await showAlert(`¡${name} registrado con éxito! (${q4+q6} partidas totales). Se abrió WhatsApp para enviar el registro.`);
     renderAll();
 }

@@ -1092,6 +1092,7 @@ const defaultsPrices=()=>({price4:10,profit4:2,price6:12,profit6:3});
 const defaultsGame=()=>({deck:Array.from({length:54},(_,i)=>i+1),drawn:[],current:0,pending:[], winnerPending: false});
 
 // --- Estado de la Aplicación (APP) ---
+// --- Estado de la Aplicación (APP) ---
 let APP = {
     prices: load(Kp) || defaultsPrices(),
     game: load(Kg) || defaultsGame(),
@@ -1108,9 +1109,43 @@ let APP = {
     isAuto: false,
     autoInterval: null,
     animShuffling: false,
-    audioCtx: null
+    audioCtx: null,
+    hasStartedRun: false // NUEVO: Controla si ya se dijo la frase de inicio
 };
 
+try{ APP.audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ APP.audioCtx=null; }
+if(APP.currentMode===8) APP.currentMode=4; // Antigua migración
+
+// --- NUEVA FUNCIÓN: MOTOR DE VOZ (TTS) ---
+function speakGame(text, isIntro = false) {
+    if (!window.speechSynthesis) return;
+    
+    // Cancelar audio anterior para que no se traslape si va muy rápido
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'es-MX'; // Intentar forzar español de México
+
+    // Buscar una voz en español si está disponible para sonar más natural
+    const voices = window.speechSynthesis.getVoices();
+    const esVoice = voices.find(v => v.lang.includes('es-MX')) || voices.find(v => v.lang.includes('es'));
+    if (esVoice) utterance.voice = esVoice;
+
+    if (isIntro) {
+        // Configuración para "SE VA Y SE CORRE CON..." (Energética)
+        utterance.rate = 1.2;  // Un poco más rápido
+        utterance.pitch = 1.1; // Tono ligeramente más alto (emoción)
+        utterance.volume = 1.0;
+    } else {
+        // Configuración para leer la carta (Clara)
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+    }
+    
+    window.speechSynthesis.speak(utterance);
+}
+  
 try{ APP.audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ APP.audioCtx=null; }
 if(APP.currentMode===8) APP.currentMode=4; // Antigua migración
 
@@ -2000,6 +2035,10 @@ function shufflePending(newDeck){
     APP.game.drawn = [];
     APP.game.current = 0;
     APP.drawnInGame = [];
+    
+    // NUEVO: Reiniciamos la bandera para que la próxima vez diga "Se va y se corre..."
+    APP.hasStartedRun = false; 
+
     APP.tx.push({id:uuid(),type:'shuffle_full',ts:Date.now()});
     saveAll();
 }
@@ -2014,6 +2053,16 @@ async function drawOne(){
         return;
     }
     
+    // --- LÓGICA DE VOZ (IA) ---
+    // 1. Si es la primera carta tras barajear, decir la frase
+    if (!APP.hasStartedRun) {
+        speakGame("¡Se va y se corre con...!", true);
+        APP.hasStartedRun = true; 
+        
+        // Pequeña pausa visual opcional para sincronizar con el audio
+        // (El audio se encola, así que el juego fluye, pero esto ayuda al ritmo)
+    }
+
     playSound('snd-flip');
     const card = APP.game.deck.shift(); 
     APP.game.drawn.push(card);
@@ -2022,6 +2071,16 @@ async function drawOne(){
     
     APP.tx.push({id:uuid(),type:'draw',card:card,ts:Date.now()});
     saveAll();
+
+    // 2. Limpiar el nombre de la carta para que la lea la IA
+    // Obtenemos el nombre base (ej: "1 el gallo-min.jpg")
+    let rawName = cardName(card); 
+    // Quitamos números al inicio, quitamos "-min", quitamos ".jpg" y espacios extra
+    let speechName = rawName.replace(/^\d+\s*/, '').replace(/-min/i, '').replace(/\.(jpg|png|jpeg)/i, '').trim();
+    
+    // 3. Leer la carta (la función speakGame encola el audio, así que sonará después de la intro)
+    speakGame(speechName, false);
+
     processCard(card);
     renderAll();
 }

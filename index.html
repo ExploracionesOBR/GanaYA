@@ -1110,42 +1110,58 @@ let APP = {
     autoInterval: null,
     animShuffling: false,
     audioCtx: null,
-    hasStartedRun: false // NUEVO: Controla si ya se dijo la frase de inicio
+    hasStartedRun: false // Controla si ya se dijo la frase de inicio
 };
 
 try{ APP.audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ APP.audioCtx=null; }
-if(APP.currentMode===8) APP.currentMode=4; // Antigua migración
+if(APP.currentMode===8) APP.currentMode=4; 
 
-// --- NUEVA FUNCIÓN: MOTOR DE VOZ (TTS) ---
+// --- MOTOR DE VOZ MEJORADO (IA) ---
+// Variable para guardar las voces cargadas
+let availableVoices = [];
+
+// Cargar voces al inicio (Chrome las carga asíncronas)
+if (window.speechSynthesis) {
+    window.speechSynthesis.onvoiceschanged = () => {
+        availableVoices = window.speechSynthesis.getVoices();
+    };
+}
+
 function speakGame(text, isIntro = false) {
     if (!window.speechSynthesis) return;
-    
-    // Cancelar audio anterior para que no se traslape si va muy rápido
-    window.speechSynthesis.cancel();
+
+    // Si es la intro, cancelamos cualquier sonido anterior.
+    // Si NO es intro (es carta), NO cancelamos para que termine de decir la frase anterior.
+    if (isIntro) {
+        window.speechSynthesis.cancel();
+    }
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'es-MX'; // Intentar forzar español de México
+    
+    // INTELIGENCIA PARA SELECCIONAR LA MEJOR VOZ DISPONIBLE
+    // Prioridad: Voces Google (Android/Chrome) > Microsoft (Windows) > Paulina/Sabina (México)
+    if (availableVoices.length === 0) availableVoices = window.speechSynthesis.getVoices();
+    
+    const preferredVoice = availableVoices.find(v => v.name.includes('Google español') || v.name.includes('Google Spanish')) ||
+                           availableVoices.find(v => v.lang === 'es-MX' && !v.name.includes('Helena')) || // Evitar robóticas si hay opciones
+                           availableVoices.find(v => v.lang.startsWith('es'));
 
-    // Buscar una voz en español si está disponible para sonar más natural
-    const voices = window.speechSynthesis.getVoices();
-    const esVoice = voices.find(v => v.lang.includes('es-MX')) || voices.find(v => v.lang.includes('es'));
-    if (esVoice) utterance.voice = esVoice;
+    if (preferredVoice) utterance.voice = preferredVoice;
 
     if (isIntro) {
-        // Configuración para "SE VA Y SE CORRE CON..." (Energética)
-        utterance.rate = 1.2;  // Un poco más rápido
-        utterance.pitch = 1.1; // Tono ligeramente más alto (emoción)
+        // Configuración ENÉRGICA para "Se va y se corre"
+        utterance.rate = 1.1;  // Velocidad media-rápida
+        utterance.pitch = 1.2; // Tono alto (emoción)
         utterance.volume = 1.0;
     } else {
-        // Configuración para leer la carta (Clara)
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
+        // Configuración NATURAL para la carta
+        utterance.rate = 0.9;  // Un poco más lento para claridad
+        utterance.pitch = 1.0; // Tono normal
         utterance.volume = 1.0;
     }
     
     window.speechSynthesis.speak(utterance);
-}
-  
+}  
 try{ APP.audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ APP.audioCtx=null; }
 if(APP.currentMode===8) APP.currentMode=4; // Antigua migración
 
@@ -2036,7 +2052,7 @@ function shufflePending(newDeck){
     APP.game.current = 0;
     APP.drawnInGame = [];
     
-    // NUEVO: Reiniciamos la bandera para que la próxima vez diga "Se va y se corre..."
+    // REINICIO OBLIGATORIO: Esto asegura que la próxima vez que tires, diga la frase.
     APP.hasStartedRun = false; 
 
     APP.tx.push({id:uuid(),type:'shuffle_full',ts:Date.now()});
@@ -2053,14 +2069,12 @@ async function drawOne(){
         return;
     }
     
-    // --- LÓGICA DE VOZ (IA) ---
-    // 1. Si es la primera carta tras barajear, decir la frase
+    // --- LÓGICA DE NARRACIÓN (IA) ---
+    // 1. Detectar si es el inicio de la corrida
     if (!APP.hasStartedRun) {
-        speakGame("¡Se va y se corre con...!", true);
+        // Usamos comas y exclamaciones para que la IA entone mejor
+        speakGame("¡Se va!... ¡y se corre!... ¡con!...", true);
         APP.hasStartedRun = true; 
-        
-        // Pequeña pausa visual opcional para sincronizar con el audio
-        // (El audio se encola, así que el juego fluye, pero esto ayuda al ritmo)
     }
 
     playSound('snd-flip');
@@ -2072,13 +2086,13 @@ async function drawOne(){
     APP.tx.push({id:uuid(),type:'draw',card:card,ts:Date.now()});
     saveAll();
 
-    // 2. Limpiar el nombre de la carta para que la lea la IA
-    // Obtenemos el nombre base (ej: "1 el gallo-min.jpg")
+    // 2. Limpieza del nombre para lectura natural
+    // Ejemplo: de "1 el gallo-min.jpg" a "EL GALLO"
     let rawName = cardName(card); 
-    // Quitamos números al inicio, quitamos "-min", quitamos ".jpg" y espacios extra
     let speechName = rawName.replace(/^\d+\s*/, '').replace(/-min/i, '').replace(/\.(jpg|png|jpeg)/i, '').trim();
     
-    // 3. Leer la carta (la función speakGame encola el audio, así que sonará después de la intro)
+    // 3. Leer la carta.
+    // NOTA: No pasamos 'true' aquí, así se encola detrás de "Se va y se corre" sin cortarlo.
     speakGame(speechName, false);
 
     processCard(card);
